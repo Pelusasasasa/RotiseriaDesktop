@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar Cuenta</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="./consultarCuenta.css">
+    <link href="../../node_modules/material-icons/iconfont/material-icons.css" rel="stylesheet">
+</head>
+<body class="consultaCuenta">
+        <section class="buscador">
+            <section class="inputs">
+                <main class="">
+                    <label for="buscar">Buscar cliente</label>
+                    <input type="text" id="buscar" autofocus name="buscar">
+                </main>
+                <main>
+                    <label for="cliente">Cliente</label>
+                    <input type="text" name="cliente" disabled id="cliente">
+                </main>
+    
+                <main class="saldo">
+                    <label for="saldo">Saldo</label>
+                    <input type="text" disabled id="saldo" name="saldo">
+                </main>
+            </section>
+
+            <section class="botones">
+                <button class="actualizar">Actualizar</button>
+                <button class="compensada none">Compensada</button>
+                <button class="historica">Historica</button>
+                <button class="volver">Volver</button>
+            </section>
+        </section>
+        <main class="listas">
+            <section class="listaVentas">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Nro-Venta</th>
+                            <th>Cliente</th>
+                            <th>Tipo Venta</th>
+                            <th>Precio</th>
+                            <th>Pagado</th>
+                            <th>Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+            <section class="listaProductos">
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Fecha</td>
+                            <td>cod-Prod</td>
+                            <td>Producto</td>
+                            <td>Cantidad</td>
+                            <td>Precio</td>
+                            <td>Total</td>
+                            <td>Nro Series</td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+        </main>
+        <section class="abajo">
+            <button class="borrar">Borrar Compensada</button>
+        </section>
+</body>
+<script src="./consultarCuenta.js"></script>
+</html>

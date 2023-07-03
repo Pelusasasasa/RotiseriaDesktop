@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="./productos.css">
+    <link href="../../node_modules/material-icons/iconfont/material-icons.css" rel="stylesheet">
+</head>
+<body class="productos">
+        <div class="buscador">
+            <fieldset>
+                <legend>Buscador</legend>
+
+                <div class="caja" id="select">
+                    <label for="seleccion">Seleccion</label>
+                    <select name="seleccion" id="seleccion">
+                        <option value="codigo">Codigo</option> 
+                        <option selected="true" value="descripcion">Descripcion</option>
+                    </select>
+                </div>
+                <div class="caja" id="input">
+                    <label for="buscador">Buscar Producto</label>
+                    <input type="text" name="buscarProducto" autofocus id="buscarProducto">
+                </div>
+                <div class="switch">
+                    <label for="switch" id="label1">Lista/Tarjeta</label>
+                    <input type="checkbox" id="switch">
+                    <label for="switch" class="lbl"></label>
+                </div>
+                <div>
+                    <p>Apretar Enter para buscar</p>
+                </div>
+            </fieldset>
+        </div>
+        <div class="tabla  none">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Descripcion</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <section class="tarjetas">
+
+        </section>
+        <section class="botones">
+            <button class="agregar">Agregar Producto</button>
+            <button class="salir">Salir</button>
+        </section>
+</body>
+<script src="./productos.js"></script>
+</html>

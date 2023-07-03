@@ -1,0 +1,30 @@
+
+h1{
+    text-align: center;
+}
+
+.input{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 2rem;
+}
+
+main{
+    display: flex;
+    flex-direction: column;
+}
+
+select{
+    font-size: 1.5rem;
+    padding: 0.5rem;
+}
+
+main fieldset{
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.5rem;
+}
+
+main div input{
+    transform: scale(1.5);
+}

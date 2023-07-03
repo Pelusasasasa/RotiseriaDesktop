@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="./seccion.css">
+    <link href="../../node_modules/material-icons/iconfont/material-icons.css" rel="stylesheet">
+    <title>Secciones</title>
+</head>
+<body>
+    <h1>Secciones</h1>
+    <section class="main">
+        <main class="agregar">
+            <div>
+                <label for="codigo">Codigo</label>
+                <input type="number" name="codigo" id="codigo">
+            </div>
+            <div>
+                <label for="nombre">Nombre</label>
+                <input type="text" name="nombre" id="nombre">
+            </div>
+            <div class="botones">
+                <button id="agregar">Agregar</button>
+            </div>
+        </main>
+        <main class="lista">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Nombre</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </main>
+    </section>
+    <section class="botones">
+        <button id="salir">Salir</button>
+    </section>
+</body>
+    <script src="./seccion.js"></script>
+</html>

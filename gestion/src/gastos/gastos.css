@@ -1,0 +1,16 @@
+h1{
+    text-align: center;
+}
+
+.inputs main{
+    margin: 4rem 0;
+}
+
+.inputs main label{
+    display: inline-block;
+    width: 9rem;
+}
+
+.inputs main input{
+    width: 70%;
+}

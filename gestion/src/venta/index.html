@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Venta</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="index.css" />
+    <link href="../../node_modules/material-icons/iconfont/material-icons.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <div class="parteCliente">
+        
+        <div>
+          <label for="codigo">Codigo</label>
+          <input placeholder="Codigo" type="text" id="codigo" name="codigo">
+        </div>
+        <div>
+          <label for="nombre">Nombre Cliente</label>
+          <input placeholder="Nombre" type="text" id="nombre" name="nombre">
+        </div>
+        <div>
+          <label for="cuit">Cuit</label>
+          <input type="text" name="cuit" id="cuit">
+        </div>
+        <div>
+          <label for="saldo">Saldo</label>
+          <input type="text" disabled  id="saldo" name="saldo">
+        </div>
+      </div>
+
+    <div class="parteCliente2">
+      <div>
+        <label for="telefono">Telefono</label>
+        <input type="text" id="telefono" name="telefono">
+      </div>
+
+      <div>
+        <label for="localidad">Localidad</label>
+        <input type="text" id="localidad" name="localidad">
+      </div>
+
+      <div>
+        <label for="direccion">Direccion</label>
+        <input type="text" id="direccion" name="direccion">
+      </div>
+
+      <main>
+        <label for="condicion">Condicion Iva</label>
+        <select name="condicion" id="condicion">
+          <option value="Consumidor Final">Consumidor Final</option>
+          <option value="Monotributo">Monotributo</option>
+          <option value="Responsable Inscripto">Inscripto</option>
+          <option value="Exento">Exento</option>
+        </select>
+      </main>
+
+    </div>
+
+    </header>
+
+    <main class="parteProductos">
+      <section class="buscarProductos">
+        <div class="cod-barra">
+          <label for="cod-barra">Codigo</label>
+          <input class="w-50" type="text" name="cod-barra" autofocus id="cod-barra">
+        </div>
+
+        <div>
+          <label for="cantidad">Cantidad</label>
+          <input class="w-50" type="number" name="cantidad" value="1.00" id="cantidad">
+        </div>
+
+        <div>
+          <label for="descripcion">Descripcion</label>
+          <input class="w-100" type="text" name="descripcion" autofocus id="descripcion">
+        </div>
+
+        <div>
+          <label for="precio-U">Precio-U</label>
+          <input class="w-50" type="number" name="precio-U" id="precio-U">
+        </div>
+      </section>
+
+      <section class="listarProductos">
+        <table>
+          <thead>
+            <tr>
+              <th>Cod-Barras</th>
+              <th>Cantidad</th>
+              <th class="th-nombre">Nombre</th>
+              <!-- <th>Marca</th> -->
+              <th>Precio-U</th>
+              <th>Precio-T</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="tbody"></tbody>
+        </table>
+      </section>
+
+    </main>
+    <main class="totales">
+
+      <main>
+        <!-- <label for="recibo">Recibo</label>
+        <input type="number" value="0.00" name="recibo" id="recibo"> -->
+      </main>
+
+      <div class="condicionVenta">
+        <!-- <div class="contado">
+          <input type="radio" name="condicion" value="PP" id="presupuesto">
+          <label for="presupuesto">Presupuesto</label>
+        </div> -->
+
+        <div class="contado">
+          <input type="radio" name="condicion" checked value="CD" id="contado">
+          <label for="contado">Contado</label>
+        </div>
+
+        <div class="contado">
+          <input type="radio" name="condicion" value="T" id="tarjeta">
+          <label for="tarjeta">Tarjeta</label>
+        </div>
+
+        <!-- <div class="cuentaCorriente none">
+          <input type="radio" name="condicion" value="CC" id="cuentaCorriente">
+          <label for="cuentaCorriente">Cuenta Corriente</label>
+        </div> -->
+      </div>
+
+      <div class="total">
+        <label for="total">Total</label>
+        <input type="number" disabled name="total" id="total" value="0.00">
+      </div>
+    </main>
+
+    <footer class="botones">
+        <main class="">
+          <label for="impresion">Impresion (F6)</label>
+          <input type="checkbox" checked name="impresion" id="impresion">
+        </main>
+
+        <button class="facturar hijoFooter">Facturar</button>
+        <button class="volver hijoFooter">Volver</button>
+
+        <div class="cobrado hijoFooter">
+          <main>
+            <label for="cobrado">Cobrado</label>
+            <input type="number" value="0.00" id="cobrado" name="cobrado">
+          </main>
+          <main>
+          <label for="vuelto">Vuelto</label>
+          <input type="number" id="vuelto" value="0.00" disabled name="vuelto">
+        </main>
+        </div>
+    </footer>
+
+    <div class="alerta none">
+      <div class="spinner"></div>
+      <p class="texto">Generando certificado de AFIP</p>
+    </div>
+
+    <script src="./venta.js"></script>
+  </body>  
+</html>

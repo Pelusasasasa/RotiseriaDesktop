@@ -1,0 +1,220 @@
+
+.contenedor {
+  width: 95%;
+  max-width: 120rem;
+  margin: 0 auto;
+
+}
+
+.negro{
+  background-color: rgb(0, 0, 0);
+  color: white;
+}
+
+.negro th,.negro td{
+  color: black;
+} 
+
+.parteCliente{
+  width: 100%;
+  border: .1rem solid black;
+  border-bottom: none;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr 1fr;
+  gap:2rem
+}
+.parteCliente div,.parteCliente2 div,.parteCliente2 main{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.parteCliente2{
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  border: .1rem solid black;
+  border-top: none;
+  padding-bottom: 1rem;
+}
+
+.parteCliente2 div input,.parteCliente2 div select{
+  width: 70%;
+  font-size: 1.8rem;
+}
+
+.parteCliente div #nombre,.parteCliente div input{
+  width: 100%;
+  font-size: 1.8rem;
+}
+
+.parteCliente div #saldo,.parteCliente div #codigo{
+  width: 50%;
+}
+
+.parteProductos .buscarProductos{
+  display: grid;
+  grid-template-columns: 1fr 1fr 3fr 1fr 1fr;
+}
+
+.parteProductos .buscarProductos div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.parteProductos .buscarProductos div input{
+  width: 70%;
+  font-size: 1.7rem;
+}
+
+.parteProductos .buscarProductos #rubro{
+  padding: .5rem;
+  font-size: 1.5rem;
+}
+
+.parteProductos .cod-barra{
+  width: 15rem;
+}
+
+.parteProductos .buscarProductos div .w-100{
+  width: 100%;
+}
+
+.parteProductos .buscarProductos div .w-50{
+  width: 50%;
+}
+
+.parteProductos .listarProductos{
+  background-color: white;
+  margin-top: 2rem;
+  border: .1rem solid black;
+  height: 50vh;
+  overflow: scroll;
+}
+
+.parteProductos .listarProductos table{
+
+  width: 100%; 
+  border-collapse: collapse;
+}
+
+.parteProductos .listarProductos table thead tr{
+  background-color: chocolate;
+}
+
+.parteProductos .listarProductos table thead th{
+  border: .1rem solid black
+}
+
+.parteProductos tbody tr:hover{
+  background-color: lightgray;
+}
+
+.parteProductos tbody .seleccionado:hover{
+  background-color: gray;
+}
+
+.parteProductos .listarProductos table thead .th-nombre{
+  width: 40%;
+}
+
+.parteProductos tbody td{
+  border: .1rem solid black;
+  word-break: break-all;
+  cursor: pointer;
+}
+
+.condicionVenta{
+  margin-top: 1rem;
+  display: flex;
+}
+
+.condicionVenta div{
+  margin-left: 1rem;
+}
+
+.condicionVenta div label{
+  font-weight: bold;
+}
+
+.condicionVenta input{
+  transform: scale(1.8);
+}
+
+.condicionVenta .none{
+  display: none;
+}
+
+
+.totales{
+  display: flex;
+  justify-content: space-between;
+}
+
+.totales input{
+  font-size: 1.7rem;
+  padding: 1rem;
+}
+
+.cobrado{
+  display: flex;
+}
+
+.alerta{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 110%;
+  background-color: rgba(0,0,0,.5);
+}
+
+.texto{
+  color: white;
+}
+
+.texto p{
+  font-size: 2rem;
+}
+
+.spinner{
+margin-left: 5rem;
+border: .4rem solid rgba(0,0,0,1);
+width: 3.6rem;
+height: 3.6rem;
+border-radius: 50%;
+border-left-color: transparent;
+
+animation: spin 1s linear infinite
+
+}
+
+@keyframes spin{
+0%{
+  transform: rotate(0deg);
+}
+
+100%{
+  transform: rotate(360deg);
+}
+}
+
+.totales input[type=number],.botones input[type=number]{
+  width: 15rem;
+}
+
+footer .hijoFooter{
+  margin-left: auto;
+}
+
+footer main,footer button{
+  margin: 0 1rem;
+}

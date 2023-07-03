@@ -1,0 +1,40 @@
+h1{
+    text-align: center;
+}
+
+.table{
+    height: 70vh;
+    background-color: white;
+    overflow: scroll;
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,td{
+    border: .1rem solid black;
+}
+
+td input{
+    width: 100%;
+}
+
+tbody tr:hover{
+    background-color: lightgray;
+}
+
+.inputs main{
+    margin: 2rem;
+}
+
+.inputs main input{
+    width: 70%;
+}
+
+.inputs label{
+    display: inline-block;
+    width: 10rem;
+}
+

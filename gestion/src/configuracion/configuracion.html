@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuracion</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="./configuracion.css">
+</head>
+<body>
+    <h1>Configuracion</h1>
+
+    <section class="input">
+        <main>
+            <label for="caja">Caja</label>
+            <input type="text" name="caja" id="caja">
+        </main>
+        <main class="cuit">
+            <label for="cuit">Cuit</label>
+            <input type="text" name="cuit" id="cuit">
+        </main>
+        <main class="puntoVenta">
+            <label for="puntoVenta">Punto Venta</label>
+            <input type="number" name="puntoVenta" id="puntoVenta">
+        </main>
+        <main>
+            <label for="condIva">Condicion de Iva</label>
+            <select name="condIva" id="condIva">
+                <option value="Monotributo">Monotributo</option>
+                <option value="Inscripto">Responsable Inscripto</option>
+            </select>
+        </main>
+        <main>
+            <fieldset>
+                <legend>Multiples Vendedores?</legend>
+                <div>
+                    <label for="si">Si</label>
+                    <input type="radio" name="multipleVendedores" id="si" value="true">
+                </div>
+                <div>
+                    <label for="no">No</label>
+                    <input type="radio" value="false" name="multipleVendedores" id="no">
+                </div>
+            </fieldset>
+        </main>
+
+        <main>
+            <fieldset>
+                <legend>Alerta Stock Negativo</legend>
+                <div>
+                    <label for="siStockNegativo">Si</label>
+                    <input type="radio" name="stockNegativo" id="siStockNegativo" value="true">
+                </div>
+                <div>
+                    <label for="noStockNegativo">No</label>
+                    <input type="radio" value="false" name="stockNegativo" id="noStockNegativo">
+            </fieldset>
+            </div>
+        </main>
+        <main>
+            <fieldset>
+                <legend>Dolar</legend>
+                <div>
+                    <label for="siDolar">Si</label>
+                    <input type="radio" value="true" name="dolar" id="siDolar">
+                </div>
+                <div>
+                    <label for="noDolar">No</label>
+                    <input type="radio" value="false" name="dolar" id="noDolar">
+                </div>
+            </fieldset>
+        </main>
+    </section>
+    <section class="botones">
+        <button class="modificar">Modificar</button>
+    </section>
+</body>
+    <script src="./configuracion.js"></script>
+</html>

@@ -1,0 +1,31 @@
+.buscador{
+    display: flex;
+    margin: 2rem;
+    justify-content: space-around;
+}
+
+.buscador label{
+    font-size: 2rem;
+}
+
+.buscador main{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.tabla{
+    background-color: white;
+    overflow: scroll;
+    border: .1rem solid black;
+    height: 70vh;
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table tr th{
+    border: .1rem solid black;
+}

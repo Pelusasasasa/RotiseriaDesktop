@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Comanda</title>
+    <link rel="stylesheet" href="./ticket.css">
+</head>
+<body>
+    <section class="logo">
+        <img src="../img/Logo.jpg" alt="">
+    </section>
+    <section class="datosTicket">
+        <h1>Sabor Urbano</h1>
+        <main class="ticket">
+            <h3 id="tipoComp"></h3>
+            <h3 id="numeroComp"></h3>
+        </main>
+        <main class="fechas">
+            <h3>Fecha: <span id="fecha"></span></h3>
+            <h3>Hora: <span id="hora"></span></h3>
+        </main>
+        <main class="numeroPedido">
+            <h1>Pedido N°: <span class="text-big text-bold" id="pedido"></span></h1>
+        </main>
+        <p>------------------------------------</p>
+    </section>
+    <section class="datosClientes">
+        <h1 id="cliente"></h1>
+        <h1 id="cuit"></h1>
+        <h1 id="direccion"></h1>
+        <h1 id="telefono"></h1>
+        <p id="notaCredito"></p>
+        <p>------------------------------------</p>
+    </section>
+    <section class="productos">
+        <h1>Cant - Desc - Precio</h1>
+        <p>------------------------------------</p>
+    </section>
+    <section class="totales">
+        <p>------------------------------------</p>
+        <p class="text-bold text-big">TOTAL: $<span id="total"></span></p>
+    </section>
+
+    <section class="version">
+        <p>Version 1.5.3</p>
+    </section>
+</body>
+<script src="./ticketComanda.js"></script>
+</html>

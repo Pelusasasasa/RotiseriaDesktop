@@ -1,0 +1,106 @@
+body{
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
+}
+
+.pestaña{
+  display: flex;
+  justify-content: space-around;
+  background-color: lightgray;
+}
+
+.pestaña main{
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  border: .1rem solid black;
+  border-right: .1rem solid black;
+  border-left: .1rem solid black;
+}
+
+.pestaña main:hover{
+  cursor: pointer;
+}
+
+.pestaña .pestañaSeleccionada{
+  background-color: gray;
+  color: white;
+  border-color: #ffeb78;
+}
+
+.pestaña p{
+  padding: 0;
+  margin: 0;
+}
+
+.filtro{
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1rem ;
+  align-items: center;
+}
+
+.filtro .buttonSeleccionado{
+  background-color: grayrgba(75, 75, 75, 0.9);
+  color: white;
+}
+
+.filtro .none{
+  display: none !important;
+}
+
+.filtro .dia,.filtro .mes,.filtro .anio{
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.filtro label{
+  font-size: 3rem;
+}
+.filtro .mes select,.filtro input{
+  padding: .5rem;
+  font-size: 2rem;
+}
+
+.listado,.gastos{
+  background-color: white;
+  height: 75vh;
+  overflow: scroll;
+}
+
+table{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bold:hover{
+  cursor: pointer;
+}
+
+table thead th{
+  border: .1rem solid;
+}
+
+table tbody .bold{
+  font-weight: bold;
+}
+
+table tbody td{
+  text-align: center;
+}
+
+table tbody tr:hover{
+  background-color: gray;
+}
+
+table tbody .total{
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+tbody tr{
+  cursor: pointer;
+}

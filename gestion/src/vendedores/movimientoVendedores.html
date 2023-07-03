@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movimiento Vendedores</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="./vendedores.css">
+</head>
+<body>
+    <section class="informacion">
+        <main>
+            <label for="fecha">Desde</label>
+            <input type="date" name="fecha" id="fecha">
+        </main>
+        <main>
+            <label for="vendedores">Vendedores</label>
+            <select name="vendedores" id="vendedores"></select>
+        </main>
+    </section>
+    <section class="tabla">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Descripcion</th>
+                    <th>Hora</th>    
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+    <script src="./movimientoVendedores.js"></script>
+</body>
+</html>

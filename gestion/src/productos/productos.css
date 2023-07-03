@@ -1,0 +1,311 @@
+
+.productos{
+    display: flex;
+    flex-direction: column;
+}
+
+.buscador fieldset{
+    display: flex;
+    justify-content: space-around;
+}
+
+.buscador .switch{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.buscador .lbl{
+    display: inline-block;
+    width: 65px;
+    height: 33px;
+    background: #979797;
+    cursor: pointer;
+    border-radius: 100px;
+    position: relative;
+    transition: 1s;
+}
+
+.buscador .lbl::after{
+    content: "";
+    display: block;
+    width: 25px;
+    height: 25px;
+    background: #eee;
+    border-radius: 100%;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    transition: .2s;
+}
+
+#switch:checked + .lbl::after{
+    left: 36px;
+    
+}
+
+#switch:checked + .lbl{
+    background: #00C881;
+    
+}
+
+#switch{
+    display: none;
+}
+
+.caja#input{
+    width: 50%;
+}
+
+.caja{
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    font-size: 1.4rem;
+}
+
+.caja input,select{
+    padding: .5rem;
+    font-size: 1.5rem;
+}
+
+.tabla{
+    border: .1rem solid black;
+    width: 100%;
+    height: 70vh;
+    border-collapse: collapse;
+    overflow: scroll;
+    background-color: white;
+}
+
+table{
+    width: 100%;        
+    border-collapse: collapse;
+}
+
+table thead th{
+    font-size: 1.5rem;
+    border: .1rem solid black ;
+}
+
+table tbody tr{
+    height: 2rem;
+    text-align: center;
+}
+
+table tbody tr:hover{
+    cursor: pointer;
+    background-color: lightgrey;
+}
+table tbody tr td{
+    border: .1rem solid black;
+}
+.botones{
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-around;
+}
+
+button:hover{
+    transform: scale(1.2);
+    cursor: pointer;
+    color: white;
+    background-color: gray;
+}
+
+/*agregar Producto y  modificarlo*/
+
+#titulo{
+    justify-content: end;
+    margin: auto .5rem;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+h1{
+    margin: auto;
+}
+
+.agregarProducto .input,.modificarProducto .input{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.agregarProducto #textBold,.modificarProducto #textBold{
+    transform: scale(1.5);
+}
+
+.agregarProducto,.modificarProducto{
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+}
+
+.agregarProducto legend,.modificarProducto legend{
+    text-align: start;
+}
+
+.agregarProducto section,.modificarProducto section{
+    display: flex;
+    justify-content: space-around;
+    margin: .5rem auto;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.agregarProducto section input,.agregarProducto section select,.modificarProducto section select,.modificarProducto section input{
+    display: flex;
+    flex-direction: column;
+    padding: .5rem;
+    font-size: 1.2rem;
+
+}
+
+.agregarProducto .descripcion,.modificarProducto .descripcion {
+    width: 50%;
+}
+
+.descripcion #descripcion{
+    width: 100%;
+}
+
+/* Cambio producto */
+.cambio .flex{
+    display: flex;
+}
+.cambio main label{
+    display: inline-block;
+    width: 80%;
+}
+
+.precio fieldset,.costo fieldset{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.cambio #descripcion{
+    width: 100%;
+}
+
+.marcas .inputs,.provedores .inputs{
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: 5rem;
+}
+
+
+.marcas .inputs main{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.provedores .inputs{
+    gap: 8rem;
+}
+
+.marcas .inputs main input,.provedores .inputs main input{
+    padding: .5rem;
+}
+
+/*Modificar Codigo*/
+
+#modificarCodigo h1{
+    text-align: center;
+}
+
+#modificarCodigo main{
+    display: flex;
+    flex-direction: column;
+    margin: 3rem 0;
+}
+
+
+.inputs main:nth-child(1),.inputs main:nth-child(3){
+    width: 30%;
+}
+
+.listaPrecios{
+    text-align: center;
+}
+
+.listaPrecios .listar{
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+}
+
+.listaPrecios .listar input{
+    transform: scale(1.5);
+}
+
+.tarjetas{
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr ;
+    gap: 2rem;
+    height: 70vh;
+    background-color: white;
+    padding: 1rem;
+    overflow: scroll;
+}
+
+.tarjetas .tarjeta{
+    height: 30rem;
+    padding: 1rem 0;
+    background-color: lightgray;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tarjetas .tarjeta img{
+    width: 20rem;
+    cursor: pointer;
+    height: 13rem;
+    object-fit: contain;
+}
+
+.tarjetas .tarjeta h4{
+    text-align: center;
+    font-size: 1.4rem;
+    margin-bottom:0;
+    margin-top: .5rem;
+}
+
+.tarjetas .tarjeta .divBotones,.tarjetas .tarjeta .divInformacion{
+    justify-content: space-around;
+    width: 100%;
+    display: flex;
+}
+
+.tarjetas .tarjeta .divBotones{
+    margin-top: auto;
+}
+
+.tarjeta .divInformacion p{
+    margin: 0;
+    margin-bottom: .5rem;
+}
+
+.tarjeta #id{
+    margin: 0;
+    font-weight: 100;
+    color: #757575;
+    margin-bottom: .5rem;
+}
+
+.tarjetas .tarjeta .divBotones .botonBorrar{
+    background-color: rgb(247, 50, 50);
+}
+
+.tarjetas .tarjeta .divBotones .botonAgregar{
+    background-color: rgb(1, 175, 1)
+}
+
+.tarjetas .tarjeta .divBotones .botonRestar{
+    background-color: yellowgreen
+}

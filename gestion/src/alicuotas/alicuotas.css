@@ -1,0 +1,27 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+      Arial, sans-serif;  
+}
+  
+html {
+    box-sizing: border-box;
+    font-size: 62.5%;
+}
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+body {
+    font-size: 1.6rem;
+    padding: 0 2rem;
+    background-color: burlywood;
+    display: flex;
+    flex-direction: column;
+}
+
+.botones{
+    margin-top: 5rem;
+    display: flex;
+    justify-content: space-around;
+}

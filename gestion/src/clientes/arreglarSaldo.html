@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arreglar Saldo</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="./clientes.css">
+</head>
+<body class="arreglarSaldo">
+    <h1>Arreglar Saldo</h1>
+    <section class="informacion">
+        <main class="id">
+            <label for="id">Codigo</label>
+            <input type="text" autofocus name="id" id="id">
+        </main>
+        <main class="nombre">
+            <label for="nombre">Nombre</label>
+            <input type="text" name="nombre" id="nombre" disabled>
+        </main>
+    </section>
+    <section class="informacion">
+        <main>
+            <label for="saldoViejo">Saldo Actual</label>
+            <input type="number" class="text-rigth" name="saldoViejo" disabled id="saldoViejo">
+        </main>
+        <main>
+            <label for="saldoNuevo">Saldo Nuevo</label>
+            <input type="number"class="text-rigth"  name="saldoNuevo" id="saldoNuevo">
+        </main>
+    </section>
+    <section class="botones">
+        <button class="modificar">Modificar</button>
+        <button class="salir">Salir</button>
+    </section>
+</body>
+<script src="./arreglarSaldo.js"></script>
+</html>

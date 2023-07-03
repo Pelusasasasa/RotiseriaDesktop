@@ -1,0 +1,27 @@
+body {
+   font-size: 1.6rem;
+   padding: 0 2rem;
+   background-color: burlywood;
+}
+ 
+.inputs{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.inputs main{
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.inputs main label{
+    display: inline-block;
+}
+
+.inputs main input{
+    display: inline-block;
+    font-size: 2rem;
+}
+

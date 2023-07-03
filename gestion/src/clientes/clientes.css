@@ -1,0 +1,234 @@
+
+h1{
+    text-align: center;
+}
+
+.none{
+    display: none !important;
+}
+
+.seccionCliente{
+    display: flex;
+    flex-direction: column;
+}
+
+.buscador{
+    display: flex;
+    justify-content: space-around;
+}
+
+.buscador div{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.buscador div input{
+    padding: 1.2rem;
+}
+
+.buscador .buscador-nombre{
+    width: 50%;
+}
+
+.tabla{
+    overflow: scroll;
+    margin-top: 1rem;
+    height: 70vh;
+    border: .1rem solid black;
+    background-color: white;
+
+}
+
+table{
+
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table thead th{
+    border: .1rem solid black;
+}
+
+table tbody tr{
+    text-align: center;
+}
+
+table tbody tr:hover{
+    cursor: pointer;
+}
+
+table tbody tr td{
+    border: .1rem solid black
+}
+
+/*Agregar Cliente*/
+
+.seccion-agregarCliente{
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+.seccion-agregarCliente .primero{
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+}
+
+.seccion-agregarCliente .primero div{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    margin-right: 5rem;
+}
+
+.seccion-agregarCliente .primero div input{
+    padding: 1rem;
+    font-size: 1.5rem;
+}
+
+.seccion-agregarCliente .segundo{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.seccion-agregarCliente .segundo div{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.seccion-agregarCliente .segundo div input{
+    padding: 1rem;
+    font-size: 1.5rem;
+}
+
+.seccion-agregarCliente .tercero{
+    display: flex;
+    justify-content: space-around;
+}
+
+.seccion-agregarCliente .tercero main{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.seccion-agregarCliente .tercero{
+    margin: 2rem;
+
+}
+
+.seccion-agregarCliente .botones{
+    margin-top: 3rem;
+}
+
+/*Agregar Cliente*/
+
+/*Modificar Cliente*/
+
+.seccion-modificarCliente .primero{
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+
+}
+
+.seccion-modificarCliente .primero div{
+    display: flex;
+    flex-direction: column;
+    margin-right: 5rem;
+    text-align: center;
+}
+
+.seccion-modificarCliente .primero div input{
+    padding: 1rem;
+    font-size: 1.5rem;
+}
+
+
+.seccion-modificarCliente .segundo{
+    display: flex;
+    justify-content: space-between;
+}
+
+.seccion-modificarCliente .segundo div{
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+}
+
+.seccion-modificarCliente .segundo div input{
+    font-size: 1.5rem;
+    padding: 1rem;
+}
+
+.seccion-modificarCliente .tercero{
+    display: flex;
+    justify-content: space-around;
+}
+
+.seccion-modificarCliente .tercero main{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+/*Modificar Cliente*/
+
+/*listado Saldo*/
+.lista{
+    background-color: white;
+    height: 70vh;
+    overflow-y: scroll;
+}
+
+.lista tr td{
+    border: .1rem solid black
+}
+
+.info{
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+}
+
+.info input{
+    width: 15%;
+    text-align: end;
+    font-size: 2rem;
+    font-weight: 900;
+    color: black;
+    background-color: white;
+}
+
+.lista .negrita{
+    font-weight: bold;
+}
+
+.lista .izquierda{
+    text-align: end;
+}
+/*listado Saldo*/
+
+/*Arreglar Saldo*/
+.arreglarSaldo .informacion{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-around; */
+    margin: 2rem 0;
+}
+
+.arreglarSaldo .informacion #id{
+    width: 8rem;
+}
+
+.arreglarSaldo .informacion #nombre{
+    width: 40rem;
+}
+
+
+.arreglarSaldo .informacion label{
+    display: inline-block;
+    width: 10rem;
+}

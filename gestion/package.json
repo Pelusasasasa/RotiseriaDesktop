@@ -1,0 +1,71 @@
+{
+  "name": "Gestion",
+  "productName": "Gestion",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
+  },
+  "keywords": [],
+  "author": {
+    "name": "Pelusa",
+    "email": "agustinlorenzatto@hotmail.com"
+  },
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "Gestion"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "@afipsdk/afip.js": "^0.7.3",
+    "axios": "^0.26.1",
+    "cuit-validator": "^1.0.0",
+    "dotenv": "^16.0.1",
+    "electron-reload": "^2.0.0-alpha.1",
+    "electron-squirrel-startup": "^1.0.0",
+    "internet-available": "^1.0.0",
+    "material-icons": "^1.12.2",
+    "mongoose": "^7.0.3",
+    "node-abi": "^3.40.0",
+    "qrcode": "^1.5.1",
+    "sharp": "^0.32.1",
+    "sweetalert2": "^11.4.17",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.63",
+    "@electron-forge/maker-deb": "^6.0.0-beta.63",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.63",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
+    "@electron-forge/maker-zip": "^6.0.0-beta.63",
+    "electron": "^19.1.9"
+  }
+}

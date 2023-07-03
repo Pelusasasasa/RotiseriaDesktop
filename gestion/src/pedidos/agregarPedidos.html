@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Pedido</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="./pedido.css">
+</head>
+<body>
+    <section class="inputs">
+        <main>
+            <label for="codigo">Codigo</label>
+            <input type="text" autofocus name="codigo" id="codigo">
+        </main>
+        <main>
+            <label for="descripcion">Producto *</label>
+            <input type="text" name="descripcion" id="descripcion">
+        </main>
+        <main>
+            <label for="cantidad">Cantidad</label>
+            <input type="number" name="cantidad" id="cantidad">
+        </main>
+        <main>
+            <label for="cliente">Cliente</label>
+            <input type="text" name="cliente" id="cliente">
+        </main>
+        <main>
+            <label for="telefono">Telefono</label>
+            <input type="text" name="telefono" id="telefono">
+        </main>
+        <main>
+            <label for="stock">Stock</label>
+            <input type="number" name="stock" id="stock">
+        </main>
+        <main>
+            <label for="observaciones">Observaciones</label>
+            <input type="text" name="observaciones" id="observaciones">
+        </main>
+
+        <main>
+            <label for="vendedor">Vendedor</label>
+            <input type="text" disabled name="vendedor" id="vendedor">
+        </main>
+    </section>
+    <section class="botones">
+        <button id="agregar">Agregar</button>
+        <button id="modificar" class="none">Modificar</button>
+        <button id="salir">Salir</button>
+    </section>
+    <script src="./agregarPedidos.js"></script>
+</body>
+</html>

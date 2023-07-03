@@ -1,0 +1,43 @@
+body {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+}
+
+.agregarRubro{
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.agregarRubro main{
+  margin-bottom: 2rem;
+  width: 100%;
+}
+  
+.lista{
+    background-color: white;
+    overflow: scroll;
+    height: 80vh;
+}
+
+.lista table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.lista table thead tr{
+    border: .1rem solid black;
+}
+
+.lista table tbody{
+    text-align: center;
+}
+
+.lista table tbody tr:hover{
+  background-color: lightgray;
+  cursor: pointer;
+}
+.none{
+  display: none;
+}

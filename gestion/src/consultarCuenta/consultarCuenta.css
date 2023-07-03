@@ -1,0 +1,69 @@
+.consultaCuenta .buscador{
+    display: flex;
+    justify-content: space-around;
+}
+.buscador .inputs{
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 2rem
+}
+
+.buscador .inputs main {
+    display: flex;
+    flex-direction: column;
+}
+.listaVentas{
+    margin-top: 2rem;
+    height: 40vh;
+    background-color: white;
+    overflow: scroll;
+}
+
+.listaVentas table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.listaVentas table thead th{
+    border: .1rem solid black;
+    text-align: center;
+}
+
+.listaVentas table tbody td{
+    border: .1rem solid black;
+}
+
+.listaProductos{
+    margin-top: 2rem;
+    height: 40vh;
+    background-color: white;
+    overflow: scroll;
+}
+
+.listaProductos table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.listaProductos table thead td{
+    border: .1rem solid black;
+    text-align: center;
+}
+
+table tbody tr:hover{
+    cursor: pointer;
+    background-color: lightgray;
+}
+
+table tbody td{
+    text-align: center;
+    border-bottom: .1rem solid black;
+}
+
+.abajo{
+    margin-top: 1rem;
+}
+
+.botones button{
+    margin: 0 2rem;
+}

@@ -1,0 +1,48 @@
+h1{
+    text-align: center;
+}
+
+
+.tabla{
+    height: 70vh;
+    overflow: scroll;
+    background-color: white;
+}
+
+table{
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table thead tr th,table tbody tr td{
+    border: .1rem solid black;
+}
+
+
+td{
+    text-align: center;
+
+}
+
+table tbody tr:hover{
+    background-color: #3E6D9C;
+    cursor: pointer;
+}
+
+label{
+    width: 5rem;
+    display: inline-block;
+}
+
+main{
+    margin: 2rem;
+}
+
+.informacion{
+    display: flex;
+    justify-content: space-around;
+}
+.informacion main{
+    display: flex;
+    flex-direction: column;
+}

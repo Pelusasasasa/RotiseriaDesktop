@@ -1,0 +1,35 @@
+h1{
+    text-align: center;
+}
+
+.main{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+}
+
+.main .agregar div:not(:last-child){
+    display: flex;
+    flex-direction: column;
+    margin: 6rem;
+}
+
+.main .lista{
+    height: 70vh;
+    background-color: white;
+    overflow: scroll;
+}
+
+.main .lista table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+
+.main .lista thead tr th,.main .lista tbody tr td{
+    cursor: pointer;
+    border: .1rem solid black;
+}
+
+.main .lista table p{
+    margin: 0;
+}

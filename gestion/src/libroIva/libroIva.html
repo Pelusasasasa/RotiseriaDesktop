@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libro Iva</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="./libroiva.css">
+</head>
+<body>
+
+    <section class="buscador">
+        <main>
+            <label for="desde">Desde</label>
+            <input type="date" autofocus name="desde" id="desde">
+        </main>
+        <main>
+            <label for="hasta">Hasta</label>
+            <input type="date" name="hasta" id="hasta">
+        </main>
+    </section>
+    <section class="tabla">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Cond Iva</th>
+                    <th>Cuit</th>
+                    <th>Tipo Comp</th>
+                    <th>Nro Comp</th>
+                    <th>Gravado 21%</th>
+                    <th>Iva 21%</th>
+                    <th>Gravado 10.5</th>
+                    <th>Iva 10.5%</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+    <section class="botones">
+        <button id="salir">Salir</button>
+    </section>
+    <script src="./libroIva.js"></script>
+</body>
+</html>

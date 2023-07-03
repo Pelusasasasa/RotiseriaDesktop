@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket</title>
+    <link rel="stylesheet" href="./ticket.css">
+</head>
+<body>
+    
+    <section class="logo">
+        <img src="../img/Logo.jpg" alt="">
+    </section>
+    <section class="datos">
+        <p>Razon Social: AYALA NORMA BEATRIZ</p>
+        <p>Domicilio Comercial: 9 de Julio 4080</p>
+        <p>CUIT: 27272214900</p>
+        <p>Ingresos Brutos: 27272214900</p>
+        <p>Inicio de Actividades: 01/01/2021</p>
+        <p>Condicion Frente Iva: Responsable Monotributo</p>
+        <p>------------------------------------</p>
+    </section>
+    <section class="titulo">
+        <h2>Sabor Urbano</h2>
+    </section>
+    <section class="datosTicket">
+        <main class="ticket">
+            <p class="tipoComp"></p>
+            <p class="numeroComp"></p>
+        </main>
+        <main class="fechas">
+            <p>Fecha: <span class="fecha"></span></p>
+            <p>Hora: <span class="hora"></span></p>
+        </main>
+        <main>
+            <p>Pedido N°: <span class="pedido"></span></p>
+        </main>
+        <p>------------------------------------</p>
+    </section>
+    <section class="datosClientes">
+        <p class="cliente"></p>
+        <p class="cuit"></p>
+        <p class="telefono"></p>
+        <p class="direccion"></p>
+        <p class="notaCredito"></p>
+        <p>------------------------------------</p>
+    </section>
+    <section class="info">
+        <main class="descripcion">
+            <p>DESCRIPCION</p>
+            <p>IMPORTE</p>  
+        </main>
+        <main class="cantidad">
+            <p class="cantidadPrecio">CANTIDAD/PRECIO UNIT</p>
+            <p class="iva"></p>
+            <p class="pagado"></p>
+        </main>
+        <p>------------------------------------</p>
+    </section>
+    <section class="listado"></section>
+    <section class="totales">
+        <p class=>DESCUENTO: $<span class="descuento"></span></p>
+        <p class=" text-big text-bold">TOTAL: $<span class="total"></span></p>
+        <p class="tipoVenta"></p>
+    </section>
+    <section class="final">
+        <p class="text-bold text-big">* MUCHAS GRACIAS *</p>
+    </section>
+
+    <section class="afip">
+        <main>
+            <img id="qr" src="" alt="">
+        </main>
+        <main class="cae">
+            <p id="cae"></p>
+            <p id="vencimientoCae"></p>
+        </main>
+        <p class="m-t-3">Version 1.1.0</p>
+    </section>
+</body>
+<script src="./ticket.js"></script>
+</html>

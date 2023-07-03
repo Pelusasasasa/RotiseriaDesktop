@@ -1,0 +1,171 @@
+@page{
+    margin: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;  
+    margin: 0;
+    margin-right: 10px;
+}
+ 
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+}
+
+*,
+*:before,
+*:after {
+box-sizing: inherit;
+}
+
+body {
+  font-size: 1rem;
+}
+
+p{
+    margin: 0;
+}
+
+img{
+    width: 10rem;
+}
+
+.logo{
+    display: flex;
+    justify-content: center;
+}
+
+.datosTicket main{
+    display: flex;
+    margin-left: 1rem;
+}
+
+.datosTicket main p{
+    margin-right: auto;
+}
+
+.datosTicket > h1{
+    text-align: center;
+}
+
+.datosTicket main h3{
+    margin: 0;
+}
+
+.datosTicket main:not(.numeroPedido){
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+
+.datos p{
+    margin: .7rem 0;
+}
+
+h2{
+    text-align: center;
+}
+
+.info{
+    margin-left: 1rem;
+}
+
+.listado{
+    margin-left: 1rem;
+}
+
+.info main{
+    display: flex;
+    justify-content: space-around;
+}
+
+.info main p{
+    margin-right: auto;
+}
+
+.totales{
+    padding-bottom: 2rem;
+    margin-left: 1rem;
+}
+
+.totales .izquierda{
+    text-align: end;
+}
+
+.listado{
+    margin-bottom: 5rem;
+}
+
+.listado main{
+    display: flex;
+}
+
+.listado main p{
+    margin-right: auto;
+}
+
+.final p{
+    text-align: center;
+}
+
+.m-t-3{
+    margin-top: 2rem;
+}
+
+.text-bold{
+    font-weight: bold;
+}
+
+.text-big{
+    font-size: 1.5rem;
+}
+
+.none{
+    display: none;
+}
+
+.afip{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/*Ticket comanda*/
+
+.datosClientes{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin-left: 1rem;
+}
+
+.datosClientes h1{
+    margin: 0;
+}
+
+.productos{
+    display: flex;
+    align-items: start;
+    flex-direction: column;
+    margin-left: 1rem;
+}
+
+.productos h1{
+    margin: 0;
+}
+
+.productos p{
+    margin-bottom: 1.5rem;
+}
+
+.productos h1:nth-last-child(1){
+    margin-bottom: 2rem;
+}
+
+.version p{
+    text-align: center;
+}

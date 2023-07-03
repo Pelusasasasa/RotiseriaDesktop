@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Producto</title>
+    <link rel="stylesheet" href="../assets/global.css">
+    <link rel="stylesheet" href="productos.css">
+</head>
+<body class="agregarProducto">
+        <section id="titulo">
+            <h1>Agregar Producto</h1>
+            <!-- <main>
+                <label for="dolar">Dolar</label>
+                <input type="text" disabled class="text-rigth" name="dolar" id="dolar">
+            </main> -->
+        </section>
+        <fieldset>
+            <legend>Identificador</legend>
+            <section class="identificador">
+                <div class="input">
+                    <label for="codigo">Codigo</label>
+                    <input type="text" autofocus name="codigo" id="codigo">
+                </div>
+        
+                <div class="input descripcion">
+                    <label for="descripcion">Descripcion</label>
+                    <input type="text" name="descripcion" id="descripcion">
+                </div>
+
+                <div class="input secciones">
+                    <label for="secciones">Secciones</label>
+                    <select name="secciones" id="secciones">
+                        <option value="">--Seleccionar--</option>
+                    </select>
+                </div>
+            </section>
+        </fieldset>
+
+
+        <fieldset>
+            <legend>Informacion</legend>
+            <section class="informacion">
+                <div class="input">
+                    <label for="provedor">Provedor</label>
+                    <input type="text" name="provedor" id="provedor">
+                </div>
+                <div class="input">
+                    <label for="img">Imagen</label>
+                    <input type="file" name="img" id="img">
+                </div>
+                <div class="input">
+                    <label for="textBold">Texto Negro</label>
+                    <input type="checkbox" id="textBold" name="textBold">
+                </div>
+                <div class="input">
+                    <label for="stock">Stock</label>
+                    <input type="number" value="0.00" name="stock" id="stock">
+                </div>
+            </section>
+        </fieldset>
+        
+        <fieldset>
+            <legend>Total</legend>
+
+            <section class="total">
+                <div class="input">
+                    <label for="costo">Costo</label>
+                    <input type="number" value="0.00" name="costo" id="costo"> 
+                </div>
+                
+                <div class="input">
+                    <label for="total">Total</label>
+                    <input type="number" value="0.00" name="total" id="total"> 
+                </div>
+
+                <div class="input">
+                    <label for="ganancia">Ganancia %</label>
+                    <input type="number" value="0.00" name="ganancia" id="ganancia"> 
+                </div>
+                
+            </section>
+        </fieldset>
+        
+        <main class="botones">
+            <button class="guardar">Guardar Producto</button>
+            <button class="salir">Salir</button>
+        </main>
+</body>
+<script src="./agregarProducto.js"></script>
+</html>
