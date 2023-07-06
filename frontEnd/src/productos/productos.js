@@ -154,19 +154,21 @@ const listarTarjetas = async (productos)=>{
         const modificar = document.createElement('button');
         const eliminar = document.createElement('button');
         const agregar = document.createElement('button');
-        const restar = document.createElement('button');
+        const x6 = document.createElement('button');
 
         const bottonModifcar = `<div id=edit class=tool><span id=edit class=material-icons>edit</span><p class=tooltip>Modificar</p></div>`;
         const bottonEliminar = `<div id=delete class=tool><span id=delete class=material-icons>delete</span><p class=tooltip>Eliminar</p></div>`;
         const bottonAgregar = `<div id=add class=tool><span id=add class=material-icons>add_shopping_cart</span><p class=tooltip>Agregar Carrito</p></div>`;
-        const bottonRestar = `<div id=restar class=tool><span id=add class=material-icons>remove_shopping_cart</span><p class=tooltip>Sacar Carrito</p></div>`;
+        const botonX6 = `<div id=restar class=tool>
+                            <span id=add class=material-icons>looks_6</span><p class=tooltip>Media Docena</p>
+                        </div>`
+
         const pathIMG = path.join(__dirname,`../imgProductos/${producto._id}`);
         img.setAttribute('src',pathIMG + ".png");
         img.setAttribute('alt',producto.descripcion);
         img.addEventListener('click',mandarProducto);
         agregar.addEventListener('click',mandarProducto);
-        restar.addEventListener('click',mandarProducto);
-    
+        x6.addEventListener('click',mandarMediaDocena);
         titulo.innerText = producto.descripcion;
         id.innerText = "Codigo: " + producto._id;
         precio.innerText = "$" + producto.precio.toFixed(2);
@@ -174,7 +176,7 @@ const listarTarjetas = async (productos)=>{
         modificar.innerHTML = (bottonModifcar);
         eliminar.innerHTML = (bottonEliminar);
         agregar.innerHTML = (bottonAgregar);
-        restar.innerHTML = (bottonRestar);
+        x6.innerHTML = (botonX6);
 
         divInformacion.innerHTML = `
             <div>
@@ -190,11 +192,10 @@ const listarTarjetas = async (productos)=>{
         agregar.classList.add('botonAgregar');
         eliminar.classList.add('botonBorrar');
         modificar.classList.add('botonModificar');
-        restar.classList.add('botonRestar');
 
         if (!ventanaSecundaria) {
             agregar.classList.add('none');
-            restar.classList.add('none');
+            x6.classList.add('none');
         }else{
             eliminar.classList.add('none');
             modificar.classList.add('none')
@@ -203,7 +204,7 @@ const listarTarjetas = async (productos)=>{
         divBotones.appendChild(modificar);
         divBotones.appendChild(eliminar);
         divBotones.appendChild(agregar);
-        divBotones.appendChild(restar);
+        producto.seccion === "EMPANADAS" && divBotones.appendChild(x6);
 
         div.appendChild(img)
         div.appendChild(titulo);
@@ -258,7 +259,6 @@ tbody.addEventListener('click',e=>{
 
     seleccionado.classList.toggle('seleccionado');
     subSeleccionado.classList.add('subSeleccionado');
-    console.log("a")
 
     if (e.target.innerHTML === "delete") {
         sweet.fire({
@@ -389,7 +389,7 @@ function clickEnTarjetas(e) {
 }
 
 
-async function mandarProducto() {
+async function mandarProducto(e) {
     if (ventanaSecundaria) {
         const {isConfirmed,value} = await sweet.fire({
             title:"Cantidad a Agregar",
@@ -409,3 +409,22 @@ async function mandarProducto() {
     }
     buscador.focus();
 };
+
+//funcion para enviar media docena de empanadas de un sabor falta
+async function mandarMediaDocena() {
+    console.log(seleccionado)
+    const {isConfirmed} = await sweet.fire({
+        title:`Media Docena de ${seleccionado.children[1].innerText}?`,
+        showCancelButton:true,
+        confirmButtonText:"Aceptar"
+    });
+
+    if (isConfirmed) {
+        ipcRenderer.send('enviar',{
+            informacion:seleccionado.id,
+            cantidad:6,
+            tipo:"producto",
+            descripcion:seleccionado.children[1].innerText
+        })
+    }
+}

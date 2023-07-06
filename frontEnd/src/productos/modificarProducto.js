@@ -148,7 +148,7 @@ async function listarSecciones() {
     const lista = JSON.parse(await ipcRenderer.invoke('get-secciones'));
     for await(let seccion of lista){
         const option = document.createElement('option');
-        option.value = seccion.codigo;
+        option.value = seccion.nombre;
         option.text = seccion.nombre;
         secciones.appendChild(option)
     }

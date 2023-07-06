@@ -62,6 +62,7 @@ let porcentajeH = 0;
 let descuento = 0;
 let listaProductos = [];
 let pedido;
+let empanadas = 0;
 
 //Por defecto ponemos el A Consumidor Final y tambien el select
 window.addEventListener('load',async e=>{
@@ -349,10 +350,6 @@ facturar.addEventListener('click',async e=>{
             //Ponemos en la cuenta conpensada si es CC
             venta.tipo_venta === "CC" && await ponerEnCuentaCompensada(venta);
             venta.tipo_venta === "CC" && await ponerEnCuentaHistorica(venta,parseFloat(saldo.value));
-
-            if (venta.tipo_venta === "CC" &&  parseFloat(inputRecibo.value) !== 0) {
-                await hacerRecibo(numeros.Recibo);
-            }
         
             let cliente = {};
             cliente.nombre = nombre.value.toUpperCase();
@@ -681,30 +678,6 @@ document.addEventListener('keydown',e=>{
     };
 });
 
-const hacerRecibo = async(numero)=>{
-    const recibo = {};
-    recibo.fecha = new Date();
-    recibo.cliente = nombre.value;
-    recibo.idCliente = codigo.value;
-    recibo.numero = numero + 1;
-    recibo.precio = inputRecibo.value;
-    recibo.tipo_comp = "Recibo";
-    recibo.tipo_venta = "CD";
-    await hacerHistoricaRecibo(recibo.numero,recibo.precio,recibo.tipo_comp);
-    await axios.post(`${URL}recibo`,recibo);
-    await axios.put(`${URL}numero/Recibo`,{Recibo:recibo.numero});
-};
-
-const hacerHistoricaRecibo = async(numero,haber,tipo)=>{
-    const cuenta = {};
-    cuenta.cliente = nombre.value;
-    cuenta.idCliente = codigo.value;
-    cuenta.nro_venta = numero + 1;
-    cuenta.tipo = tipo;
-    cuenta.haber = haber;
-    cuenta.saldo = parseFloat(total.value) - parseFloat(haber)  + parseFloat(saldo.value);
-    (await axios.post(`${URL}historica`,cuenta)).data;
-};
 
 //Lo usamos para mostrar o ocultar cuestiones que tiene que ver con las ventas
 const cambiarSituacion = (situacion) =>{

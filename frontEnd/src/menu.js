@@ -1,10 +1,6 @@
 const { ipcRenderer } = require("electron");
 const sweet = require('sweetalert2');
 
-// const axios = require('axios');
-// require("dotenv").config();
-// const URL = process.env.GESTIONURL;
-
 const archivo = require('./configuracion.json');
 
 ipcRenderer.send('poner-cierre');
@@ -183,37 +179,6 @@ caja.addEventListener('click',async e=>{
     }
 });
 
-// movimiento.addEventListener('click',e=>{
-//     location.href = "./movimiento/movimiento.html";
-// });
-
-// consulta.addEventListener('click',e=>{
-//     location.href = "./consultarCuenta/consultarCuenta.html";
-// });
-
-// recibo.addEventListener('click',async e=>{
-//     if (verVendedores) {
-//         const vendedor = await verificarUsuarios();
-//         if (vendedor) {
-//             location.href = `./recibo/recibo.html?vendedor=${vendedor.nombre}`;
-//             ipcRenderer.send('sacar-cierre');
-//         }else if(vendedor === ""){
-//             await sweet.fire({
-//                 title:"Contraseña incorrecta"
-//             })
-//             clientes.click()
-//         }
-//     }else{
-//         location.href = "./recibo/recibo.html";
-//         ipcRenderer.send('sacar-cierre');
-//     }
-// });
-
-// notaCredito.addEventListener('click',e=>{
-//     location.href = "./venta/index.html?tipoFactura=notaCredito";
-//     ipcRenderer.send('sacar-cierre');
-// });
-
 //ponemos un numero para la venta y luego mandamos a imprimirla
 ipcRenderer.on('poner-numero',async (e,args)=>{
     ponerNumero();
@@ -221,6 +186,10 @@ ipcRenderer.on('poner-numero',async (e,args)=>{
 
 ipcRenderer.on('libroIva',async (e,args)=>{
     location.href = "./libroIva/libroIva.html";
+});
+
+ipcRenderer.on('cartas-empanadas',()=>{
+    location.href = 'cartas/cartasEmpandas.html'
 });
 
 const cargarPrimerCliente = async()=>{

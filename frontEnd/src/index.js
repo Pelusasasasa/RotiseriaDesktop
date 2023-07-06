@@ -1,4 +1,4 @@
-const { dialog, app, BrowserWindow,Menu } = require('electron');
+const { dialog, app, BrowserWindow,Menu, ipcRenderer } = require('electron');
 const { ipcMain } = require('electron/main');
 const path = require('path');
 const {condIva} = require('./configuracion.json')
@@ -14,6 +14,7 @@ const Numero = require('./models/Numero');
 const Venta = require('./models/Venta');
 const Pedido = require('./models/Pedido');
 const Seccion = require('./models/Seccion');
+const CartaEmpanada = require('./models/CartaEmpanada');
 
 //Fin Base de Datos
 
@@ -169,39 +170,6 @@ const hacerMenu = () => {
             abrirVentana("seccion/seccion.html",500,900)
           }
         },
-    //     {
-    //       label:"Vendedores",
-    //       submenu:[
-    //         {
-    //           label:"Informacion Vendedores",
-    //           click(){
-    //             abrirVentana("vendedores/vendedores.html",600,800);
-    //           }
-    //         },
-    //         {
-    //           label:"Movimiento Vendedores",
-    //             click(){
-    //               abrirVentana("vendedores/movimientoVendedores.html",600,1100);
-    //             }
-    //         }
-    //       ]
-    //     },
-    //     {
-    //       label: condIva === "Inscripto" ? "Libro Ventas" :"Alicuotas",
-    //       click(){
-    //         if (condIva === "Inscripto") {
-    //           ventanaPrincipal.webContents.send('libroIva');
-    //         }else{
-    //           abrirVentana("alicuotas/alicuotas.html",400,500);
-    //         }
-    //       }          
-    //     },
-    //     {
-    //       label:"Imprimir Venta",
-    //       click(){
-    //         ventanaPrincipal.webContents.send('poner-numero');
-    //       }
-    //     }
       ]
     },
     {
@@ -268,18 +236,17 @@ const hacerMenu = () => {
         // }
       ]
     },
-    // {
-    //   label:"Pedidos",
-    //   click(){
-    //     ventanaPrincipal.loadFile('src/pedidos/pedidos.html')
-    //   }
-    // },
-    // {
-    //   label:"Servicio Tecnico",
-    //   click(){
-    //     ventanaPrincipal.loadFile('src/servicioTecnico/servicio.html')
-    //   }
-    // },
+    {
+      label:"Cartas",
+      submenu:[
+        {
+          label:"Carta Empandas",
+          click(){
+            abrirVentana('cartas/cartasEmpanadas.html',500,500,false)
+          }
+        }
+      ]
+    },
     {
       label:"Configuracion",
       click(){
@@ -513,3 +480,23 @@ ipcMain.handle('delete-seccion',async(e,args)=>{
   }
 })
 //Fin Seccion
+
+//Inicio CartaEmpanada
+
+ipcMain.on('post-CartaEmpanada',async (e,args)=>{
+  const carta =  new CartaEmpanada(args);
+  console.log(carta)
+  await carta.save();
+});
+
+ipcMain.on('put-CartaEmpanada',async (e,args)=>{
+  await CartaEmpanada.findOneAndUpdate({_id:args._id},args);
+});
+
+
+ipcMain.handle('get-cartaEmpanada',async()=>{
+  const precios = await CartaEmpanada.findOne();
+  return JSON.stringify(precios)
+});
+
+//Fin CartaEmpanada
