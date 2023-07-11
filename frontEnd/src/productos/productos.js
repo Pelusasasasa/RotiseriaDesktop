@@ -422,9 +422,9 @@ async function mandarMediaDocena() {
     if (isConfirmed) {
         ipcRenderer.send('enviar',{
             informacion:seleccionado.id,
-            cantidad:6,
+            cantidad:"6",
             tipo:"producto",
-            descripcion:seleccionado.children[1].innerText
+            descripcion:seleccionado.children[1].innerHTML
         })
     }
 }

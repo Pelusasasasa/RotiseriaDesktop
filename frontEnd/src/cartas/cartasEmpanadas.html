@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartas Empanadas</title>
+    <link rel="stylesheet" href="../assets/global.css">     
+    <link rel="stylesheet" href="./cartas.css">
+</head>
+<body class="cartasEmpandas"> 
+    <h1>Cartas Empanadas</h1>
+    <section class="inputs">
+        <main>
+            <label for="mediaDocena">Precio 1/2 Docena</label>
+            <input type="number" value="0.00" disabled name="mediaDocena" id="mediaDocena">
+        </main>
+        <main>
+            <label for="docena">Precio Por Docena</label>
+            <input type="number" name="docena" disabled value="0.00" id="docena">
+        </main>
+    </section>
+
+    <section class="botones">
+        <button id="modificar">Modificar</button>
+        <button id="guardar" class="none">Guardar</button>
+        <button id="salir">Salir</button>
+    </section>
+</body>
+<script src="./cartasEmpanadas.js"></script>
+</html>

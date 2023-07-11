@@ -1,0 +1,12 @@
+.cartasEmpandas{
+    text-align: center;
+}
+.cartasEmpandas .inputs{
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.inputs{
+    margin-bottom: 15rem;
+}

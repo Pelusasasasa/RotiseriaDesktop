@@ -55,35 +55,21 @@ let facturaAnterior;
 
 let movimientos = [];
 let descuentoStock = [];
-let totalGlobal = 0;
 let idProducto = 0;
 let situacion = "blanco";
-let porcentajeH = 0;
 let descuento = 0;
 let listaProductos = [];
 let pedido;
+
+//Empanadas
+let precioEmpanadas = 0;
 let empanadas = 0;
+let cantDocena = 0;
+let cantMediaDocena = 0;
 
 //Por defecto ponemos el A Consumidor Final y tambien el select
 window.addEventListener('load',async e=>{
-
-    if (tipoFactura === "notaCredito") {
-
-        await sweet.fire({
-            title:"Numero de Factura Anterior",
-            input:"text",
-            confirmButtonText:"Aceptar",
-            showCancelButton:true
-        }).then(({isConfirmed,value})=>{
-            console.log(isConfirmed)
-            if (isConfirmed) {
-                facturaAnterior = value.padStart(8,'0');
-            }else{
-                location.href = '../menu.html';
-            }
-        });
-    }
-    
+    precioEmpanadas = JSON.parse(await ipcRenderer.invoke('get-cartaEmpanada'));
     listarCliente(1);//listanos los clientes
 });
 
@@ -412,6 +398,92 @@ const listarCliente = async(id)=>{
     }
 };
 
+//Lo que hacemos es listar el producto traido
+const listarProducto =async(id)=>{
+    let producto;
+    await ipcRenderer.invoke('get-producto',id).then((result)=>{
+        producto = JSON.parse(result);
+    });
+
+    if (producto) {
+        //Vemos si el producto ya fue usado
+       const productoYaUsado = listaProductos.find(({producto: product})=>{
+           if (product._id === producto._id) {
+               return product
+           };
+        });
+
+        if(producto !== "" && !productoYaUsado){
+            if (producto.stock === 0 && archivo.stockNegativo) {
+                await sweet.fire({
+                    title:"Producto con Stock en 0"
+                });
+            };
+            if (producto.stock - (parseFloat(cantidad.value)) < 0 && archivo.stockNegativo) {
+                await sweet.fire({
+                    title:"Producto con Stock menor a 0",
+                });
+            }
+            idProducto++;
+            producto.idTabla = `${idProducto}`;
+            listaProductos.push({cantidad:parseFloat(cantidad.value),producto});
+            codBarra.value = producto._id;
+            precioU.value = redondear(producto.precio,2);
+            total.value = redondear(parseFloat(total.value) + (parseFloat(cantidad.value) * parseFloat(precioU.value)),2);
+
+            tbody.innerHTML += `
+            <tr id=${producto.idTabla}>
+                <td>${codBarra.value}</td>
+                <td>${parseFloat(cantidad.value).toFixed(2)}</td>
+                <td>${producto.descripcion.toUpperCase()}</td>
+                <td>${parseFloat(precioU.value).toFixed(2)}</td>
+                <td>${redondear(parseFloat(precioU.value) * parseFloat(cantidad.value),2)}</td>
+                <td class=acciones>
+                    <div class=tool>
+                        <span class=material-icons>edit</span>
+                        <p class=tooltip>Modificar</p>
+                    </div>
+                    <div class=tool>
+                        <span class=material-icons>manage_search</span>
+                        <p class=tooltip>Observaciones</p>
+                    </div>
+                    <div class=tool>
+                        <span class=material-icons>delete</span>
+                        <p class=tooltip>Eliminar</p>
+                    </div>
+                </td>
+            </tr>
+            `;
+            tbody.scrollIntoView({
+                block:"end"
+            });
+            totalGlobal = parseFloat(total.value);
+        }else if(producto !== "" && productoYaUsado){
+            productoYaUsado.cantidad += parseFloat(cantidad.value);
+            producto.idTabla = productoYaUsado.producto.idTabla;
+            const tr = document.getElementById(producto.idTabla);
+            tr.children[1].innerHTML = redondear(parseFloat(tr.children[1].innerHTML) + parseFloat(cantidad.value),2);
+            tr.children[4].innerHTML = redondear(parseFloat(tr.children[1].innerHTML) * producto.precio,2);
+            total.value = redondear(parseFloat(total.value) + (parseFloat(cantidad.value) * producto.precio),2);
+            totalGlobal = parseFloat(total.value);
+        }
+        await calcularTotal();
+        
+        await calcularEmpanadas(producto,cantidad)
+
+
+        cantidad.value = "1.00";
+        codBarra.value = "";
+        descripcion.value = "";
+        precioU.value = "";
+        codBarra.focus();
+    }else{
+        descripcion.focus();
+    }
+    
+};
+
+
 //creamos la cuenta compensada cuedo la venta se hace en cuenta corriente
 const ponerEnCuentaCompensada = async(venta)=>{
     const cuenta = {};
@@ -465,85 +537,6 @@ const descontarStock = async({cantidad,producto})=>{
     }
     descuentoStock.push(producto)
 }
-
-//Lo que hacemos es listar el producto traido
-const listarProducto =async(id)=>{
-    let producto;
-    await ipcRenderer.invoke('get-producto',id).then((result)=>{
-        producto = JSON.parse(result);
-    });
-
-    if (producto) {
-       const productoYaUsado = listaProductos.find(({producto: product})=>{
-           if (product._id === producto._id) {
-               return product
-           };
-        });
-        if(producto !== "" && !productoYaUsado){
-            console.log(producto)
-        if (producto.stock === 0 && archivo.stockNegativo) {
-            await sweet.fire({
-                title:"Producto con Stock en 0"
-            });
-        };
-        if (producto.stock - (parseFloat(cantidad.value)) < 0 && archivo.stockNegativo) {
-            await sweet.fire({
-                title:"Producto con Stock menor a 0",
-            });
-        }
-        listaProductos.push({cantidad:parseFloat(cantidad.value),producto});
-        codBarra.value = producto._id;
-        precioU.value = redondear(producto.precio,2);
-        idProducto++;
-        producto.idTabla = `${idProducto}`;
-        tbody.innerHTML += `
-        <tr id=${producto.idTabla}>
-            <td>${codBarra.value}</td>
-            <td>${parseFloat(cantidad.value).toFixed(2)}</td>
-            <td>${producto.descripcion.toUpperCase()}</td>
-            <td>${parseFloat(precioU.value).toFixed(2)}</td>
-            <td>${redondear(parseFloat(precioU.value) * parseFloat(cantidad.value),2)}</td>
-            <td class=acciones>
-                <div class=tool>
-                    <span class=material-icons>edit</span>
-                    <p class=tooltip>Modificar</p>
-                </div>
-                <div class=tool>
-                    <span class=material-icons>manage_search</span>
-                    <p class=tooltip>Observaciones</p>
-                </div>
-                <div class=tool>
-                    <span class=material-icons>delete</span>
-                    <p class=tooltip>Eliminar</p>
-                </div>
-            </td>
-        </tr>
-    `;
-    tbody.scrollIntoView({
-        block:"end"
-    });
-        total.value = redondear(parseFloat(total.value) + (parseFloat(cantidad.value) * parseFloat(precioU.value)),2);
-        totalGlobal = parseFloat(total.value);
-        }else if(producto !== "" && productoYaUsado){
-            productoYaUsado.cantidad += parseFloat(cantidad.value);
-            producto.idTabla = productoYaUsado.producto.idTabla;
-            const tr = document.getElementById(producto.idTabla);
-            tr.children[1].innerHTML = redondear(parseFloat(tr.children[1].innerHTML) + parseFloat(cantidad.value),2);
-            tr.children[4].innerHTML = redondear(parseFloat(tr.children[1].innerHTML) * producto.precio,2);
-            total.value = redondear(parseFloat(total.value) + (parseFloat(cantidad.value) * producto.precio),2);
-            totalGlobal = parseFloat(total.value);
-        }
-        cantidad.value = "1.00";
-        codBarra.value = "";
-        descripcion.value = "";
-        precioU.value = "";
-        codBarra.focus();  
-    }else{
-        descripcion.focus();
-    }
-        
-
-};
 
 let seleccionado;
 //Hacemos para que se seleccione un tr
@@ -777,4 +770,66 @@ async function calcularTotal() {
     };
 
     total.value = redondear(aux,2);
+};
+
+async function calcularEmpanadas(producto,cantidadProducto){
+    empanadas = producto.seccion === "EMPANADAS" ? empanadas + parseFloat(cantidad.value) : empanadas;
+        if (empanadas % 12 === 0 && empanadas !== 0) {
+            let aux = precioEmpanadas.docena / 12;
+            for await (let {cantidad,producto} of listaProductos){
+                if (producto.seccion === "EMPANADAS") {
+                    producto.precio = aux;
+                    cambiarTr(producto.idTabla,producto.precio,cantidad)
+                    }
+                };
+                calcularTotal();
+        }else if(empanadas === 6){
+            let aux = precioEmpanadas.mediaDocena / 6;
+            for await(let {cantidad,producto} of listaProductos){
+                if (producto.seccion === "EMPANADAS") {
+                    producto.precio = aux;
+                    cambiarTr(producto.idTabla,producto.precio,cantidad);
+                }
+            };  
+            calcularTotal();
+        
+        }else if(empanadas % 12 === 6 && empanadas > 6){
+            let precioaux = 0;
+            let totalEmpanadas = 0;
+            if (producto.seccion !== "EMPANADAS") {
+                precioaux = producto.precio;
+            }else{
+                console.log(producto.precio);
+                console.log(parseFloat(cantidad.value))
+                totalEmpanadas += (producto.precio * parseFloat(cantidad.value));
+            };
+
+            let aux = empanadas;
+            let cantDoce = 0;
+            while (aux >= 12) {
+                aux -= 12;
+                cantDoce++;
+            }
+            console.log(totalEmpanadas)
+            console.log("El total es: " + total.value);
+            total.value = ((cantDoce * precioEmpanadas.docena) + precioEmpanadas.mediaDocena + precioaux).toFixed(2);
+        }else{
+            for await(let {cantidad,producto} of listaProductos){
+                if (producto.seccion === "EMPANADAS") {
+                    const precio = JSON.parse(await ipcRenderer.invoke('get-producto',producto._id)).precio;
+                    producto.precio = precio;
+                    cambiarTr(producto.idTabla,producto.precio,cantidad);
+                };
+            };
+            calcularTotal();
+        }
+}
+
+
+function cambiarTr(idtabla,precio,cantidad) {
+    const tr = document.getElementById(idtabla);
+    if (tr) {
+        tr.children[3].innerText = precio.toFixed(2);
+        tr.children[4].innerText = redondear(cantidad*precio,2);
+    }
 };
