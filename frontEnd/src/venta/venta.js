@@ -794,25 +794,24 @@ async function calcularEmpanadas(producto,cantidadProducto){
             calcularTotal();
         
         }else if(empanadas % 12 === 6 && empanadas > 6){
-            let precioaux = 0;
+            
             let totalEmpanadas = 0;
-            if (producto.seccion !== "EMPANADAS") {
-                precioaux = producto.precio;
-            }else{
-                console.log(producto.precio);
-                console.log(parseFloat(cantidad.value))
-                totalEmpanadas += (producto.precio * parseFloat(cantidad.value));
-            };
-
+            let cantDocena = 0;
             let aux = empanadas;
-            let cantDoce = 0;
-            while (aux >= 12) {
+            while(aux > 12){
                 aux -= 12;
-                cantDoce++;
+                cantDocena++;
             }
-            console.log(totalEmpanadas)
-            console.log("El total es: " + total.value);
-            total.value = ((cantDoce * precioEmpanadas.docena) + precioEmpanadas.mediaDocena + precioaux).toFixed(2);
+
+            for await(let {cantidad:cant,producto} of listaProductos){
+                if (producto.seccion === "EMPANADAS") {
+                    producto.precio = precioEmpanadas.mediaDocena / 6;
+                    cambiarTr(producto.idTabla,producto.precio,cant);
+                    totalEmpanadas += (producto.precio * cant);
+                }
+                await calcularTotal();
+            }
+            total.value = (parseFloat(total.value) - totalEmpanadas + (precioEmpanadas.docena * cantDocena) + precioEmpanadas.mediaDocena).toFixed(2);
         }else{
             for await(let {cantidad,producto} of listaProductos){
                 if (producto.seccion === "EMPANADAS") {

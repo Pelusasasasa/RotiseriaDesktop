@@ -17,15 +17,11 @@ const { recorrerFlechas,copiar, redondear, agregarMovimientoVendedores } = requi
 let seleccionado;
 let subSeleccionado;
 let ventanaSecundaria = false;
-let mostrarLista = false;
 
 const body = document.querySelector('body');
 const seleccion = document.querySelector('#seleccion');
-const tbody = document.querySelector('tbody');
 const agregar = document.querySelector('.agregar');
 const salir = document.querySelector('.salir');
-const lbl = document.querySelector('.lbl');
-const label1 = document.querySelector('#label1');
 const buscador = document.querySelector('#buscarProducto');
 const seccionTarjetas = document.querySelector('.tarjetas');
 
@@ -34,9 +30,6 @@ window.addEventListener('load',async e=>{
     copiar();
 });
 
-/*Hacemos que se cambie de modo la lsita de productos */
-label1.addEventListener('click',toggleListaTarjeta);
-lbl.addEventListener('click',toggleListaTarjeta);
 
 ipcRenderer.on('informacion-a-ventana',(e,args)=>{
     const producto = JSON.parse(args);
@@ -60,68 +53,6 @@ ipcRenderer.on('informacion-a-ventana',(e,args)=>{
     }
 });
 
-const listar = (productos)=>{
-    productos.sort((a,b)=>{
-        if(a.descripcion>b.descripcion){
-            return 1;
-        }else if(a.descripcion < b.descripcion){
-            return -1;
-        }
-        return 0
-    });
-    
-    tbody.innerHTML = "";
-    for(let {_id,descripcion,marca,stock,precio,textBold} of productos){
-        const tr = document.createElement('tr');
-        tr.id = _id;
-
-        if(textBold){
-            tr.classList.add('text-bold')
-        }
-
-        const tdId = document.createElement('td');
-        const tdDescripcion = document.createElement('td');
-        const tdPrecio = document.createElement('td');
-        const tdStock = document.createElement('td');
-        // const tdMarca = document.createElement('td');
-        const tdAcciones = document.createElement('td');
-        
-        tdPrecio.classList.add('text-rigth');
-        tdStock.classList.add('text-rigth');
-        tdAcciones.classList.add('acciones')
-
-        tdId.innerHTML = _id;
-        tdDescripcion.innerHTML = descripcion;
-        tdPrecio.innerHTML = redondear(precio,2);
-        tdStock.innerHTML = redondear(stock,2);
-        tdAcciones.innerHTML = `
-            <div id=edit class=tool>
-                <span id=edit class=material-icons>edit</span>
-                <p class=tooltip>Modificar</p>
-            </div>
-            <div id=delete class="tool ${permiso !== 0 && "none"}">
-                <span id=delete class=material-icons>delete</span>
-                <p class=tooltip>Eliminar</p>
-            </div>
-        `
-
-        tr.appendChild(tdId);
-        tr.appendChild(tdDescripcion);
-        tr.appendChild(tdPrecio);
-        tr.appendChild(tdStock);
-        tr.appendChild(tdAcciones)
-        
-        tbody.appendChild(tr);
-
-        seleccionado && seleccionado.classList.remove('seleccionado');
-        seleccionado = tbody.firstElementChild;
-        seleccionado.classList.add('seleccionado');
-
-        subSeleccionado && subSeleccionado.classList.remove('subSeleccionado');
-        subSeleccionado = seleccionado.children[0];
-        subSeleccionado.classList.add('subSeleccionado');
-    }
-};
 
 const listarTarjetas = async (productos)=>{
     seccionTarjetas.innerText = "";
@@ -155,12 +86,16 @@ const listarTarjetas = async (productos)=>{
         const eliminar = document.createElement('button');
         const agregar = document.createElement('button');
         const x6 = document.createElement('button');
+        const x12 = document.createElement('button');
 
         const bottonModifcar = `<div id=edit class=tool><span id=edit class=material-icons>edit</span><p class=tooltip>Modificar</p></div>`;
         const bottonEliminar = `<div id=delete class=tool><span id=delete class=material-icons>delete</span><p class=tooltip>Eliminar</p></div>`;
         const bottonAgregar = `<div id=add class=tool><span id=add class=material-icons>add_shopping_cart</span><p class=tooltip>Agregar Carrito</p></div>`;
         const botonX6 = `<div id=restar class=tool>
                             <span id=add class=material-icons>looks_6</span><p class=tooltip>Media Docena</p>
+                        </div>`
+        const botonX12 = `<div id=restar class=tool>
+                            <span id=add class=material-icons>1k</span><p class=tooltip>Docena</p>
                         </div>`
 
         const pathIMG = path.join(__dirname,`../imgProductos/${producto._id}`);
@@ -169,6 +104,7 @@ const listarTarjetas = async (productos)=>{
         img.addEventListener('click',mandarProducto);
         agregar.addEventListener('click',mandarProducto);
         x6.addEventListener('click',mandarMediaDocena);
+        x12.addEventListener('click',mandarDocena);
         titulo.innerText = producto.descripcion;
         id.innerText = "Codigo: " + producto._id;
         precio.innerText = "$" + producto.precio.toFixed(2);
@@ -177,6 +113,7 @@ const listarTarjetas = async (productos)=>{
         eliminar.innerHTML = (bottonEliminar);
         agregar.innerHTML = (bottonAgregar);
         x6.innerHTML = (botonX6);
+        x12.innerHTML = (botonX12);
 
         divInformacion.innerHTML = `
             <div>
@@ -196,6 +133,7 @@ const listarTarjetas = async (productos)=>{
         if (!ventanaSecundaria) {
             agregar.classList.add('none');
             x6.classList.add('none');
+            x12.classList.add('none');
         }else{
             eliminar.classList.add('none');
             modificar.classList.add('none')
@@ -205,6 +143,7 @@ const listarTarjetas = async (productos)=>{
         divBotones.appendChild(eliminar);
         divBotones.appendChild(agregar);
         producto.seccion === "EMPANADAS" && divBotones.appendChild(x6);
+        producto.seccion === "EMPANADAS" && divBotones.appendChild(x12);
 
         div.appendChild(img)
         div.appendChild(titulo);
@@ -217,18 +156,15 @@ const listarTarjetas = async (productos)=>{
 }
 
 const filtrar = async()=>{
-    tbody.innerHTML = '';
     let condicion = seleccion.value;
     if (condicion === "codigo") {
         condicion="_id";
     };
     const descripcion = buscador.value !== "" ? buscador.value : "textoVacio";
     let producto;
-    console.log(buscador.value)
     await ipcRenderer.invoke('gets-productos-for-descripcion-and-seleccion',[descripcion,condicion]).then((result)=>{
         producto = JSON.parse(result);
     });
-    producto.length !== 0 && listar(producto);
     producto.length !== 0 && listarTarjetas(producto);
 };
 
@@ -240,49 +176,6 @@ buscador.addEventListener('keyup',e=>{
 
 buscador.addEventListener('keyup',filtrar);
 
-//cuando ahcemos un click en un tr lo ponemos como que esta seleccionado
-tbody.addEventListener('click',e=>{
-    seleccionado && seleccionado.classList.toggle('seleccionado');
-    subSeleccionado && subSeleccionado.classList.remove('subSeleccionado');
-
-    if (e.target.nodeName === "TD") {
-        seleccionado = e.target.parentNode;
-        subSeleccionado = e.target;
-
-    }else if(e.target.nodeName === "DIV"){
-        seleccionado = e.target.parentNode.parentNode;
-        subSeleccionado = e.target.parentNode;
-    }else if(e.target.nodeName === "SPAN"){
-        seleccionado = e.target.parentNode.parentNode.parentNode;
-        subSeleccionado = e.target.parentNode.parentNode;
-    };
-
-    seleccionado.classList.toggle('seleccionado');
-    subSeleccionado.classList.add('subSeleccionado');
-
-    if (e.target.innerHTML === "delete") {
-        sweet.fire({
-            title:"Seguro Borrar " + seleccionado.children[1].innerHTML,
-            "showCancelButton":true,
-            "confirmButtonText":"Aceptar"
-        }).then(async (result)=>{
-            if (result.isConfirmed) {
-                ipcRenderer.send('delete-producto',seleccionado.id);
-                tbody.removeChild(seleccionado);
-            }
-        })
-    }else if(e.target.innerHTML === "edit"){
-        const opciones = {
-            path: "./productos/modificarProducto.html",
-            botones:true,
-            informacion:seleccionado.id,
-            altura:600,
-            vendedor:vendedor
-        }
-        ipcRenderer.send('abrir-ventana',opciones);
-    }
-
-});
 
 seccionTarjetas.addEventListener('click',clickEnTarjetas);
 
@@ -311,12 +204,8 @@ ipcRenderer.on('informacion',async (e,args)=>{
 body.addEventListener('keypress',e=>{
     if (document.activeElement.nodeName !== "INPUT") {
         if (e.key === "Enter" && ventanaSecundaria){
+            console.log(seleccionado)
             if (seleccionado) {
-                ipcRenderer.send('enviar',{
-                            tipo:"producto",
-                            informacion:seleccionado.id,
-                });
-                window.close();
             }else{
                 sweet.fire({title:"Producto no seleccionado"});
             }
@@ -324,24 +213,6 @@ body.addEventListener('keypress',e=>{
     }
 });
 
-salir.addEventListener('click',e=>{
-    location.href = "../menu.html";
-});
-
-document.addEventListener("keydown",e=>{
-    if (e.key === "Escape" && ventanaSecundaria) {
-        window.close();
-    }else if(e.key === "Escape" && !ventanaSecundaria){
-        location.href = "../menu.html";
-    }
-    recorrerFlechas(e.keyCode);
-});
-
-function toggleListaTarjeta(e) {
-    tbody.parentNode.parentNode.classList.toggle('none');
-    seccionTarjetas.classList.toggle('none');
-    mostrarLista = !mostrarLista;
-}
 
 function clickEnTarjetas(e) {
     
@@ -410,9 +281,9 @@ async function mandarProducto(e) {
     buscador.focus();
 };
 
-//funcion para enviar media docena de empanadas de un sabor falta
-async function mandarMediaDocena() {
-    console.log(seleccionado)
+//funcion para enviar media docena de empanadas de un sabor
+async function mandarMediaDocena(e) {
+    seleccionado = e.target.parentNode.parentNode.parentNode.parentNode
     const {isConfirmed} = await sweet.fire({
         title:`Media Docena de ${seleccionado.children[1].innerText}?`,
         showCancelButton:true,
@@ -427,4 +298,36 @@ async function mandarMediaDocena() {
             descripcion:seleccionado.children[1].innerHTML
         })
     }
-}
+};
+
+//funcion para enviar docena de empanadas de un sabor
+async function mandarDocena(e){
+    seleccionado = e.target.parentNode.parentNode.parentNode.parentNode;
+    const {isConfirmed} = await sweet.fire({
+        title:`Docena de ${seleccionado.children[1].innerText}?`,
+        showCancelButton:true,
+        confirmButtonText:"Aceptar"
+    });
+
+    if (isConfirmed) {
+        ipcRenderer.send('enviar',{
+            informacion:seleccionado.id,
+            cantidad:"12",
+            tipo:"producto",
+            descripcion:seleccionado.children[1].innerHTML
+        })
+    }
+};
+
+salir.addEventListener('click',e=>{
+    location.href = "../menu.html";
+});
+
+document.addEventListener("keydown",e=>{
+    if (e.key === "Escape" && ventanaSecundaria) {
+        window.close();
+    }else if(e.key === "Escape" && !ventanaSecundaria){
+        location.href = "../menu.html";
+    }
+    recorrerFlechas(e.keyCode);
+});
