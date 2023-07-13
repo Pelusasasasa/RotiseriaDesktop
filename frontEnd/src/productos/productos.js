@@ -257,7 +257,7 @@ function clickEnTarjetas(e) {
         ipcRenderer.send('abrir-ventana',opciones);
         
     }
-}
+};
 
 
 async function mandarProducto(e) {

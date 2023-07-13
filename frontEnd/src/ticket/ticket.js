@@ -20,6 +20,7 @@ const listado = document.querySelector('.listado');
 const descuento = document.querySelector('.descuento');
 const total = document.querySelector('.total');
 const tipoVenta = document.querySelector('.tipoVenta');
+const descuentoPorDocena = document.querySelector('.descuentoPorDocena');
 
 //afip
 const qr = document.querySelector('#qr');
@@ -108,6 +109,7 @@ const listar = async(venta,clienteTraido,lista)=>{
     descuento.innerHTML = "0.00"
     total.innerHTML = venta.precio.toFixed(2);
     tipoVenta.innerHTML = venta.tipo_venta === "CC" ? "Cuenta Corriente" : "Contado";
+    descuentoPorDocena.innerText = venta.descuentoPorDocena ? "Se hizo descuento por docena de Empanadas" : ""
 
     if (venta.F) {
         vencimientoCae.innerHTML = `Vencimiento Cae: ${venta.afip.vencimiento}`;

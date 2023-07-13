@@ -64,8 +64,7 @@ let pedido;
 //Empanadas
 let precioEmpanadas = 0;
 let empanadas = 0;
-let cantDocena = 0;
-let cantMediaDocena = 0;
+let descuentoPorDocena = false; //Se usa para que en el ticket si esto es true se muetre un texto que diga que se hizo un descuento por una docena y media
 
 //Por defecto ponemos el A Consumidor Final y tambien el select
 window.addEventListener('load',async e=>{
@@ -278,6 +277,7 @@ facturar.addEventListener('click',async e=>{
         venta.gravado105 = gravado105;
         venta.cantIva = cantIva;
         venta.direccion = direccion.value;
+        venta.descuentoPorDocena = descuentoPorDocena;
 
         await ipcRenderer.invoke('get-numero-pedido').then((result)=>{
             pedido = JSON.parse(result)
@@ -373,7 +373,7 @@ facturar.addEventListener('click',async e=>{
             alerta.classList.add('none');
         }
     }
-})
+});
 
 //Lo que hacemos es listar el cliente traido
 const listarCliente = async(id)=>{
@@ -483,7 +483,6 @@ const listarProducto =async(id)=>{
     
 };
 
-
 //creamos la cuenta compensada cuedo la venta se hace en cuenta corriente
 const ponerEnCuentaCompensada = async(venta)=>{
     const cuenta = {};
@@ -506,7 +505,7 @@ const ponerEnCuentaHistorica = async(venta,saldo)=>{
     cuenta.debe = venta.precio;
     cuenta.saldo = facturaAnterior ? saldo - venta.precio : venta.precio + saldo;
     (await axios.post(`${URL}historica`,cuenta)).data;
-}
+};
 
 //Cargamos el movimiento de producto a la BD
 const cargarMovimiento = async({cantidad,producto,observaciones},numero,cliente,tipo_venta,tipo_comp,caja,vendedor="")=>{
@@ -536,7 +535,7 @@ const descontarStock = async({cantidad,producto})=>{
         producto.stock -= cantidad;
     }
     descuentoStock.push(producto)
-}
+};
 
 let seleccionado;
 //Hacemos para que se seleccione un tr
@@ -559,9 +558,12 @@ tbody.addEventListener('click',async e=>{
         }).then(({isConfirmed})=>{
             if (isConfirmed) {
                 tbody.removeChild(seleccionado);
-                total.value = redondear(parseFloat(total.value) - parseFloat(seleccionado.children[4].innerHTML),2);
-                totalGlobal = parseFloat(total.value);
+                calcularTotal();
                 const productoABorrar = listaProductos.findIndex(({producto,cantidad})=>seleccionado.id === producto.idTabla);
+                console.log(listaProductos[productoABorrar])
+                if (listaProductos[productoABorrar].producto.seccion === "EMPANADAS") {
+                    empanadas -= parseFloat(seleccionado.children[1].innerText)
+                }
                 listaProductos.splice(productoABorrar,1);
             }
         });
@@ -576,7 +578,6 @@ tbody.addEventListener('click',async e=>{
             inputValue:producto.observaciones ? producto.observaciones : ""
         });
         producto.observaciones = observaciones.value ? observaciones.value : producto.observaciones;
-        console.log(producto)
     }
 });
 
@@ -671,11 +672,10 @@ document.addEventListener('keydown',e=>{
     };
 });
 
-
 //Lo usamos para mostrar o ocultar cuestiones que tiene que ver con las ventas
 const cambiarSituacion = (situacion) =>{
     situacion === "negro" ? document.querySelector('#tarjeta').parentNode.classList.add('none') : document.querySelector('#tarjeta').parentNode.classList.remove('none');
-}
+};
 
 //Ver Codigo Documento
 const verCodigoDocumento = async(cuit)=>{
@@ -693,7 +693,7 @@ const verCodigoDocumento = async(cuit)=>{
 //ponemos un numero para la venta y luego mandamos a imprimirla
 ipcRenderer.on('poner-numero',async (e,args)=>{
     ponerNumero();
-})
+});
 
 nombre.addEventListener('keypress',e=>{
     apretarEnter(e,cuit);
@@ -762,6 +762,7 @@ async function cambiarPrecio(e) {
     calcularTotal();
 };
 
+//Calculamos el total que representa los tr
 async function calcularTotal() {
     const trs = document.querySelectorAll('tbody tr');
     let aux = 0;
@@ -783,6 +784,7 @@ async function calcularEmpanadas(producto,cantidadProducto){
                     }
                 };
                 calcularTotal();
+                descuentoPorDocena = false;
         }else if(empanadas === 6){
             let aux = precioEmpanadas.mediaDocena / 6;
             for await(let {cantidad,producto} of listaProductos){
@@ -792,6 +794,7 @@ async function calcularEmpanadas(producto,cantidadProducto){
                 }
             };  
             calcularTotal();
+            descuentoPorDocena = false;
         
         }else if(empanadas % 12 === 6 && empanadas > 6){
             
@@ -811,6 +814,7 @@ async function calcularEmpanadas(producto,cantidadProducto){
                 }
                 await calcularTotal();
             }
+            descuentoPorDocena = true;
             total.value = (parseFloat(total.value) - totalEmpanadas + (precioEmpanadas.docena * cantDocena) + precioEmpanadas.mediaDocena).toFixed(2);
         }else{
             for await(let {cantidad,producto} of listaProductos){
@@ -821,9 +825,9 @@ async function calcularEmpanadas(producto,cantidadProducto){
                 };
             };
             calcularTotal();
+            descuentoPorDocena = false;
         }
-}
-
+};
 
 function cambiarTr(idtabla,precio,cantidad) {
     const tr = document.getElementById(idtabla);

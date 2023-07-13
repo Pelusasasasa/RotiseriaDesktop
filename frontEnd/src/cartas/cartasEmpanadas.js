@@ -20,6 +20,7 @@ window.addEventListener('load',async e=>{
         docena.value = cartaEmpanada.docena.toFixed(2);
         mediaDocena.value = cartaEmpanada.mediaDocena.toFixed(2);
     }else{
+        cartaEmpanada = {};
         creado = false;
     }
 });
@@ -65,9 +66,7 @@ async function modificarCarta() {
     cartaEmpanada.docena = docena.value;
     cartaEmpanada.mediaDocena = mediaDocena.value;
     if (creado) {
-        console.log(cartaEmpanada)
         await ipcRenderer.send('put-CartaEmpanada',cartaEmpanada);
-        console.log("a")
     }else{
         await ipcRenderer.send('post-CartaEmpanada',cartaEmpanada);
     };
