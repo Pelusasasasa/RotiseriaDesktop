@@ -21,6 +21,7 @@ const productos = document.querySelector('.productos');
 
 //Total
 const total = document.getElementById('total');
+const descuentoPorDocena = document.querySelector('.descuentoPorDocena');
  
 ipcRenderer.on('imprimir',async(e,args)=>{
     const [venta,cliente,listado] = JSON.parse(args);
@@ -50,6 +51,7 @@ function listarInfoTicket (info) {
     hora.innerText = `${hour}:${minuts}:${seconds}`;
     pedido.innerText = info.nPedido;
     total.innerText = info.precio;
+    descuentoPorDocena.innerText = info.descuentoPorDocena ? "Se hizo descuento por docena de Empanadas" : ""
 };
 
 function listarInfoCliente(info,tipo) {
@@ -76,8 +78,8 @@ function listarProductos(lista) {
 
         pObservaciones.classList.add('text-big');//Ponemos para que las observaciones se vean grande
         //Las agregamos al innerText
-        h3.innerText = `${cantidad} - ${producto} - $${precio}`;
-        pObservaciones.innerText = `${observaciones}`;
+        h3.innerText = `${cantidad} - ${producto} - $${precio.toFixed(2)}`;
+        pObservaciones.innerText = observaciones ? `${observaciones}` : "";
         p.innerText = "------------------------------------";
         //Las Agremgamos al ticket
         productos.appendChild(h3);

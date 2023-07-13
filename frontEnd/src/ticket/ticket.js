@@ -91,7 +91,7 @@ const listar = async(venta,clienteTraido,lista)=>{
                     <p></p>
                 </main>
                 <main class = "observaciones">
-                    <p>${elem.observaciones}</p>
+                    <p>${elem.observaciones ? elem.observaciones : ""}</p>
                 </main>
                 <p>------------------------------------</p>
             `   
@@ -109,7 +109,7 @@ const listar = async(venta,clienteTraido,lista)=>{
     descuento.innerHTML = "0.00"
     total.innerHTML = venta.precio.toFixed(2);
     tipoVenta.innerHTML = venta.tipo_venta === "CC" ? "Cuenta Corriente" : "Contado";
-    descuentoPorDocena.innerText = venta.descuentoPorDocena ? "Se hizo descuento por docena de Empanadas" : ""
+    descuentoPorDocena.innerText = venta.descuentoPorDocena ? "Se hizo descuento por docena de Empanadas" : "";
 
     if (venta.F) {
         vencimientoCae.innerHTML = `Vencimiento Cae: ${venta.afip.vencimiento}`;
