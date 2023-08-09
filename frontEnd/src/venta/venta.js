@@ -821,28 +821,39 @@ async function calcularEmpanadas(producto,cantidadProducto){
             let empanadaIndividual = 0;
             let aux = empanadas;
             let cantDocena = 0;
+            let cantMediaDocena = 0;
+            let totalAux = 0;
+
             while(empenadaDocena % 12 !== 0 && empenadaDocena % 12 !== 6){
                 empenadaDocena--;
                 empanadaIndividual++;
             };
+
             while(aux > 12){
-                console.log("a")
                 aux -= 12;
                 cantDocena++;
             }
+
+            while(aux > 6){
+                aux -= 6;
+                cantMediaDocena++;
+            }
+
 
             for await(let {cantidad,producto} of listaProductos){
                 if (producto.seccion === "EMPANADAS") {
                     const precio = JSON.parse(await ipcRenderer.invoke('get-producto',producto._id)).precio;
                     producto.precio = precio;
                     cambiarTr(producto.idTabla,producto.precio,cantidad);
+                 }else{
+                    totalAux += cantidad * producto.precio;
                  };
             };
             await calcularTotal();
             if (empanadas > 6) {
                 descuentoPorDocena = true;
             }
-            total.value = redondear((cantDocena*precioEmpanadas.docena) + (empanadaIndividual * 320),2);
+            total.value = redondear((cantDocena*precioEmpanadas.docena) + (cantMediaDocena*precioEmpanadas.mediaDocena) + (empanadaIndividual * 320) + totalAux,2);
             
         }
 };
