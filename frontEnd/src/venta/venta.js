@@ -797,7 +797,6 @@ async function calcularEmpanadas(producto,cantidadProducto){
             descuentoPorDocena = false;
         
         }else if(empanadas % 12 === 6 && empanadas > 6){
-            
             let totalEmpanadas = 0;
             let cantDocena = 0;
             let aux = empanadas;
@@ -850,10 +849,11 @@ async function calcularEmpanadas(producto,cantidadProducto){
                  };
             };
             await calcularTotal();
+
             if (empanadas > 6) {
                 descuentoPorDocena = true;
             }
-            total.value = redondear((cantDocena*precioEmpanadas.docena) + (cantMediaDocena*precioEmpanadas.mediaDocena) + (empanadaIndividual * 320) + totalAux,2);
+            total.value = redondear((cantDocena*precioEmpanadas.docena) + (cantMediaDocena*precioEmpanadas.mediaDocena) + (empanadaIndividual * producto.precio) + totalAux,2);
             
         }
 };
