@@ -19,12 +19,11 @@ const CartaEmpanada = require('./models/CartaEmpanada');
 //Fin Base de Datos
 
 // Lo usamos para cuando alla un cambio en la aplicacion se reinicie
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'desarrollo') {
   require('electron-reload')(__dirname, {
       electron: path.join(__dirname, '../node_modules', '.bin', 'electron')
-  });
+  })
 };
-
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
