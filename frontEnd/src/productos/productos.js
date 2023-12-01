@@ -28,6 +28,7 @@ const seccionTarjetas = document.querySelector('.tarjetas');
 window.addEventListener('load',async e=>{
     filtrar();
     copiar();
+    categorias();
 });
 
 
@@ -331,3 +332,24 @@ document.addEventListener("keydown",e=>{
     }
     recorrerFlechas(e.keyCode);
 });
+
+async function categorias(){
+    const divCategorias = document.querySelector('.categorias');
+    const secciones = JSON.parse(await ipcRenderer.invoke('get-secciones'));
+    for await(let seccion of secciones){
+        const button = document.createElement('button');
+        button.innerText = seccion.nombre;
+        button.id = seccion.nombre;
+        divCategorias.appendChild(button);
+
+
+        button.addEventListener('click',mostrarProductosPorCategoria);
+    }
+};
+
+async function mostrarProductosPorCategoria(e){
+    const id = e.target.id;
+    const productos = JSON.parse(await ipcRenderer.invoke('gets-productos-for-seccion',id));
+    listarTarjetas(productos)
+
+}

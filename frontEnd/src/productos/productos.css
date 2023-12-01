@@ -45,6 +45,12 @@
     
 }
 
+.categorias{
+    margin-top: 1rem;
+    display: flex;
+    gap: 2rem;
+}
+
 #switch:checked + .lbl{
     background: #00C881;
     

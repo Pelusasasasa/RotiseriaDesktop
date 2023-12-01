@@ -327,6 +327,11 @@ ipcMain.handle('gets-productos',async(e,args)=>{
   return JSON.stringify(productos);
 });
 
+ipcMain.handle('gets-productos-for-seccion',async(e,seccion)=>{
+  const productos = await Producto.find({seccion:seccion});
+  return JSON.stringify(productos);
+})
+
 ipcMain.handle('gets-productos-for-descripcion-and-seleccion',async(e,args)=>{
   const [descripcion,condicion] = args;
   let productos = [];
