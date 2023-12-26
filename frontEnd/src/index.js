@@ -409,15 +409,19 @@ ipcMain.handle('get-ventas-for-day',async(e,args)=>{
 
 ipcMain.handle('get-ventas-for-month',async(e,args)=>{
     const anio = (new Date()).getFullYear();
-    const mes = parseFloat(args) + 1<10 ? `0${parseFloat(args) + 1}` : parseFloat(args) + 1;
+    let mes = (parseFloat(args) + 1) < 10 ? `0${parseFloat(args) + 1}` : parseFloat(args) + 1;
+    let year = mes === 13 ? anio + 1 : anio;
+    mes = mes === 13 ? "01" : mes;
+    
     const inicioMes = new Date(`${anio}-${args}-01T00:00:00.000Z`);
-    const finMes = new Date(`${anio}-${mes}-01T00:00:00.000Z`);
+    const finMes = new Date(`${year}-${mes}-01T00:00:00.000Z`);
+
     const ventas = await Venta.find({
-      $and:[
+       $and:[
         {fecha:{$gte:inicioMes}},
         {fecha:{$lt:finMes}},
     ]});
-    return JSON.stringify(ventas)
+    return JSON.stringify(ventas);
 });
 
 ipcMain.handle('get-ventas-for-year',async(e,args)=>{

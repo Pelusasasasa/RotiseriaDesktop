@@ -197,6 +197,7 @@ botonMes.addEventListener('click',async e=>{
         await ipcRenderer.invoke('get-ventas-for-month',selectMes.value).then((result)=>{
             ventas = JSON.parse(result);
         });
+        console.log(ventas)
         listarVentas(ventas);
     }else{
         gastos = (await axios.get(`${URL}gastos/mes/${selectMes.value}`)).data;
@@ -337,14 +338,6 @@ const listarVentas = async (ventas)=>{
     }
     let totalVenta = 0;
     for await(let venta of lista){
-        const fecha = venta.fecha.slice(11,18).split(':',3);
-        let hora = fecha[0];
-        let minutos = fecha[1];
-        let segundos = fecha[2];
-
-        // hora = hora < 10 ? `0${hora}` : hora;
-        // minutos = minutos < 10 ? `0${minutos}` : minutos;
-        segundos = segundos < 10 ? `0${segundos}` : segundos;
 
         const tr = document.createElement('tr');
         tr.id = venta._id;
@@ -358,30 +351,20 @@ const listarVentas = async (ventas)=>{
         const tdCantidad =  document.createElement('td');
         const tdPrecio =  document.createElement('td');
         const tdPrecioTotal = document.createElement('td');
+        const tdHora = document.createElement('td');
         const tdVendedor = document.createElement('td');
         const tdCaja = document.createElement('td');
-        const tdAcciones = document.createElement('td');
 
-        tdAcciones.classList.add('acciones')
 
         tdNumero.innerHTML = venta.numero;
-        tdFecha.innerHTML = `${hora}:${minutos}:${segundos}`;
+        tdFecha.innerHTML = venta.fecha.slice(0,10).split('-',3).reverse().join('/');
+        tdHora.innerHTML = venta.fecha.slice(11,19).split(':',3).join(':');
         tdCliente.innerHTML = venta.cliente;
         tdCodProducto.innerHTML = venta.tipo_comp;
         tdProducto.innerHTML = "";
         tdPrecioTotal.innerHTML = venta.tipo_comp === "Nota Credito C" ? redondear(venta.precio * -1,2) : venta.precio.toFixed(2);
         tdVendedor.innerHTML = venta.vendedor ? venta.vendedor : "";
         tdCaja.innerHTML = venta.caja;
-        tdAcciones.innerHTML = `
-            <div class=tool>
-                    <span class=material-icons>edit</span>
-                    <p class=tooltip>Modificar</p>
-                </div>
-            <div class=tool>
-                <span class=material-icons>delete</span>
-                <p class=tooltip>Eliminar</p>
-            </div>
-        `
 
         tr.appendChild(tdNumero);
         tr.appendChild(tdFecha);
@@ -393,7 +376,7 @@ const listarVentas = async (ventas)=>{
         tr.appendChild(tdPrecioTotal);
         tr.appendChild(tdVendedor);
         tr.appendChild(tdCaja);
-        tr.appendChild(tdAcciones);
+        tr.appendChild(tdHora);
 
         tbody.appendChild(tr);
 
@@ -415,7 +398,7 @@ const listarVentas = async (ventas)=>{
                     const tdTotalProducto = document.createElement('td');
 
                     tdNumeroProducto.innerHTML = venta.numero;
-                    tdFechaProducto.innerHTML = tdFecha.innerHTML;
+                    tdFechaProducto.innerHTML = tdFecha.innerText;
                     tdClienteProducto.innerHTML = venta.cliente;
                     tdIdProducto.innerHTML = producto._id === undefined ? " " : producto._id;
                     tdDescripcion.innerHTML = producto.descripcion;
