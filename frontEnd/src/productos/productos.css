@@ -46,9 +46,15 @@
 }
 
 .categorias{
+    overflow-x: scroll;
+    overflow-y: hidden;
     margin-top: 1rem;
     display: flex;
     gap: 2rem;
+}
+
+.categorias button{
+    margin-bottom: 2rem;
 }
 
 #switch:checked + .lbl{

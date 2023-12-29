@@ -12,6 +12,7 @@ const Cliente = require('./models/Cliente');
 const Producto = require('./models/Producto');
 const Numero = require('./models/Numero');
 const Venta = require('./models/Venta');
+const Gasto = require('./models/Gasto');
 const Pedido = require('./models/Pedido');
 const Seccion = require('./models/Seccion');
 const CartaEmpanada = require('./models/CartaEmpanada');
@@ -407,6 +408,7 @@ ipcMain.handle('get-ventas-for-day',async(e,args)=>{
     return JSON.stringify(ventas)
 });
 
+
 ipcMain.handle('get-ventas-for-month',async(e,args)=>{
     const anio = (new Date()).getFullYear();
     let mes = (parseFloat(args) + 1) < 10 ? `0${parseFloat(args) + 1}` : parseFloat(args) + 1;
@@ -459,6 +461,32 @@ ipcMain.on('put-pedido',async(e,args)=>{
   await Pedido.findOneAndUpdate({_id:args._id},args);
 });
   //Fin Pedido
+
+// Inicio Gasto}
+
+ipcMain.on('post-gasto',async(e,gasto) =>{
+  const now = new Date();
+  gasto.fecha = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString();
+
+  const newGasto = new Gasto(gasto);
+  await newGasto.save();
+});
+
+
+ipcMain.handle('get-gastos-for-day',async (e,fecha)=>{
+  const inicioDia = new Date(fecha + "T00:00:00.000Z");
+  const finDia = new Date(fecha + "T23:59:59.000Z");
+
+  const gastos = await Gasto.find({
+    $and:[
+      {fecha:{$gte:inicioDia}},
+      {fecha:{$lte:finDia}}
+    ]
+  });
+  return JSON.stringify(gastos)
+});
+
+// Fin Gasto
 
 
 //Inicio Seccion

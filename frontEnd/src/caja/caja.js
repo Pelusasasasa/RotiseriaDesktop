@@ -164,9 +164,9 @@ botonDia.addEventListener('click',async e=>{
     anio.classList.add('none');
     botonSeleccionado.classList.add('seleccionado');
     if (filtro === "Ingresos" || filtro === "Cuenta Corriente") {
-        ventas = (await axios.get(`${URL}ventas/dia/${fecha.value}`)).data;
-        recibos = (await axios.get(`${URL}recibo/dia/${fecha.value}`)).data;
-        cuentasCorrientes = ventas.filter(venta=>venta.tipo_venta === "CC");
+        ventas = JSON.parse(await ipcRenderer.invoke('get-ventas-for-day',fecha.value));
+        // recibos = (await axios.get(`${URL}recibo/dia/${fecha.value}`)).data;
+        // cuentasCorrientes = ventas.filter(venta=>venta.tipo_venta === "CC");
         if (filtro === "Ingresos") {
             listarVentas([...ventas,...recibos]);
         }else{
@@ -176,7 +176,7 @@ botonDia.addEventListener('click',async e=>{
         presupuestos = (await axios.get(`${URL}presupuesto/forDay/${fecha.value}`)).data;
         listarVentas(presupuestos);
     }else{
-        gastos = (await axios.get(`${URL}gastos/dia/${fecha.value}`)).data;
+        gastos = JSON.parse(await ipcRenderer.invoke('get-gastos-for-day',fecha.value));
         listarGastos(gastos);
     }
 });

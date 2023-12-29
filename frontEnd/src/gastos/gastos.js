@@ -4,6 +4,7 @@ const URL = process.env.GESTIONURL;
 
 const sweet = require('sweetalert2');
 const {cerrarVentana} = require('../helpers');
+const { ipcRenderer } = require('electron');
 
 const fecha = document.getElementById('fecha');
 const descripcion = document.getElementById('descripcion');
@@ -50,10 +51,9 @@ aceptar.addEventListener('click',async e=>{
 
     gasto.fecha = fecha.value;
     gasto.descripcion = descripcion.value.toUpperCase();
-    gasto.importe = importe.value;
-    console.log(gasto)
+    gasto.importe = importe.value; 
     try {
-        await axios.post(`${URL}gastos`,gasto);
+        ipcRenderer.send('post-gasto',gasto);
         window.close();
     } catch (error) {
         console.log(error)
