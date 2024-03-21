@@ -308,6 +308,11 @@ ipcMain.on('eliminar-Cliente',async(e,id)=>{
 ipcMain.on('put-cliente',async(e,args)=>{
   await Cliente.findOneAndUpdate({_id:args._id},args);
 });
+
+ipcMain.handle('trearClientePorTelefono', async(e,telefono) => {
+  const cliente = await Cliente.findOne({telefono:telefono});
+  return JSON.stringify(cliente)
+})
   //Fin Cliente
 
   //Inicio Producto
