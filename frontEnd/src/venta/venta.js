@@ -921,12 +921,19 @@ async function clickEnTarjetas(e) {
         seleccionado = e.target.parentNode.parentNode.parentNode.parentNode;
     };
 
-    const res = await sweet.fire({
-        title:"Cantidad",
-        input:"number",
-    });
 
-    cantidad.value = res.value;
+    if(e.target.innerText === 'looks_6'){
+        cantidad.value = '6.00';
+    }else if(e.target.innerText === '1k'){
+        cantidad.value = '12.00';
+    }else{
+        const res = await sweet.fire({
+            title:"Cantidad",
+            input:"number",
+        });
+        cantidad.value = res.value;
+    }
+    
 
     listarProducto(seleccionado.id);
 };
@@ -977,8 +984,9 @@ const listarTarjetas = async (productos)=>{
                         </div>`
 
         const pathIMG = path.join(__dirname,`../imgProductos/${producto._id}`);
-        // img.setAttribute('src',pathIMG + ".png");
+        // img.setAttribute('src',pathIMG + ".jpg");
         img.setAttribute('alt',producto.descripcion);
+
         titulo.innerText = producto.descripcion;
         id.innerText = "Codigo: " + producto._id;
         precio.innerText = "$" + producto.precio.toFixed(2);
@@ -1001,6 +1009,8 @@ const listarTarjetas = async (productos)=>{
         `;
 
         divBotones.appendChild(agregar);
+        producto.seccion === "EMPANADAS" && divBotones.appendChild(x6);
+        producto.seccion === "EMPANADAS" && divBotones.appendChild(x12);
 
         div.appendChild(img);
         div.appendChild(titulo);
@@ -1012,6 +1022,4 @@ const listarTarjetas = async (productos)=>{
     }
 };
 
-const pasarAventa = async(e)=>{
-    
-};
+
