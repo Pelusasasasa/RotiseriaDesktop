@@ -96,7 +96,7 @@ header input,header select{
   background-color: white;
   margin-top: 2rem;
   border: .1rem solid black;
-  height: 55vh;
+  height: 50vh;
   overflow: scroll;
 }
 
@@ -255,7 +255,7 @@ footer main,footer button{
   background-color: white;
   padding: 1rem;
   overflow: scroll;
-  height: 73vh;
+  height: 68vh;
 }
 
 .tarjetas .tarjeta{
