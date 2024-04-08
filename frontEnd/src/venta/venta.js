@@ -984,7 +984,7 @@ const listarTarjetas = async (productos)=>{
                         </div>`
 
         const pathIMG = path.join(__dirname,`../imgProductos/${producto._id}`);
-        // img.setAttribute('src',pathIMG + ".jpg");
+        img.setAttribute('src',pathIMG + ".jpg");
         img.setAttribute('alt',producto.descripcion);
 
         titulo.innerText = producto.descripcion;
