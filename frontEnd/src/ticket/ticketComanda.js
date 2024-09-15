@@ -80,7 +80,7 @@ function listarProductos(lista) {
         //Las agregamos al innerText
         h3.innerText = `${cantidad} - ${producto} - $${precio.toFixed(2)}`;
         pObservaciones.innerText = observaciones ? `${observaciones}` : "";
-        p.innerText = "------------------------------------";
+        p.innerText = "---------------------------------------------------------------";
         //Las Agremgamos al ticket
         productos.appendChild(h3);
         productos.appendChild(pObservaciones);

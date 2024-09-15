@@ -143,6 +143,10 @@ h2{
     margin-left: 1rem;
 }
 
+.datosTicket .ticket h3{
+    font-size: 1.5rem;
+}
+
 .datosClientes h1{
     margin: 0;
 }

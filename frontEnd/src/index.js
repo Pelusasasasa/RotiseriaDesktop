@@ -25,6 +25,7 @@ if (process.env.NODE_ENV === 'desarrollo') {
       electron: path.join(__dirname, '../node_modules', '.bin', 'electron')
   })
 };
+
 if (require('electron-squirrel-startup')) {
   app.quit();
 }

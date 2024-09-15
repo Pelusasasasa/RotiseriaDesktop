@@ -77,9 +77,9 @@ const listar = async(venta,clienteTraido,lista)=>{
         pagado.innerHTML = "Pagado";
         descripcion.classList.add('none');
         notaCredito.innerHTML = `SALDO ACTUAL: ${clienteTraido.saldo}`;
-    }
+    };
+    
     for await(const elem of lista){
-        console.log(elem)
         if (venta.tipo_comp !== "Recibo") {
             listado.innerHTML += `
                 <main>
@@ -93,7 +93,7 @@ const listar = async(venta,clienteTraido,lista)=>{
                 <main class = "observaciones">
                     <p>${elem.observaciones ? elem.observaciones : ""}</p>
                 </main>
-                <p>------------------------------------</p>
+                <p class="text-big">------------------------------------------</p>
             `   
         }else{
             listado.innerHTML += `
@@ -118,4 +118,4 @@ const listar = async(venta,clienteTraido,lista)=>{
 
     }
     ipcRenderer.send('imprimir-ventana');
-}
+};
