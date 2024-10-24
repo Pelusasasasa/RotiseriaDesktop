@@ -410,6 +410,7 @@ const listarCliente = async(id)=>{
 //Lo que hacemos es listar el producto traido
 const listarProducto =async(id)=>{
     let producto;
+
     await ipcRenderer.invoke('get-producto',id).then((result)=>{
         producto = JSON.parse(result);
     });
@@ -433,6 +434,7 @@ const listarProducto =async(id)=>{
                     title:"Producto con Stock menor a 0",
                 });
             }
+
             idProducto++;
             producto.idTabla = `${idProducto}`;
             listaProductos.push({cantidad:parseFloat(cantidad.value),producto});
@@ -466,7 +468,9 @@ const listarProducto =async(id)=>{
             tbody.scrollIntoView({
                 block:"end"
             });
+            
             totalGlobal = parseFloat(total.value);
+
         }else if(producto !== "" && productoYaUsado){
             productoYaUsado.cantidad += parseFloat(cantidad.value);
             producto.idTabla = productoYaUsado.producto.idTabla;
@@ -475,10 +479,15 @@ const listarProducto =async(id)=>{
             tr.children[4].innerHTML = redondear(parseFloat(tr.children[1].innerHTML) * producto.precio,2);
             total.value = redondear(parseFloat(total.value) + (parseFloat(cantidad.value) * producto.precio),2);
             totalGlobal = parseFloat(total.value);
-        }
-        await calcularTotal();
+        };
+
+
+        if (producto.seccion === "EMPANADAS") {
+            await calcularTotal();
         
-        await calcularEmpanadas(producto,cantidad)
+            await calcularEmpanadas(producto,cantidad);
+        };
+        
 
 
         cantidad.value = "1.00";
@@ -633,6 +642,24 @@ const sacarIva = (lista) => {
     return [parseFloat(totalIva21.toFixed(2)),parseFloat(totalIva0.toFixed(2)),parseFloat(gravado21.toFixed(2)),parseFloat(gravado0.toFixed(2)),parseFloat(totalIva105.toFixed(2)),parseFloat(gravado105.toFixed(2)),cantIva]
 };
 
+//Lo usamos para mostrar o ocultar cuestiones que tiene que ver con las ventas
+const cambiarSituacion = (situacion) =>{
+    situacion === "negro" ? document.querySelector('#tarjeta').parentNode.classList.add('none') : document.querySelector('#tarjeta').parentNode.classList.remove('none');
+};
+
+//Ver Codigo Documento
+const verCodigoDocumento = async(cuit)=>{
+    if (cuit !== "00000000" && cuit !== "") {
+        if (cuit.length === 8) {
+            return 96
+        }else{
+            return 80
+        }
+    }
+
+    return 99
+};
+
 codigo.addEventListener('focus',e=>{
     codigo.select();
 });
@@ -680,24 +707,6 @@ document.addEventListener('keydown',e=>{
         });
     };
 });
-
-//Lo usamos para mostrar o ocultar cuestiones que tiene que ver con las ventas
-const cambiarSituacion = (situacion) =>{
-    situacion === "negro" ? document.querySelector('#tarjeta').parentNode.classList.add('none') : document.querySelector('#tarjeta').parentNode.classList.remove('none');
-};
-
-//Ver Codigo Documento
-const verCodigoDocumento = async(cuit)=>{
-    if (cuit !== "00000000" && cuit !== "") {
-        if (cuit.length === 8) {
-            return 96
-        }else{
-            return 80
-        }
-    }
-
-    return 99
-};
 
 //ponemos un numero para la venta y luego mandamos a imprimirla
 ipcRenderer.on('poner-numero',async (e,args)=>{
@@ -790,10 +799,29 @@ async function calcularTotal() {
     };
 
     total.value = redondear(aux,2);
+    // console.log(total.value)
 };
 
 async function calcularEmpanadas(producto,cantidadProducto){
     empanadas = producto.seccion === "EMPANADAS" ? empanadas + parseFloat(cantidad.value) : empanadas;
+
+    // console.log(empanadas)
+
+    // let adicioanles;
+    // let total = 0;
+    // if (empanadas >= 12){
+    //     const docenas = Math.floor( empanadas / 12);
+    //     total += docenas * precioEmpanadas.docena;
+    //     adicioanles = empanadas - 12;
+    // };
+
+    // if (empanadas >= 6){
+    //     total += precioEmpanadas.mediaDocena;
+    //     empanadas -= 6;
+    // };
+
+    // return total;
+
         if (empanadas % 12 === 0 && empanadas !== 0) {
             let aux = precioEmpanadas.docena / 12;
             for await (let {cantidad,producto} of listaProductos){
@@ -805,6 +833,7 @@ async function calcularEmpanadas(producto,cantidadProducto){
                 calcularTotal();
                 descuentoPorDocena = false;
         }else if(empanadas === 6){
+            //Si es media docena
             let aux = precioEmpanadas.mediaDocena / 6;
             for await(let {cantidad,producto} of listaProductos){
                 if (producto.seccion === "EMPANADAS") {
@@ -885,7 +914,6 @@ function cambiarTr(idtabla,precio,cantidad) {
     }
 };
 
-
 const filtrar = async(e) => {
     let condicion = seleccion.value;
 
@@ -898,13 +926,12 @@ const filtrar = async(e) => {
     
 };
 
-buscador.addEventListener('keyup',filtrar);
-seccionTarjetas.addEventListener('click',clickEnTarjetas);
-
-async function clickEnTarjetas(e) {
+const clickEnTarjetas = async(e) => {
     
     seleccionado && seleccionado.classList.toggle('seleccionado');  
-    console.log(e.target)
+
+    // console.log(e.target)
+
     if (e.target.classList.contains('tarjeta')) {
         seleccionado = e.target;
     }else if(e.target.nodeName === "IMG"){
@@ -937,7 +964,6 @@ async function clickEnTarjetas(e) {
 
     listarProducto(seleccionado.id);
 };
-
 
 const listarTarjetas = async (productos)=>{
     seccionTarjetas.innerText = "";
@@ -1021,5 +1047,8 @@ const listarTarjetas = async (productos)=>{
         seccionTarjetas.appendChild(div);
     }
 };
+
+buscador.addEventListener('keyup',filtrar);
+seccionTarjetas.addEventListener('click',clickEnTarjetas);
 
 
