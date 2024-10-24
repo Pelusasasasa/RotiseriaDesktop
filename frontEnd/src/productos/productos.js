@@ -100,7 +100,7 @@ const listarTarjetas = async (productos)=>{
                         </div>`
 
         const pathIMG = path.join(__dirname,`../imgProductos/${producto._id}`);
-        img.setAttribute('src',pathIMG + ".jpg");
+        img.setAttribute('src',pathIMG + ".png");
         img.setAttribute('alt',producto.descripcion);
         img.addEventListener('click',mandarProducto);
         agregar.addEventListener('click',mandarProducto);

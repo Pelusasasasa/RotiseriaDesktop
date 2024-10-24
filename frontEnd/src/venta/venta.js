@@ -954,13 +954,21 @@ const clickEnTarjetas = async(e) => {
     }else if(e.target.innerText === '1k'){
         cantidad.value = '12.00';
     }else{
-        const res = await sweet.fire({
+        const {isConfirmed, value} = await sweet.fire({
             title:"Cantidad",
             input:"number",
+            confirmButtonText: 'Aceptar'
         });
-        cantidad.value = res.value;
-    }
-    
+
+        if (isConfirmed && value !== '') {
+            cantidad.value = value;
+            listarProducto(seleccionado.id);
+            return;
+        }else{
+            cantidad.value = '1.00';
+            return;
+        };
+    };
 
     listarProducto(seleccionado.id);
 };
@@ -1010,7 +1018,7 @@ const listarTarjetas = async (productos)=>{
                         </div>`
 
         const pathIMG = path.join(__dirname,`../imgProductos/${producto._id}`);
-        img.setAttribute('src',pathIMG + ".jpg");
+        img.setAttribute('src',pathIMG + ".png");
         img.setAttribute('alt',producto.descripcion);
 
         titulo.innerText = producto.descripcion;
