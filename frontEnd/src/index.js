@@ -100,6 +100,7 @@ ipcMain.on('imprimir-comanda',(e,args)=>{
 });
 
 ipcMain.on('imprimir-ventana',(e,args)=>{
+  console.log("A")
   nuevaVentana.webContents.print({silent:true},(success,errorType)=>{
     if (success) {
       ventanaPrincipal.focus();
@@ -118,7 +119,7 @@ const abrirVentana = (direccion,altura = 700,ancho = 1200,reinicio = false)=>{
     width: ancho,
     modal:true,
     parent:ventanaPrincipal,
-    show:false,
+    show:true,
     webPreferences:{
       nodeIntegration: true,
       contextIsolation:false
@@ -171,6 +172,12 @@ const hacerMenu = () => {
             abrirVentana("seccion/seccion.html",500,900)
           }
         },
+        {
+          label: "Re Imprimir Factura",
+          click(){
+            abrirVentana('facturas/facturas.html')
+          }
+        }
       ]
     },
     {
@@ -403,7 +410,7 @@ ipcMain.handle('get-ventas',async()=>{
   return JSON.stringify(ventas)
 });
 
-ipcMain.handle('get-ventas-for-day',async(e,args)=>{
+ipcMain.handle('get-ventas-for-day',async(e,args) => {
     const inicioDia = new Date(args + "T00:00:00.000Z");
     const finDia = new Date(args + "T23:59:59.999Z");
     const ventas = await Venta.find({
@@ -414,8 +421,7 @@ ipcMain.handle('get-ventas-for-day',async(e,args)=>{
     return JSON.stringify(ventas)
 });
 
-
-ipcMain.handle('get-ventas-for-month',async(e,args)=>{
+ipcMain.handle('get-ventas-for-month',async(e,args) => {
     const anio = (new Date()).getFullYear();
     let mes = (parseFloat(args) + 1) < 10 ? `0${parseFloat(args) + 1}` : parseFloat(args) + 1;
     let year = mes === 13 ? anio + 1 : anio;
@@ -432,7 +438,7 @@ ipcMain.handle('get-ventas-for-month',async(e,args)=>{
     return JSON.stringify(ventas);
 });
 
-ipcMain.handle('get-ventas-for-year',async(e,args)=>{
+ipcMain.handle('get-ventas-for-year',async(e,args) => {
     const inicioYear = new Date(`${args}-01-01T00:00:00.000Z`);
     const finYear = new Date(`${args}-12-31T23:59:59.999Z`);
     const ventas = await Venta.find({
@@ -441,6 +447,20 @@ ipcMain.handle('get-ventas-for-year',async(e,args)=>{
         {fecha:{$lt:finYear}},
     ]});
     return JSON.stringify(ventas);
+});
+
+ipcMain.handle('get-facturas', async(e, {desde, hasta}) => {
+  const inicioDia = new Date(desde + "T00:00:00.000Z");
+  const finDia = new Date(hasta + "T23:59:59.999Z");
+  const ventas = await (Venta.find({
+    $and:[
+      {fecha: {$gte: inicioDia}},
+      {fecha: {$lte: finDia}},
+      {F: true}
+    ]
+  }));
+
+  return JSON.stringify(ventas);
 });
   //Fin Ventas
 
@@ -520,7 +540,7 @@ ipcMain.handle('delete-seccion',async(e,args)=>{
   } catch (error) {
    return(false) 
   }
-})
+});
 //Fin Seccion
 
 //Inicio CartaEmpanada

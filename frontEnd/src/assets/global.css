@@ -99,3 +99,71 @@ select{
   color: white;
   border: .1rem solid black;
 }
+
+/* background */
+
+.bg-white{
+  background-color: white;
+}
+
+/* border */
+
+.border{
+  border: .1rem solid black;
+}
+
+.border-collapase{
+  border-collapse: collapse;
+}
+
+
+/* heght */
+.h-50{
+  height: 50rem;
+}
+
+
+/* width */
+
+.w-full{
+  width: 100%;
+}
+
+/* flex */
+.flex{
+  display: flex;
+}
+
+.flex-col{
+  flex-direction: column;
+}
+
+.justify-around{
+  justify-content: space-around;
+}
+
+/* hover */
+
+.cursor-pointer{
+  cursor: pointer;
+}
+
+.text-end{
+  text-align: end;
+}
+
+.hover-bg-gray:hover{
+  background-color: gray;
+}
+
+/* padding */
+
+/* margin */
+
+.m-2{
+  margin: 2rem;
+}
+
+.mb-2{
+  margin-bottom: 2rem;
+}

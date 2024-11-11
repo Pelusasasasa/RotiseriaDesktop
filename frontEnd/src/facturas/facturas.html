@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/global.css">
+    <title>Facturas</title>
+</head>
+<body>
+    <section class="flex justify-around mb-2">
+        <div class="flex flex-col">
+            <label for="desde">Desde</label>
+            <input type="date" name="desde" autofocus id="desde">
+        </div>
+        <div class="flex flex-col">
+            <label for="hasta">Hasta</label>
+            <input type="date" name="hasta" id="hasta">
+        </div>
+    </section>
+    <section class="h-50 bg-white">
+        <table class="w-full border-collapase">
+            <thead>
+                <tr>
+                    <th class="border">Fecha</th>
+                    <th class="border">Cliente</th>
+                    <th class="border">Tipo Comp</th>
+                    <th class="border">Nro Comp</th>
+                    <th class="border">Precio</th>
+                    <th class="border">Re imprimir</th>
+                </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+    </section>
+</body>
+<script src="facturas.js"></script>
+</html>

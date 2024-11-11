@@ -39,6 +39,7 @@ const titulo = document.querySelector('.titulo');
 
 ipcRenderer.on('imprimir',(e,args)=>{
     const [venta,cliente,listado] = JSON.parse(args);
+
     listar(venta,cliente,listado);
     if(!venta.F){
         titulo.classList.remove('none');
@@ -54,12 +55,14 @@ const listar = async(venta,clienteTraido,lista)=>{
     let hour = date.getHours();
     let minuts = date.getMinutes();
     let seconds = date.getSeconds();
+
     month = month === 13 ? 1 : month;
     month = month <10 ? `0${month}` : month;
     day = day <10 ? `0${day}` : day;
     hour = hour <10 ? `0${hour}` : hour;
     minuts = minuts <10 ? `0${minuts}` : minuts;
     seconds = seconds <10 ? `0${seconds}` : seconds;
+
     pedido.innerText = venta.nPedido;
     numeroComp.innerHTML = venta.F ? (venta.afip.puntoVenta.toString()).padStart(4,'0') + "-" + venta.afip.numero.toString().padStart(8,'0') :(venta.numero.toString()).padStart(8,'0');
     tipoComp.innerHTML = venta.tipo_comp;
@@ -79,32 +82,52 @@ const listar = async(venta,clienteTraido,lista)=>{
         notaCredito.innerHTML = `SALDO ACTUAL: ${clienteTraido.saldo}`;
     };
     
-    for await(const elem of lista){
-        if (venta.tipo_comp !== "Recibo") {
-            listado.innerHTML += `
-                <main>
-                    <p>${elem.producto}</p>
-                    <p>$ ${(elem.precio * elem.cantidad).toFixed(2)}</p>
-                </main>
-                <main class = "linea">
-                    <p>${elem.cantidad.toFixed(2)}/${elem.precio.toFixed(2)}</p>
-                    <p></p>
-                </main>
-                <main class = "observaciones">
-                    <p>${elem.observaciones ? elem.observaciones : ""}</p>
-                </main>
-                <p class="text-big">------------------------------------------</p>
-            `   
-        }else{
-            listado.innerHTML += `
-                <main>
-                    <p>${elem.fecha}</p>
-                    <p>${elem.comprobante.toString().padStart(8,'0')}</p>
-                    <p>${elem.pagado.toFixed(2)}</p>
-                </main>
-            `
+    if (!lista){
+        for(let elem of venta.listaProductos){
+            console.log(elem);
+                    listado.innerHTML += `<main>
+                        <p>${elem.producto.descripcion}</p>
+                        <p>$ ${(elem.producto.precio * elem.cantidad).toFixed(2)}</p>
+                    </main>
+                    <main class = "linea">
+                        <p>${elem.cantidad.toFixed(2)}/${elem.producto.precio?.toFixed(2)}</p>
+                        <p></p>
+                    </main>
+                    <main class = "observaciones">
+                        <p>${elem.observaciones ? elem.observaciones : ""}</p>
+                    </main>
+                    <p class="text-big">------------------------------------------</p>
+                `   
         }
-    };
+    }else{
+        for await(const elem of lista){
+            if (venta.tipo_comp !== "Recibo") {
+                listado.innerHTML += `
+                    <main>
+                        <p>${elem.producto}</p>
+                        <p>$ ${(elem.precio * elem.cantidad).toFixed(2)}</p>
+                    </main>
+                    <main class = "linea">
+                        <p>${elem.cantidad.toFixed(2)}/${elem.precio?.toFixed(2)}</p>
+                        <p></p>
+                    </main>
+                    <main class = "observaciones">
+                        <p>${elem.observaciones ? elem.observaciones : ""}</p>
+                    </main>
+                    <p class="text-big">------------------------------------------</p>
+                `   
+            }else{
+                listado.innerHTML += `
+                    <main>
+                        <p>${elem.fecha}</p>
+                        <p>${elem.comprobante.toString().padStart(8,'0')}</p>
+                        <p>${elem.pagado.toFixed(2)}</p>
+                    </main>
+                `
+            }
+        };
+    }
+    
 
     descuento.innerHTML = "0.00"
     total.innerHTML = venta.precio.toFixed(2);
@@ -116,6 +139,7 @@ const listar = async(venta,clienteTraido,lista)=>{
         cae.innerHTML = `CAE: ${venta.afip.cae}`;
         qr.src = venta.afip.QR;
 
-    }
-    ipcRenderer.send('imprimir-ventana');
+    };
+
+    // ipcRenderer.send('imprimir-ventana');
 };

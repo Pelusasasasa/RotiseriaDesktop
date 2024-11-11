@@ -391,6 +391,7 @@ const listarCliente = async(id)=>{
     await ipcRenderer.invoke('get-cliente',id).then((result) =>{
         cliente = JSON.parse(result);
     });
+
     if (cliente !== "") {
         nombre.value = cliente.nombre;
         saldo.value = cliente.saldo;
