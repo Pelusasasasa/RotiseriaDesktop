@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,33 +9,36 @@
     <link rel="stylesheet" href="../assets/global.css">
     <link rel="stylesheet" href="./gastos.css">
 </head>
+
 <body>
     <section>
         <header>
             <div class="flex justify-around align-center">
                 <h1>Control de Gastos</h1>
-        
-                <button id="salir" class="flex gap-2">
-                    <span>x</span>
-                    Salir</button>
+
+                <div class="flex flex-col">
+                    <label for="total" class="text-center">Total</label>
+                    <input type="number" value="0.00" name="total" id="total">
+                </div>
             </div>
-        
+
             <div class="flex justify-around mb-2">
-                <div>
-                    <input type="text" placeholder="Buscar Gasto..." name="" id="">
+                <div class="flex flex-col">
+                    <label for="buscador">Buscador</label>
+                    <input type="text" placeholder="Buscar Gasto..." name="buscador" id="buscador">
                 </div>
-                <div>
-                    <label for="fecha">Fecha</label>
-                    <input type="date">
+                <div class="flex flex-col">
+                    <label for="desde">Desde</label>
+                    <input type="date" id="desde" name="desde">
                 </div>
-                <div>
-                    <label for="">Fecha</label>
-                    <input type="date" name="" id="">
+                <div class="flex flex-col">
+                    <label for="hasta">Hasta</label>
+                    <input type="date" name="hasta" id="hasta">
                 </div>
             </div>
-        
+
         </header>
-        
+
         <div id="table">
             <table>
                 <thead>
@@ -47,16 +51,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <td>Fecha</td>
-                    <td>Descripcion</td>
-                    <td>Importe</td>
-                    <td>Tipo</td>
-                    <td>Acciones</td>
                 </tbody>
             </table>
         </div>
-        
-        <div class="flex justify-end mt-2">
+
+        <div class="flex justify-around mt-2">
+            <button id="salir" class="flex gap-2">
+                <span>x</span>
+                Salir</button>
             <Button id="agregar" class="flex gap-2">
                 <span>
                     +
@@ -64,9 +66,9 @@
                 Agregar Gasto
             </Button>
         </div>
-        
-        
-        <div id="modal" class="">
+
+
+        <div id="modal" class="none">
             <div class="flex flex-col gap-2">
                 <div>
                     <label htmlFor="">Fecha</label>
@@ -74,15 +76,20 @@
                 </div>
                 <div>
                     <label htmlFor="">Descripcion</label>
-                    <input type="text" id="descripcion"/>
+                    <input type="text" id="descripcion" />
                 </div>
                 <div>
                     <label htmlFor="">Importe</label>
-                    <input type="number" id="importe"/>
+                    <input type="number" id="importe" />
                 </div>
                 <div>
                     <label htmlFor="">Categoria</label>
-                    <input type="text" id="categoria" />
+                    <div class="flex gap-2 justify-around">
+                        <select name="categoria" id="categoria">
+                            <option value="">---Seleccionar Una Opcion---</option>
+                        </select>
+                        <button id="agregarCateogoria">+</button>
+                    </div>
                 </div>
             </div>
 
@@ -95,4 +102,5 @@
 
     <script src="./gastos.js"></script>
 </body>
+
 </html>

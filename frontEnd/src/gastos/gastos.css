@@ -1,43 +1,43 @@
-#table{
-    height: 75vh;
+#table {
+    height: 65vh;
     overflow: scroll;
     background-color: white;
 }
 
-table{
+table {
     width: 100%;
     color: gray;
     border-collapse: collapse;
 }
 
-td{
+td {
     color: black;
     text-align: center;
     font-weight: 800;
 }
 
-tr{
+tr {
     border-top: .1rem solid gray;
     border-bottom: .1rem solid gray;
 }
 
-input{
+input {
     border-radius: 0.5rem - 2px;
 }
 
-#agregar{
+#agregar {
     background-color: rgb(24, 24, 27);
     color: rgb(250, 250, 250);
     font-weight: 300;
 }
 
-#agregar:hover{
+#agregar:hover {
     background-color: rgba(24, 24, 27, 0.8);
     transform: scale(1);
 }
 
 
-#salir{
+#salir {
     background-color: white;
 }
 
@@ -47,24 +47,17 @@ input{
     transform: scale(1);
 }
 
-label {
-    display: inline-block;
-    width: 7rem;
-}
 
-input{
-    width: 20rem;
-}
-
-section{
+section {
     position: relative;
 }
 
-#modal{
+#modal {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /*Hace que se centre*/
+    transform: translate(-50%, -50%);
+    /*Hace que se centre*/
     background-color: #FFF;
     padding: 20px;
     width: 500px;
@@ -84,6 +77,16 @@ section{
 
 #modal input {
     width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s ease;
+    font-size: 1.3rem;
+}
+
+#modal select {
+    width: 80%;
     padding: 0.75rem;
     border: 1px solid #dddddd;
     border-radius: 8px;
@@ -139,4 +142,8 @@ section{
 
 #modal #guardar:hover {
     background-color: #0056b3;
+}
+
+#buscador {
+    width: 150%;
 }

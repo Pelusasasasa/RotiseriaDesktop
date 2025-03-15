@@ -1,96 +1,104 @@
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-      Arial, sans-serif;
-  
-  }
-  .buttonSeleccionado{
-    background-color: rgba(75, 75, 75, 0.9);
-    color: white;
-  }
-  html {
-    box-sizing: border-box;
-    font-size: 62.5%;
-  }
-  *,
-  *:before,
-  *:after {
-    box-sizing: inherit;
-  }
-  body {
-    font-size: 1.6rem;
-    padding: 0 2rem;
-    background-color: burlywood;
-  }
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
 
-.seleccionado{
-    background-color: lightgray !important; 
 }
 
-.subSeleccionado{
-    background-color: gray !important;
+.buttonSeleccionado {
+  background-color: rgba(75, 75, 75, 0.9);
+  color: white;
 }
 
-.botones{ 
-    display: flex;
-    justify-content: space-evenly;
-    margin-top: 2rem;
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
 }
 
-button{
-    font-size: 1.5rem;
-    border: none;
-    padding: 1rem;
-    border-radius: 8.5px;
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
 
-button:hover{
-    cursor: pointer;
-    transform: scale(1.2);
+body {
+  font-size: 1.6rem;
+  padding: 0 2rem;
+  background-color: burlywood;
+}
+
+.seleccionado {
+  background-color: lightgray !important;
+}
+
+.subSeleccionado {
+  background-color: gray !important;
+}
+
+.botones {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 2rem;
+}
+
+button {
+  font-size: 1.5rem;
+  border: none;
+  padding: 1rem;
+  border-radius: 8.5px;
+}
+
+button:hover {
+  cursor: pointer;
+  transform: scale(1.2);
 }
 
 
-.none{
-    display: none !important;
+.none {
+  display: none !important;
 }
 
-input{
+input {
   padding: .5rem;
   font-size: 1.5rem;
 }
 
-input:disabled{
+input:disabled {
   font-weight: 900;
   color: black;
 }
 
-.text-rigth{
+.text-center {
+  text-align: center;
+}
+
+.text-rigth {
   text-align: right;
 }
 
-.text-bold{
+.text-bold {
   font-weight: bold;
 }
 
-select{
+select {
   font-size: 2rem;
   padding: 1rem;
 }
 
-.acciones{
+.acciones {
   display: flex;
   justify-content: space-around;
   cursor: pointer;
 }
 
-.tool{
+.tool {
   position: relative;
 }
 
-.tool:hover .tooltip{
+.tool:hover .tooltip {
   display: block;
 }
 
-.tooltip{
+.tooltip {
   display: none;
   position: absolute;
   z-index: 1;
@@ -102,61 +110,65 @@ select{
 
 /* background */
 
-.bg-white{
+.bg-white {
   background-color: white;
 }
 
 /* border */
 
-.border{
+.border {
   border: .1rem solid black;
 }
 
-.border-collapase{
+.border-collapase {
   border-collapse: collapse;
 }
 
 
 /* heght */
-.h-50{
+.h-50 {
   height: 50rem;
 }
 
 
 /* width */
 
-.w-full{
+.w-full {
   width: 100%;
 }
 
 /* flex */
-.flex{
+.flex {
   display: flex;
 }
 
-.flex-col{
+.flex-col {
   flex-direction: column;
 }
 
-.justify-around{
+.justify-around {
   justify-content: space-around;
 }
 
-.justify-end{
+.justify-center {
+  justify-content: center;
+}
+
+.justify-end {
   justify-content: flex-end;
 }
 
 /* hover */
 
-.cursor-pointer{
+.cursor-pointer {
   cursor: pointer;
 }
 
-.text-end{
+.text-end {
   text-align: end;
 }
 
-.hover-bg-gray:hover{
+.hover-bg-gray:hover {
   background-color: gray;
 }
 
@@ -164,22 +176,30 @@ select{
 
 /* margin */
 
-.m-2{
+.m-2 {
   margin: 2rem;
 }
 
-.mt-2{
+.mt-1 {
+  margin-top: 1rem;
+}
+
+.mt-2 {
   margin-top: 2rem;
 }
 
-.mb-2{
+.mb-1 {
+  margin-bottom: 1rem;
+}
+
+.mb-2 {
   margin-bottom: 2rem;
 }
 
-.gap-2{
+.gap-2 {
   gap: 2rem;
 }
 
-.align-center{
+.align-center {
   align-items: center;
 }
