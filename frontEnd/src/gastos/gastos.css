@@ -1,16 +1,142 @@
-h1{
+#table{
+    height: 75vh;
+    overflow: scroll;
+    background-color: white;
+}
+
+table{
+    width: 100%;
+    color: gray;
+    border-collapse: collapse;
+}
+
+td{
+    color: black;
     text-align: center;
+    font-weight: 800;
 }
 
-.inputs main{
-    margin: 4rem 0;
+tr{
+    border-top: .1rem solid gray;
+    border-bottom: .1rem solid gray;
 }
 
-.inputs main label{
+input{
+    border-radius: 0.5rem - 2px;
+}
+
+#agregar{
+    background-color: rgb(24, 24, 27);
+    color: rgb(250, 250, 250);
+    font-weight: 300;
+}
+
+#agregar:hover{
+    background-color: rgba(24, 24, 27, 0.8);
+    transform: scale(1);
+}
+
+
+#salir{
+    background-color: white;
+}
+
+
+#salir:hover {
+    background-color: rgba(250, 250, 250, 0.8);
+    transform: scale(1);
+}
+
+label {
     display: inline-block;
-    width: 9rem;
+    width: 7rem;
 }
 
-.inputs main input{
-    width: 70%;
+input{
+    width: 20rem;
+}
+
+section{
+    position: relative;
+}
+
+#modal{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /*Hace que se centre*/
+    background-color: #FFF;
+    padding: 20px;
+    width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+#modal label {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #555555;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+#modal input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s ease;
+    font-size: 1.3rem;
+}
+
+#modal::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(66, 49, 49, 0.6);
+    z-index: -1;
+}
+
+#modal input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Botón de cerrar */
+#modal #salir {
+    top: 1rem;
+    right: 1rem;
+    border: none;
+    font-size: 1.5rem;
+    color: #888888;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+#modal #salir:hover {
+    color: #333333;
+}
+
+/* Botón de acción (por ejemplo, "Guardar") */
+#modal #guardar {
+    padding: 0.75rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#modal #guardar:hover {
+    background-color: #0056b3;
 }

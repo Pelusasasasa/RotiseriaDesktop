@@ -16,6 +16,7 @@ const Gasto = require('./models/Gasto');
 const Pedido = require('./models/Pedido');
 const Seccion = require('./models/Seccion');
 const CartaEmpanada = require('./models/CartaEmpanada');
+const CategoriaGasto = require('./models/CategoriaGasto');
 
 //Fin Base de Datos
 
@@ -562,3 +563,36 @@ ipcMain.handle('get-cartaEmpanada',async()=>{
 });
 
 //Fin CartaEmpanada
+
+//Inicio Gastos
+ipcMain.handle('get-gastos', async(e, args) => {
+  const gastos = await Gasto.find();
+
+  return JSON.stringify(gastos)
+});
+
+ipcMain.handle('post-gasto', async(e, args) => {
+  try {
+    const gasto = new Gasto(args);
+
+    await gasto.save();
+
+    return JSON.stringify(gasto)
+  } catch (error) {
+      return error;
+  }
+})
+
+//Inicio Categoria Gasto
+
+ipcMain.handle('post-categoriaGasto', async(e, args) => {
+  try {
+    const categoriaGasto = new CategoriaGasto(args);
+
+    await categoriaGasto.save();
+
+    return JSON.stringify(categoriaGasto)
+  } catch (error) {
+    return error
+  }
+})

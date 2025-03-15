@@ -142,6 +142,10 @@ select{
   justify-content: space-around;
 }
 
+.justify-end{
+  justify-content: flex-end;
+}
+
 /* hover */
 
 .cursor-pointer{
@@ -164,6 +168,18 @@ select{
   margin: 2rem;
 }
 
+.mt-2{
+  margin-top: 2rem;
+}
+
 .mb-2{
   margin-bottom: 2rem;
+}
+
+.gap-2{
+  gap: 2rem;
+}
+
+.align-center{
+  align-items: center;
 }

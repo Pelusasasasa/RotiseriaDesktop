@@ -11,7 +11,7 @@ const ventas = document.querySelector('.ventas');
 const clientes = document.querySelector('.clientes');
 const caja = document.querySelector('.caja');
 const productos = document.querySelector('.productos');
-const movimiento = document.querySelector('.movimiento');
+const gastos = document.querySelector('.gastos');
 const consulta = document.querySelector('.consulta');
 const recibo = document.querySelector('.recibo');
 const notaCredito = document.querySelector('.notaCredito');
@@ -177,6 +177,10 @@ caja.addEventListener('click',async e=>{
     }else{
         location.href = "./caja/caja.html";
     }
+});
+
+gastos.addEventListener('click', e => {
+    location.href = './gastos/gastos.html'
 });
 
 //ponemos un numero para la venta y luego mandamos a imprimirla
