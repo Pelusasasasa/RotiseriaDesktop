@@ -128,7 +128,8 @@ section {
 }
 
 /* Botón de acción (por ejemplo, "Guardar") */
-#modal #guardar {
+#modal #guardar,
+#modal #modificar {
     padding: 0.75rem;
     background-color: #007bff;
     color: white;
@@ -140,7 +141,8 @@ section {
     transition: background-color 0.3s ease;
 }
 
-#modal #guardar:hover {
+#modal #guardar:hover,
+#modal #modificar:hover {
     background-color: #0056b3;
 }
 

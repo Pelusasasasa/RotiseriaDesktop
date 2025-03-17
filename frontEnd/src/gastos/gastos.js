@@ -15,6 +15,7 @@ const salir = document.getElementById('salir');
 
 const inputAgregarCateogoria = document.getElementById('agregarCateogoria');
 const guardar = document.getElementById('guardar');
+const modificar = document.getElementById('modificar');
 const cancelar = document.getElementById('cancelar');
 
 const fechaInput = document.getElementById('fecha');
@@ -24,6 +25,31 @@ const categoria = document.getElementById('categoria');
 
 let gastos = [];
 let categoriaGastos = [];
+
+const fechaUTC = () => {
+    const fecha = new Date(`${fechaInput.value}T00:00:00.000Z`);
+
+    const ahora = new Date();
+    const hours = ahora.getUTCHours();
+    const minuts = ahora.getUTCMinutes();
+    const seconds = ahora.getUTCSeconds();
+
+    fecha.setUTCHours(hours, minuts, seconds);
+    //Lo que hacemos es conver la fecha y la hpora para que la base de datos de mongo db lo entienda bien
+    const fechaUTC = new Date(
+        Date.UTC(
+            fecha.getFullYear(),
+            fecha.getMonth(),
+            fecha.getDate(),
+            fecha.getHours(),
+            fecha.getMinutes(),
+            fecha.getSeconds(),
+
+        )
+    )
+
+    return fechaUTC;
+};
 
 const listarGastos = (lista) => {
     tbody.innerHTML = '';
@@ -70,9 +96,13 @@ const listarGastos = (lista) => {
         tdImporte.innerText = elem.importe.toFixed(2);
         tdTipo.innerText = elem.categoria.nombre;
 
-        botonUpdate.innerText = 'M';
-        botonDelete.innerText = 'E';
+        botonUpdate.classList.add('tool');
+        botonDelete.classList.add('tool');
 
+        botonUpdate.innerHTML = `<span id=edit class=material-icons>edit</span>`;
+        botonDelete.innerHTML = `<span id=edit class=material-icons>delete</span>`;
+
+        botonUpdate.addEventListener('click', updateGasto);
         botonDelete.addEventListener('click', deleteGasto);
 
         divAcciones.appendChild(botonUpdate);
@@ -95,6 +125,7 @@ const listarGastos = (lista) => {
 };
 
 const deleteGasto = async (e) => {
+
     const { isConfirmed } = await Swal.fire({
         title: 'Seguro quiere elimina el gasto?',
         confirmButtonText: 'Eliminar',
@@ -103,7 +134,13 @@ const deleteGasto = async (e) => {
 
 
     if (isConfirmed) {
-        const id = e.target.parentNode.parentNode.parentNode.id;
+        let id = '';
+
+        if (e.target.nodeName === 'BUTTON') {
+            id = e.target.parentNode.parentNode.parentNode.id;
+        } else {
+            id = e.target.parentNode.parentNode.parentNode.parentNode.id;
+        };
 
         await ipcRenderer.invoke('delete-gasto', id);
 
@@ -111,6 +148,28 @@ const deleteGasto = async (e) => {
 
         listarGastos(gastos);
     };
+};
+
+const updateGasto = async (e) => {
+    let id = '';
+
+    if (e.target.nodeName === 'BUTTON') {
+        id = e.target.parentNode.parentNode.parentNode.id;
+    } else {
+        id = e.target.parentNode.parentNode.parentNode.parentNode.id;
+    };
+
+    const gasto = gastos.find(elem => elem._id === id);
+
+    fechaInput.value = gasto.fecha.slice(0, 10);
+    descripcion.value = gasto.descripcion;
+    importe.value = gasto.importe.toFixed(2);
+    categoria.value = gasto.categoria._id;
+
+    modal.classList.remove('none');
+    modificar.classList.remove('none');
+    guardar.classList.add('none');
+
 };
 
 const cargarPagina = async () => {
@@ -144,6 +203,8 @@ const abrirModal = async () => {
     const modal = document.getElementById('modal');
 
     modal.classList.remove('none');
+    modificar.classList.add('none');
+    guardar.classList.remove('none');
 
 };
 
@@ -151,28 +212,7 @@ const guardarGasto = async () => {
 
     const gasto = {};
 
-    const fecha = new Date(`${fechaInput.value}T00:00:00.000Z`);
-
-    const ahora = new Date();
-    const hours = ahora.getUTCHours();
-    const minuts = ahora.getUTCMinutes();
-    const seconds = ahora.getUTCSeconds();
-
-    fecha.setUTCHours(hours, minuts, seconds);
-    //Lo que hacemos es conver la fecha y la hpora para que la base de datos de mongo db lo entienda bien
-    const fechaUTC = new Date(
-        Date.UTC(
-            fecha.getFullYear(),
-            fecha.getMonth(),
-            fecha.getDate(),
-            fecha.getHours(),
-            fecha.getMinutes(),
-            fecha.getSeconds(),
-
-        )
-    )
-
-    gasto.fecha = fechaUTC.toISOString();
+    gasto.fecha = fechaUTC().toISOString();
     gasto.descripcion = descripcion.value;
     gasto.importe = importe.value;
     gasto.categoria = categoria.value;
@@ -198,7 +238,7 @@ const filtrar = (e) => {
     const gastosFiltrados = gastos.filter(elem =>
         elem.descripcion.toUpperCase().includes(texto.toUpperCase())
         || elem.importe.toFixed(2).includes(texto)
-        || elem.categoria.toUpperCase().includes(texto.toUpperCase())
+        || elem.categoria.nombre.toUpperCase().includes(texto.toUpperCase())
     )
 
     listarGastos(gastosFiltrados)
@@ -234,8 +274,20 @@ const buscarPorFechaGastos = async () => {
     listarGastos(gastos)
 };
 
+const modificarGasto = async () => {
+    const gasto = {};
+
+    gasto.fecha = fechaUTC().toISOString();
+    gasto.descripcion = descripcion.value;
+    gasto.importe = importe.value;
+    gasto.categoria = categoria.value;
+
+    const gastoUpdate = ipcRenderer.invoke('update-gasto', gasto);
+};
 
 agregar.addEventListener('click', abrirModal);
+
+modificar.addEventListener('click', modificarGasto)
 
 buscador.addEventListener('keyup', filtrar);
 
@@ -263,9 +315,17 @@ salir.addEventListener('click', e => {
 
 cancelar.addEventListener('click', e => {
 
-    modal.classList.add('none');
+    fecha.value = '';
+    descripcion.value = '';
+    importe.value = '';
+    categoria.value = '',
+
+        modal.classList.add('none');
 
 });
 
-//TODO:
-//Listar los gastos
+document.addEventListener('keyup', e => {
+    if (e.keyCode === 27) {
+        location.href = '../menu.html';
+    };
+});
