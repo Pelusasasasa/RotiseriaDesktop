@@ -161,6 +161,8 @@ const updateGasto = async (e) => {
 
     const gasto = gastos.find(elem => elem._id === id);
 
+    modificar.id = id;
+
     fechaInput.value = gasto.fecha.slice(0, 10);
     descripcion.value = gasto.descripcion;
     importe.value = gasto.importe.toFixed(2);
@@ -169,7 +171,6 @@ const updateGasto = async (e) => {
     modal.classList.remove('none');
     modificar.classList.remove('none');
     guardar.classList.add('none');
-
 };
 
 const cargarPagina = async () => {
@@ -210,6 +211,9 @@ const abrirModal = async () => {
 
 const guardarGasto = async () => {
 
+    if ('Invalid Date' == fechaUTC()) return await Swal.fire('Error al cargar un Gasto', 'Poner Una fecha', 'error');
+    if (categoria.value == '') return await Swal.fire('Error al cargar el gasto', 'Falta poner un tipo de categoria', 'error');
+
     const gasto = {};
 
     gasto.fecha = fechaUTC().toISOString();
@@ -219,6 +223,13 @@ const guardarGasto = async () => {
 
 
     const newGasto = JSON.parse(await ipcRenderer.invoke('post-gasto', gasto));
+
+    if (newGasto.errors) {
+        const error = newGasto.errors;
+        if (newGasto.errors.descripcion) return await Swal.fire('Error al cargar el gasto', `${error.descripcion.message}`, 'error');
+        if (newGasto.errors.importe) return await Swal.fire('Error al cargar el gasto', `${error.importe.message}`, 'error');
+    };
+
     gastos.push(newGasto);
 
     document.getElementById('modal').classList.add('none');
@@ -274,15 +285,34 @@ const buscarPorFechaGastos = async () => {
     listarGastos(gastos)
 };
 
-const modificarGasto = async () => {
+const modificarGasto = async (e) => {
     const gasto = {};
 
+    gasto._id = modificar.id;
     gasto.fecha = fechaUTC().toISOString();
     gasto.descripcion = descripcion.value;
     gasto.importe = importe.value;
     gasto.categoria = categoria.value;
 
-    const gastoUpdate = ipcRenderer.invoke('update-gasto', gasto);
+    const gastoUpdate = JSON.parse(await ipcRenderer.invoke('put-gasto', gasto));
+
+    gastos = gastos.map(elem => {
+        if (elem._id === gastoUpdate._id) {
+            return gastoUpdate
+        };
+
+        return elem;
+    })
+
+    modificar.id = '';
+    fechaInput.value = '';
+    descripcion.value = '';
+    importe.value = '';
+    categoria.value = '';
+
+    listarGastos(gastos);
+
+    modal.classList.add('none');
 };
 
 agregar.addEventListener('click', abrirModal);

@@ -7,17 +7,17 @@ const Gasto = new mongoose.Schema({
     },
     descripcion: {
         type: String,
-        require: [true, 'La Descripcion es obligatoria'],
+        required: [true, 'La Descripcion es obligatoria'],
         set: value => value.toUpperCase()
     },
     importe: {
         type: Number,
-        require: [true, 'El importe es obligatorio']
+        required: [true, 'El importe es obligatorio']
     },
     categoria: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'CategoriaGasto',
-        require: [true, 'La categoria de Gasto es Obligatoria']
+        required: [true, 'La categoria de Gasto es Obligatoria']
     }
 });
 

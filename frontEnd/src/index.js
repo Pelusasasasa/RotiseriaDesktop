@@ -101,7 +101,6 @@ ipcMain.on('imprimir-comanda', (e, args) => {
 });
 
 ipcMain.on('imprimir-ventana', (e, args) => {
-  console.log("A")
   nuevaVentana.webContents.print({ silent: true }, (success, errorType) => {
     if (success) {
       ventanaPrincipal.focus();
@@ -549,7 +548,6 @@ ipcMain.handle('delete-seccion', async (e, args) => {
 
 ipcMain.on('post-CartaEmpanada', async (e, args) => {
   const carta = new CartaEmpanada(args);
-  console.log(carta)
   await carta.save();
 });
 
@@ -572,13 +570,8 @@ ipcMain.handle('get-gastos', async (e, args) => {
   return JSON.stringify(gastos)
 });
 
-
 ipcMain.handle('get-gastos-for-date', async (e, args) => {
   const { desde, hasta } = args;
-
-  console.log(desde);
-  console.log(hasta);
-
   const gastos = await Gasto.find({
     $and: [
       {
@@ -602,7 +595,7 @@ ipcMain.handle('post-gasto', async (e, args) => {
     const gastoConCategoria = await Gasto.findOne({ _id: gasto._id }).populate('categoria', ['nombre']);
     return JSON.stringify(gastoConCategoria)
   } catch (error) {
-    return error;
+    return JSON.stringify(error);
   }
 });
 
@@ -616,6 +609,16 @@ ipcMain.handle('delete-gasto', async (e, args) => {
     console.log(error);
     return error;
   }
+});
+
+ipcMain.handle('put-gasto', async (e, gasto) => {
+  try {
+    const gastoUpdate = await Gasto.findOneAndUpdate({ _id: gasto._id }, gasto, { new: true }).populate('categoria', ['nombre']);
+
+    return JSON.stringify(gastoUpdate);
+  } catch (error) {
+    return JSON.stringify(error)
+  };
 });
 
 //Inicio Categoria Gasto
