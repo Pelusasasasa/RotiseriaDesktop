@@ -6,6 +6,7 @@ const archivo = require('./configuracion.json');
 ipcRenderer.send('poner-cierre');
 
 const {abrirVentana, ponerNumero, cargarVendedor, verificarUsuarios} = require('./helpers');
+const { default: Swal } = require("sweetalert2");
 
 const ventas = document.querySelector('.ventas');
 const clientes = document.querySelector('.clientes');
@@ -17,6 +18,7 @@ const recibo = document.querySelector('.recibo');
 const notaCredito = document.querySelector('.notaCredito');
 
 let verVendedores;
+let contrasenaGasto;
 
 window.addEventListener('load',async e=>{
     await ipcRenderer.send('cargar-numero-pedido');
@@ -34,33 +36,20 @@ window.addEventListener('load',async e=>{
         }
     });
 
-//     await cargarPrimerCliente();
-//     verVendedores = archivo.vendedores;
-//     const vendedores = (await axios.get(`${URL}vendedores`)).data;
-//     if (!vendedores.find(vendedor => vendedor.permiso === 0) && verVendedores) {
-//         sweet.fire({
-//             title:"Cargar un Vendedor con permiso en 0 inicial",
-//             html: await cargarVendedor(),
-//             confirmButtonText:"Aceptar",
-//             showCancelButton:true
-//         }).then(async({isConfirmed})=>{
-//             if (isConfirmed) {
-//                 const nuevoVendedor = {};
-//                 nuevoVendedor.codigo = document.getElementById('codigo').value;
-//                 nuevoVendedor.nombre = document.getElementById('nombre').value.toUpperCase();
-//                 nuevoVendedor.permiso = document.getElementById('permisos').value;
-//                 try {
-//                     await axios.post(`${URL}vendedores`,nuevoVendedor);
-//                 } catch (error) {
-//                     sweet.fire({
-//                         title:"no se pudo cargar el vendedor"
-//                     })
-//                 }
-//             }else{
-//                 location.reload();
-//             }
-//         })
-//     }
+    contrasenaGasto = JSON.parse(await ipcRenderer.invoke('get-contrasenaGasto'))?.contrasenaGasto;
+    
+    if(!contrasenaGasto){
+        const {isConfirmed, value} = await Swal.fire({
+            title: 'Poner Contraseña de Gasto por unica vez',
+            confirmButtonText: 'Aceptar',
+            input: 'text',
+            showCancelButton: true,
+        });
+
+        if(isConfirmed){
+            contrasenaGasto = JSON.parse(await ipcRenderer.invoke('post-variables-and-contrasenaGasto', {contrasenaGasto: value})).contrasenaGasto;
+        };
+    };
 });
 
 //Al tocar el atajo de teclado, abrimos ventanas
@@ -98,7 +87,6 @@ document.addEventListener('keyup',async e=>{
     }
 });
 
-
 ventas.addEventListener('click',async e=>{
     if (verVendedores) {
         const vendedor = await verificarUsuarios();
@@ -118,7 +106,6 @@ ventas.addEventListener('click',async e=>{
     }
 });
 
-
 clientes.addEventListener('click',async e=>{
     if (verVendedores) {
         const vendedor = await verificarUsuarios();
@@ -137,7 +124,6 @@ clientes.addEventListener('click',async e=>{
     }
     
 });
-
 
 productos.addEventListener('click',async e=>{
     if (verVendedores) {
@@ -179,8 +165,19 @@ caja.addEventListener('click',async e=>{
     }
 });
 
-gastos.addEventListener('click', e => {
-    location.href = './gastos/gastos.html'
+gastos.addEventListener('click', async e => {
+    const {isConfirmed, value } = await Swal.fire({
+        title: 'Contraseña',
+        confirmButtonText: 'Aceptar',
+        showCancelButton: true,
+        input: 'text'
+    })
+    
+    if({isConfirmed}){
+        if(value !== contrasenaGasto) return await Swal.fire('Contraseña Incorrecta', 'La contraseña de Gasto es incorrecta', 'error');
+        
+        location.href = './gastos/gastos.html';
+    }
 });
 
 //ponemos un numero para la venta y luego mandamos a imprimirla
@@ -195,26 +192,3 @@ ipcRenderer.on('libroIva',async (e,args)=>{
 ipcRenderer.on('cartas-empanadas',()=>{
     location.href = 'cartas/cartasEmpandas.html'
 });
-
-const cargarPrimerCliente = async()=>{
-    const id = (await axios.get(`${URL}clientes`)).data;
-    if (id === 1) {
-        const cliente = {};
-        cliente._id = 1;
-        cliente.nombre = "Consumidor Final";
-        cliente.telefono = "";
-        cliente.direccion = "CHAJARI";
-        cliente.localidad = "CHAJARI";
-        cliente.cuit = "00000000";
-        cliente.condicionFacturacion = 2;
-
-        try {
-            await axios.post(`${URL}clientes`,cliente);
-        } catch (error) {
-            console.log(error);
-            await sweet.fire({
-                title:"No se pudo cargar el primer cliene, cargarlo normal"
-            })
-        }
-    }
-}

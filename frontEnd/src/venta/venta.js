@@ -286,6 +286,7 @@ facturar.addEventListener('click',async e=>{
         venta.gravado105 = gravado105;
         venta.cantIva = cantIva;
         venta.direccion = direccion.value;
+        venta.telefono = telefono.value;
         venta.descuentoPorDocena = descuentoPorDocena;
 
         await ipcRenderer.invoke('get-numero-pedido').then((result)=>{

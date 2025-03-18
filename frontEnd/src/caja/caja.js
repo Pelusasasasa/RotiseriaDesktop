@@ -361,7 +361,8 @@ const listarVentas = async (ventas)=>{
         tdHora.innerHTML = venta.fecha.slice(11,19).split(':',3).join(':');
         tdCliente.innerHTML = venta.cliente;
         tdCodProducto.innerHTML = venta.tipo_comp;
-        tdProducto.innerHTML = "";
+        tdProducto.innerHTML = venta.direccion;
+        tdCantidad.innerText = venta.telefono;
         tdPrecioTotal.innerHTML = venta.tipo_comp === "Nota Credito C" ? redondear(venta.precio * -1,2) : venta.precio.toFixed(2);
         tdVendedor.innerHTML = venta.vendedor ? venta.vendedor : "";
         tdCaja.innerHTML = venta.caja;

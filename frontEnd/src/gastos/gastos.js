@@ -93,7 +93,7 @@ const listarGastos = (lista) => {
 
         tdFecha.innerText = `${fecha}  ${hora}`
         tdDescripcion.innerText = elem.descripcion;
-        tdImporte.innerText = elem.importe.toFixed(2);
+        tdImporte.innerText = elem.importe?.toFixed(2);
         tdTipo.innerText = elem.categoria.nombre;
 
         botonUpdate.classList.add('tool');
@@ -230,7 +230,7 @@ const guardarGasto = async () => {
         if (newGasto.errors.importe) return await Swal.fire('Error al cargar el gasto', `${error.importe.message}`, 'error');
     };
 
-    gastos.push(newGasto);
+    buscarPorFechaGastos();
 
     document.getElementById('modal').classList.add('none');
 
@@ -286,6 +286,11 @@ const buscarPorFechaGastos = async () => {
 };
 
 const modificarGasto = async (e) => {
+    if ('Invalid Date' == fechaUTC()) return await Swal.fire('Error al cargar un Gasto', 'Poner Una fecha', 'error');
+    if (categoria.value == '') return await Swal.fire('Error al cargar el gasto', 'Falta poner un tipo de categoria', 'error');
+    if (importe.value === '') return await Swal.fire('Error al cargar el gasto', 'Falta poner un importe en el gasto', 'error');
+    if (descripcion.value === '') return await Swal.fire('Error al cargar el gasto', 'Falta poner una descripcion en el gasto', 'error');
+
     const gasto = {};
 
     gasto._id = modificar.id;
@@ -295,6 +300,7 @@ const modificarGasto = async (e) => {
     gasto.categoria = categoria.value;
 
     const gastoUpdate = JSON.parse(await ipcRenderer.invoke('put-gasto', gasto));
+
 
     gastos = gastos.map(elem => {
         if (elem._id === gastoUpdate._id) {
@@ -356,6 +362,10 @@ cancelar.addEventListener('click', e => {
 
 document.addEventListener('keyup', e => {
     if (e.keyCode === 27) {
-        location.href = '../menu.html';
+        if(modal.classList.contains('none')){
+            location.href = '../menu.html';
+        }else{
+            modal.classList.add('none');
+        }
     };
 });

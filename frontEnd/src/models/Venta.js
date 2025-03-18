@@ -11,7 +11,8 @@ const Venta = new mongoose.Schema({
     },
     cliente:{
         type:String,
-        default:"Consumidor Final"
+        default:"Consumidor Final",
+        set: value => value.toUpperCase().trim()
     },
     idCliente:{
         type:String,
@@ -52,6 +53,17 @@ const Venta = new mongoose.Schema({
     afip:{
         type:Object,
         default:{}
+    },
+
+    //Persona
+    direccion: {
+        type: String,
+        default: '',
+        set: value => value.toUpperCase().trim()
+    },
+    telefono: {
+        type: String,
+        default: ''
     },
 
     //Para la afip

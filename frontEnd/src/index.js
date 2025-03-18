@@ -17,6 +17,7 @@ const Pedido = require('./models/Pedido');
 const Seccion = require('./models/Seccion');
 const CartaEmpanada = require('./models/CartaEmpanada');
 const CategoriaGasto = require('./models/CategoriaGasto');
+const Variables = require('./models/Variables');
 
 //Fin Base de Datos
 
@@ -641,4 +642,24 @@ ipcMain.handle('post-categoriaGasto', async (e, args) => {
   } catch (error) {
     return error
   }
+});
+
+//Inicion Variables
+
+ipcMain.handle('get-contrasenaGasto', async(e, args) => {
+  const contrasena = await Variables.findOne().sort({_id: 1});
+
+  return JSON.stringify(contrasena)
+})
+
+ipcMain.handle('post-variables', async() => {
+  const variable = new Variables();
+  await variable.save();
+  return JSON.stringify(variable);
+});
+
+ipcMain.handle('post-variables-and-contrasenaGasto', async(e, args) => {
+  const variable = new Variables(args);
+  await variable.save();
+  return JSON.stringify(variable);
 });
