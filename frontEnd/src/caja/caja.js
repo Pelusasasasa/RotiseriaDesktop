@@ -10,6 +10,7 @@ let vendedor = getParameterByName('vendedor');
 const { ipcRenderer } = require("electron");
 const { cerrarVentana, redondear, agregarMovimientoVendedores } = require("../helpers");
 const sweet = require('sweetalert2');
+const { default: Swal } = require("sweetalert2");
 
 let seleccionado;
 let subSeleccionado;
@@ -103,6 +104,33 @@ window.addEventListener('load',async e=>{
     });
     listarVentas(ventas);
 });
+
+const eliminarVenta = async(e) => {
+
+    const id = e.target.parentNode.parentNode.id;
+
+    const { isConfirmed } = await Swal.fire({
+        title: '¿Seguro queres Eliminar La venta?',
+        confirmButtonText: 'Aceptar',
+        showCancelButton: true
+    });
+
+    if(isConfirmed){
+        const ventaEliminada = JSON.parse(await ipcRenderer.invoke('delete-venta', id));
+        ventas = ventas.filter( elem => elem._id !== ventaEliminada._id);
+
+        const trEliminado = document.getElementById(`${ventaEliminada._id}`);
+
+        //Son los tr que muestran los productos de una venta
+        const alltrMovEliminados = document.querySelectorAll(`.venta${ventaEliminada._id}`);
+
+        for(let elem of alltrMovEliminados){
+            tbody.removeChild(elem);
+        };
+
+        tbody.removeChild(trEliminado);
+    }
+}
 
 const verQueTraer = async()=>{
     if (botonSeleccionado.classList.contains("botonDia")) {
@@ -269,37 +297,11 @@ tbody.addEventListener('click',async e=>{
 
     if (e.target.nodeName === "TD") {
         seleccionado = e.target.parentNode;
-    }else if(e.target.nodeName === "DIV"){
+    }else if(e.target.nodeName === "BUTTON"){
         seleccionado = e.target.parentNode.parentNode;
-    }else if(e.target.nodeName === "SPAN"){
-        seleccionado = e.target.parentNode.parentNode.parentNode;
-    }
+    };
 
     seleccionado.classList.add('seleccionado');
-
-    if (e.target.innerHTML === "delete") {
-        sweet.fire({
-            title:"Seguro quiere borrar la Venta",
-            confirmButtonText:"Aceptar",
-            showCancelButton:true
-        }).then(async({isConfirmed})=>{
-            if (isConfirmed) {
-                try {
-                    await axios.delete(`${URL}ventas/id/${seleccionado.id}/${seleccionado.children[3].innerHTML}`);
-                    vendedor && await agregarMovimientoVendedores(`Elimino la venta ${seleccionado.children[0].innerHTML} con el precio ${seleccionado.children[7].innerHTML}`,vendedor);
-                    tbody.removeChild(seleccionado);
-                    total.value = redondear(parseFloat(total.value) - parseFloat(seleccionado.children[7].innerHTML),2);
-                } catch (error) {
-                    sweet.fire({
-                        title:"No se puede borrar la venta"
-                    });
-                    console.log(error)
-                }
-            }
-        })
-    }else if(e.target.innerHTML === "edit"){
-        
-    }
 
     const trs = document.querySelectorAll("tbody .venta" + id)
 
@@ -349,11 +351,22 @@ const listarVentas = async (ventas)=>{
         const tdCodProducto =  document.createElement('td');
         const tdProducto =  document.createElement('td');
         const tdCantidad =  document.createElement('td');
-        const tdPrecio =  document.createElement('td');
         const tdPrecioTotal = document.createElement('td');
         const tdHora = document.createElement('td');
         const tdVendedor = document.createElement('td');
         const tdCaja = document.createElement('td');
+        const tdAccion = document.createElement('td');
+
+        const buttonAccion = document.createElement('button');
+
+        buttonAccion.addEventListener('click', eliminarVenta);
+
+        tdAccion.classList.add('tool');
+        buttonAccion.classList.add('material-icons')
+        buttonAccion.innerText = 'delete';
+
+        tdAccion.appendChild(buttonAccion);
+
 
 
         tdNumero.innerHTML = venta.numero;
@@ -373,11 +386,11 @@ const listarVentas = async (ventas)=>{
         tr.appendChild(tdCodProducto);
         tr.appendChild(tdProducto);
         tr.appendChild(tdCantidad);
-        tr.appendChild(tdPrecio);
         tr.appendChild(tdPrecioTotal);
         tr.appendChild(tdVendedor);
         tr.appendChild(tdCaja);
         tr.appendChild(tdHora);
+        tr.appendChild(tdAccion);
 
         tbody.appendChild(tr);
 
@@ -395,7 +408,6 @@ const listarVentas = async (ventas)=>{
                     const tdIdProducto = document.createElement('td');
                     const tdDescripcion = document.createElement('td');
                     const tdCantidad = document.createElement('td');
-                    const tdPrecioProducto = document.createElement('td');
                     const tdTotalProducto = document.createElement('td');
 
                     tdNumeroProducto.innerHTML = venta.numero;
@@ -404,7 +416,6 @@ const listarVentas = async (ventas)=>{
                     tdIdProducto.innerHTML = producto._id === undefined ? " " : producto._id;
                     tdDescripcion.innerHTML = producto.descripcion;
                     tdCantidad.innerHTML = cantidad.toFixed(2);
-                    tdPrecioProducto.innerHTML = producto.precio.toFixed(2);
                     tdTotalProducto.innerHTML = (cantidad*producto.precio).toFixed(2);
 
                     trProducto.appendChild(tdNumeroProducto);
@@ -413,7 +424,6 @@ const listarVentas = async (ventas)=>{
                     trProducto.appendChild(tdIdProducto);
                     trProducto.appendChild(tdDescripcion);
                     trProducto.appendChild(tdCantidad);
-                    trProducto.appendChild(tdPrecioProducto);
                     trProducto.appendChild(tdTotalProducto);
 
                     tbody.appendChild(trProducto);

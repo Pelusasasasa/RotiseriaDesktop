@@ -141,5 +141,5 @@ const listar = async(venta,clienteTraido,lista)=>{
 
     };
 
-    // ipcRenderer.send('imprimir-ventana');
+    ipcRenderer.send('imprimir-ventana');
 };
