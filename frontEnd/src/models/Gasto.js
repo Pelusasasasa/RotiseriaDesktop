@@ -10,9 +10,17 @@ const Gasto = new mongoose.Schema({
         required: [true, 'La Descripcion es obligatoria'],
         set: value => value.toUpperCase()
     },
+    cantidad: {
+        type: Number, 
+        required: [true, 'La cantidad es obligatoria']
+    },
     importe: {
         type: Number,
         required: [true, 'El importe es obligatorio']
+    },
+    total: {
+        type: Number,
+        required: true,
     },
     categoria: {
         type: mongoose.Schema.Types.ObjectId,
@@ -20,5 +28,6 @@ const Gasto = new mongoose.Schema({
         required: [true, 'La categoria de Gasto es Obligatoria']
     }
 });
+
 
 module.exports = mongoose.model('Gasto', Gasto);

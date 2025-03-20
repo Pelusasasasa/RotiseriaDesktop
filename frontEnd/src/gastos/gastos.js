@@ -20,7 +20,9 @@ const cancelar = document.getElementById('cancelar');
 
 const fechaInput = document.getElementById('fecha');
 const descripcion = document.getElementById('descripcion');
+const cantidad = document.getElementById('cantidad');
 const importe = document.getElementById('importe');
+const totalInput = document.getElementById('totalInput');
 const categoria = document.getElementById('categoria');
 
 let gastos = [];
@@ -73,7 +75,9 @@ const listarGastos = (lista) => {
 
         const tdFecha = document.createElement('td');
         const tdDescripcion = document.createElement('td');
+        const tdCantidad = document.createElement('td');
         const tdImporte = document.createElement('td');
+        const tdTotal = document.createElement('td');
         const tdTipo = document.createElement('td');
         const tdAcciones = document.createElement('td');
 
@@ -93,7 +97,9 @@ const listarGastos = (lista) => {
 
         tdFecha.innerText = `${fecha}  ${hora}`
         tdDescripcion.innerText = elem.descripcion;
+        tdCantidad.innerText = elem.cantidad?.toFixed(2);
         tdImporte.innerText = elem.importe?.toFixed(2);
+        tdTotal.innerText = elem.total?.toFixed(2);
         tdTipo.innerText = elem.categoria.nombre;
 
         botonUpdate.classList.add('tool');
@@ -112,13 +118,15 @@ const listarGastos = (lista) => {
 
         tr.appendChild(tdFecha)
         tr.appendChild(tdDescripcion)
+        tr.appendChild(tdCantidad)
         tr.appendChild(tdImporte)
+        tr.appendChild(tdTotal)
         tr.appendChild(tdTipo)
         tr.appendChild(tdAcciones)
 
         tbody.appendChild(tr);
 
-        suma += elem.importe;
+        suma += elem.total;
     };
 
     total.value = suma.toFixed(2);
@@ -165,7 +173,9 @@ const updateGasto = async (e) => {
 
     fechaInput.value = gasto.fecha.slice(0, 10);
     descripcion.value = gasto.descripcion;
+    cantidad.value = gasto.cantidad.toFixed(2);
     importe.value = gasto.importe.toFixed(2);
+    totalInput.value = gasto.total.toFixed(2);
     categoria.value = gasto.categoria._id;
 
     modal.classList.remove('none');
@@ -218,12 +228,13 @@ const guardarGasto = async () => {
 
     gasto.fecha = fechaUTC().toISOString();
     gasto.descripcion = descripcion.value;
+    gasto.cantidad = cantidad.value;
     gasto.importe = importe.value;
+    gasto.total = totalInput.value;
     gasto.categoria = categoria.value;
 
 
     const newGasto = JSON.parse(await ipcRenderer.invoke('post-gasto', gasto));
-
     if (newGasto.errors) {
         const error = newGasto.errors;
         if (newGasto.errors.descripcion) return await Swal.fire('Error al cargar el gasto', `${error.descripcion.message}`, 'error');
@@ -238,7 +249,10 @@ const guardarGasto = async () => {
 
     fechaInput.value = '';
     descripcion.value = '';
+    cantidad.value = '';
     importe.value = '';
+    total.value = '';
+    categoria.value = '';
 
 
 };
@@ -296,7 +310,9 @@ const modificarGasto = async (e) => {
     gasto._id = modificar.id;
     gasto.fecha = fechaUTC().toISOString();
     gasto.descripcion = descripcion.value;
+    gasto.cantidad = cantidad.value;
     gasto.importe = importe.value;
+    gasto.total = totalInput.value;
     gasto.categoria = categoria.value;
 
     const gastoUpdate = JSON.parse(await ipcRenderer.invoke('put-gasto', gasto));
@@ -313,7 +329,9 @@ const modificarGasto = async (e) => {
     modificar.id = '';
     fechaInput.value = '';
     descripcion.value = '';
+    cantidad.value = '';
     importe.value = '';
+    totalInput.value = '';
     categoria.value = '';
 
     listarGastos(gastos);
@@ -353,10 +371,12 @@ cancelar.addEventListener('click', e => {
 
     fecha.value = '';
     descripcion.value = '';
+    cantidad.value = '';
     importe.value = '';
+    totalInput.value = '';
     categoria.value = '',
 
-        modal.classList.add('none');
+    modal.classList.add('none');
 
 });
 
@@ -368,4 +388,36 @@ document.addEventListener('keyup', e => {
             modal.classList.add('none');
         }
     };
+});
+
+fechaInput.addEventListener('keypress', (e) => {
+    if(e.keyCode === 13){
+        descripcion.focus();
+    }
+});
+
+descripcion.addEventListener('keypress', (e) => {
+    if(e.keyCode === 13){
+        cantidad.focus();
+    }
+});
+
+cantidad.addEventListener('keypress', (e) => {
+    if(e.keyCode === 13){
+        importe.focus();
+    }
+});
+
+importe.addEventListener('keypress', e => {
+    if(e.keyCode === 13){
+        totalInput.value = (cantidad.value * importe.value).toFixed(2);
+        categoria.focus();
+    }
+});
+
+categoria.addEventListener('keypress', e => {
+    if(e.keyCode === 13){
+        e.preventDefault();
+        guardar.classList.contains('none') ? modificar.focus() : guardar.focus();
+    }
 });

@@ -129,6 +129,11 @@ const eliminarVenta = async(e) => {
         };
 
         tbody.removeChild(trEliminado);
+
+        console.log(total.value)
+        console.log(trEliminado.children[6].innerText)
+
+        total.value = redondear(parseFloat(total.value) - parseFloat(trEliminado.children[6].innerText), 2);
     }
 }
 
