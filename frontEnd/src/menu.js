@@ -5,7 +5,7 @@ const archivo = require('./configuracion.json');
 
 ipcRenderer.send('poner-cierre');
 
-const {abrirVentana, ponerNumero, cargarVendedor, verificarUsuarios} = require('./helpers');
+const { abrirVentana, ponerNumero, cargarVendedor, verificarUsuarios } = require('./helpers');
 const { default: Swal } = require("sweetalert2");
 
 const ventas = document.querySelector('.ventas');
@@ -20,175 +20,175 @@ const notaCredito = document.querySelector('.notaCredito');
 let verVendedores;
 let contrasenaGasto;
 
-window.addEventListener('load',async e=>{
+window.addEventListener('load', async e => {
     await ipcRenderer.send('cargar-numero-pedido');
-    ipcRenderer.invoke('get-numero-pedido').then((result)=>{
+    ipcRenderer.invoke('get-numero-pedido').then((result) => {
         const pedido = JSON.parse(result)
-        const diaPedido = pedido.fecha.slice(8,10)
+        const diaPedido = pedido.fecha.slice(8, 10)
         const fecha = new Date();
         const hoy = (new Date(fecha.getTime() - fecha.getTimezoneOffset() * 60000).toISOString());
-        const diaHoy = hoy.slice(8,10)
-        if(!(diaPedido === diaHoy)){
+        const diaHoy = hoy.slice(8, 10)
+        if (!(diaPedido === diaHoy)) {
             pedido.numero = 0;
             console.log("a")
             pedido.fecha = hoy;
-            ipcRenderer.send('put-pedido',pedido);
+            ipcRenderer.send('put-pedido', pedido);
         }
     });
 
     contrasenaGasto = JSON.parse(await ipcRenderer.invoke('get-contrasenaGasto'))?.contrasenaGasto;
-    
-    if(!contrasenaGasto){
-        const {isConfirmed, value} = await Swal.fire({
+
+    if (!contrasenaGasto) {
+        const { isConfirmed, value } = await Swal.fire({
             title: 'Poner Contraseña de Gasto por unica vez',
             confirmButtonText: 'Aceptar',
             input: 'text',
             showCancelButton: true,
         });
 
-        if(isConfirmed){
-            contrasenaGasto = JSON.parse(await ipcRenderer.invoke('post-variables-and-contrasenaGasto', {contrasenaGasto: value})).contrasenaGasto;
+        if (isConfirmed) {
+            contrasenaGasto = JSON.parse(await ipcRenderer.invoke('post-variables-and-contrasenaGasto', { contrasenaGasto: value })).contrasenaGasto;
         };
     };
 });
 
 //Al tocar el atajo de teclado, abrimos ventanas
-document.addEventListener('keyup',async e=>{
+document.addEventListener('keyup', async e => {
     if (e.keyCode === 112) {
         ventas.click()
-    }else if(e.keyCode === 113){
+    } else if (e.keyCode === 113) {
         const opciones = {
-            path:"clientes/agregarCliente.html",
-            ancho:1200,
-            altura:500
+            path: "clientes/agregarCliente.html",
+            ancho: 1200,
+            altura: 500
         }
-        ipcRenderer.send('abrir-ventana',opciones);
-    }else if(e.keyCode === 114){
+        ipcRenderer.send('abrir-ventana', opciones);
+    } else if (e.keyCode === 114) {
         const opciones = {
-            path:"productos/agregarProducto.html",
-            ancho:1200,
-            altura:550
+            path: "productos/agregarProducto.html",
+            ancho: 1200,
+            altura: 550
         };
-        ipcRenderer.send('abrir-ventana',opciones);
-    }else if(e.keyCode === 115){
+        ipcRenderer.send('abrir-ventana', opciones);
+    } else if (e.keyCode === 115) {
         const opciones = {
             path: "productos/cambio.html",
             ancho: 1000,
-            altura:550
+            altura: 550
         }
-        ipcRenderer.send('abrir-ventana',opciones)
-    }else if(e.keyCode === 116){
+        ipcRenderer.send('abrir-ventana', opciones)
+    } else if (e.keyCode === 116) {
         const opciones = {
-            path:"gastos/gastos.html",
-            ancho:500,
-            altura:400
+            path: "gastos/gastos.html",
+            ancho: 500,
+            altura: 400
         }
-        ipcRenderer.send('abrir-ventana',opciones);
+        ipcRenderer.send('abrir-ventana', opciones);
     }
 });
 
-ventas.addEventListener('click',async e=>{
+ventas.addEventListener('click', async e => {
     if (verVendedores) {
         const vendedor = await verificarUsuarios();
         console.log(vendedor)
         if (vendedor) {
             location.href = `./venta/index.html?vendedor=${vendedor.nombre}`;
             ipcRenderer.send('sacar-cierre');
-        }else if(vendedor === ""){
+        } else if (vendedor === "") {
             await sweet.fire({
-                title:"Contraseña incorrecta"
+                title: "Contraseña incorrecta"
             })
             ventas.click()
         }
-    }else{
+    } else {
         location.href = "./venta/index.html";
         ipcRenderer.send('sacar-cierre');
     }
 });
 
-clientes.addEventListener('click',async e=>{
+clientes.addEventListener('click', async e => {
     if (verVendedores) {
         const vendedor = await verificarUsuarios();
         if (vendedor) {
             location.href = `./clientes/clientes.html?vendedor=${vendedor.nombre}&permiso=${vendedor.permiso}`;
             ipcRenderer.send('sacar-cierre');
-        }else if(vendedor === ""){
+        } else if (vendedor === "") {
             await sweet.fire({
-                title:"Contraseña incorrecta"
+                title: "Contraseña incorrecta"
             })
             clientes.click()
         }
-    }else{
+    } else {
         location.href = `./clientes/clientes.html`;
         ipcRenderer.send('sacar-cierre');
     }
-    
+
 });
 
-productos.addEventListener('click',async e=>{
+productos.addEventListener('click', async e => {
     if (verVendedores) {
         const vendedor = await verificarUsuarios();
         if (vendedor) {
             location.href = `./productos/productos.html?vendedor=${vendedor.nombre}&permiso=${vendedor.permiso}`;
             ipcRenderer.send('sacar-cierre');
-        }else if(vendedor === ""){
+        } else if (vendedor === "") {
             await sweet.fire({
-                title:"Contraseña incorrecta"
+                title: "Contraseña incorrecta"
             })
             productos.click()
         }
-    }else{
+    } else {
         location.href = `./productos/productos.html`;
         ipcRenderer.send('sacar-cierre');
     }
 });
 
-caja.addEventListener('click',async e=>{
+caja.addEventListener('click', async e => {
     if (verVendedores) {
         const vendedor = await verificarUsuarios();
         if (vendedor) {
             if (vendedor.permiso === 2) {
                 sweet.fire({
-                    title:"No tiene Permisos para ingresar a Caja"
+                    title: "No tiene Permisos para ingresar a Caja"
                 })
-            }else{
-                location.href = `./caja/caja.html?vendedor=${vendedor.nombre}&permiso=${vendedor.permiso}`;    
+            } else {
+                location.href = `./caja/caja.html?vendedor=${vendedor.nombre}&permiso=${vendedor.permiso}`;
             }
-        }else if(vendedor === ""){
+        } else if (vendedor === "") {
             await sweet.fire({
-                title:"Contraseña incorrecta"
+                title: "Contraseña incorrecta"
             })
             caja.click()
         }
-    }else{
+    } else {
         location.href = "./caja/caja.html";
     }
 });
 
 gastos.addEventListener('click', async e => {
-    const {isConfirmed, value } = await Swal.fire({
+    const { isConfirmed, value } = await Swal.fire({
         title: 'Contraseña',
         confirmButtonText: 'Aceptar',
         showCancelButton: true,
-        input: 'text'
+        input: 'password'
     })
-    
-    if({isConfirmed}){
-        if(value !== contrasenaGasto) return await Swal.fire('Contraseña Incorrecta', 'La contraseña de Gasto es incorrecta', 'error');
-        
+
+    if ({ isConfirmed }) {
+        if (value !== contrasenaGasto) return await Swal.fire('Contraseña Incorrecta', 'La contraseña de Gasto es incorrecta', 'error');
+
         location.href = './gastos/gastos.html';
     }
 });
 
 //ponemos un numero para la venta y luego mandamos a imprimirla
-ipcRenderer.on('poner-numero',async (e,args)=>{
+ipcRenderer.on('poner-numero', async (e, args) => {
     ponerNumero();
 });
 
-ipcRenderer.on('libroIva',async (e,args)=>{
+ipcRenderer.on('libroIva', async (e, args) => {
     location.href = "./libroIva/libroIva.html";
 });
 
-ipcRenderer.on('cartas-empanadas',()=>{
+ipcRenderer.on('cartas-empanadas', () => {
     location.href = 'cartas/cartasEmpandas.html'
 });
