@@ -96,3 +96,5 @@ release-builds
 *.ico
 
 src/imgProductos
+
+dist

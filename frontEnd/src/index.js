@@ -1,4 +1,4 @@
-const { dialog, app, BrowserWindow, Menu, ipcRenderer } = require('electron');
+const { dialog, app, BrowserWindow, Menu, ipcRenderer, autoUpdater } = require('electron');
 const { ipcMain } = require('electron/main');
 const path = require('path');
 const { condIva } = require('./configuracion.json')
@@ -467,15 +467,15 @@ ipcMain.handle('get-facturas', async (e, { desde, hasta }) => {
   return JSON.stringify(ventas);
 });
 
-ipcMain.handle('delete-venta', async(e, id) => {
-    try {
-      const ventaDelete = await Venta.findByIdAndDelete(id);
+ipcMain.handle('delete-venta', async (e, id) => {
+  try {
+    const ventaDelete = await Venta.findByIdAndDelete(id);
 
-      return JSON.stringify(ventaDelete);
-    } catch (error) {
-      error.msg = 'Hable con el administrador'
-      return JSON.stringify(error);
-    }
+    return JSON.stringify(ventaDelete);
+  } catch (error) {
+    error.msg = 'Hable con el administrador'
+    return JSON.stringify(error);
+  }
 });
 //Fin Ventas
 
@@ -631,20 +631,41 @@ ipcMain.handle('post-categoriaGasto', async (e, args) => {
 
 //Inicion Variables
 
-ipcMain.handle('get-contrasenaGasto', async(e, args) => {
-  const contrasena = await Variables.findOne().sort({_id: 1});
+ipcMain.handle('get-contrasenaGasto', async (e, args) => {
+  const contrasena = await Variables.findOne().sort({ _id: 1 });
 
   return JSON.stringify(contrasena)
 })
 
-ipcMain.handle('post-variables', async() => {
+ipcMain.handle('post-variables', async () => {
   const variable = new Variables();
   await variable.save();
   return JSON.stringify(variable);
 });
 
-ipcMain.handle('post-variables-and-contrasenaGasto', async(e, args) => {
+ipcMain.handle('post-variables-and-contrasenaGasto', async (e, args) => {
   const variable = new Variables(args);
   await variable.save();
   return JSON.stringify(variable);
 });
+
+
+autoUpdater.on('update-available', () => {
+  console.log("a");
+  ventanaPrincipal.webContents.send('actualizacion-disponible');
+});
+
+autoUpdater.on('update-downloaded', () => {
+  console.log("v");
+  ventanaPrincipal.webContents.send('actualizacion-desccargada');
+});
+
+ipcMain.on('reiniciar-aplicacion', () => {
+  console.log('c');
+  autoUpdater.quitAndInstall();
+});
+
+setInterval(() => {
+  autoUpdater.checkForUpdates()
+  console.log(k);
+}, 60000);
