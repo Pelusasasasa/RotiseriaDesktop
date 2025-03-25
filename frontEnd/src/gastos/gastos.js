@@ -239,6 +239,7 @@ const guardarGasto = async () => {
         const error = newGasto.errors;
         if (newGasto.errors.descripcion) return await Swal.fire('Error al cargar el gasto', `${error.descripcion.message}`, 'error');
         if (newGasto.errors.importe) return await Swal.fire('Error al cargar el gasto', `${error.importe.message}`, 'error');
+        if (newGasto.errors.cantidad) return await Swal.fire('Error al cargar el gasto', `${error.cantidad.message}`, 'error');
     };
 
     buscarPorFechaGastos();
@@ -376,47 +377,47 @@ cancelar.addEventListener('click', e => {
     totalInput.value = '';
     categoria.value = '',
 
-    modal.classList.add('none');
+        modal.classList.add('none');
 
 });
 
 document.addEventListener('keyup', e => {
     if (e.keyCode === 27) {
-        if(modal.classList.contains('none')){
+        if (modal.classList.contains('none')) {
             location.href = '../menu.html';
-        }else{
+        } else {
             modal.classList.add('none');
         }
     };
 });
 
 fechaInput.addEventListener('keypress', (e) => {
-    if(e.keyCode === 13){
+    if (e.keyCode === 13) {
         descripcion.focus();
     }
 });
 
 descripcion.addEventListener('keypress', (e) => {
-    if(e.keyCode === 13){
+    if (e.keyCode === 13) {
         cantidad.focus();
     }
 });
 
 cantidad.addEventListener('keypress', (e) => {
-    if(e.keyCode === 13){
+    if (e.keyCode === 13) {
         importe.focus();
     }
 });
 
 importe.addEventListener('keypress', e => {
-    if(e.keyCode === 13){
+    if (e.keyCode === 13) {
         totalInput.value = (cantidad.value * importe.value).toFixed(2);
         categoria.focus();
     }
 });
 
 categoria.addEventListener('keypress', e => {
-    if(e.keyCode === 13){
+    if (e.keyCode === 13) {
         e.preventDefault();
         guardar.classList.contains('none') ? modificar.focus() : guardar.focus();
     }
