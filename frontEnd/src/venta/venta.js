@@ -321,7 +321,7 @@ facturar.addEventListener('click',async e=>{
         try {
             if (situacion === "blanco") {
                 alerta.classList.remove('none');
-                venta.afip = await cargarFactura(venta,facturaAnterior ? true : false);
+                venta.afip = await cargarFactura(venta, facturaAnterior ? true : false);
                 venta.F = true;
             }else{
                 venta.F = false;

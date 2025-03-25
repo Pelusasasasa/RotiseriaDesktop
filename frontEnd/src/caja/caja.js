@@ -8,7 +8,7 @@ function getParameterByName(name) {
 let vendedor = getParameterByName('vendedor');
 
 const { ipcRenderer } = require("electron");
-const { cerrarVentana, redondear, agregarMovimientoVendedores } = require("../helpers");
+const { cerrarVentana, redondear, agregarMovimientoVendedores, cargarNotaCredito } = require("../helpers");
 const sweet = require('sweetalert2');
 const { default: Swal } = require("sweetalert2");
 
@@ -116,6 +116,14 @@ const eliminarVenta = async(e) => {
     });
 
     if(isConfirmed){
+
+        const venta = JSON.parse(await ipcRenderer.invoke('get-venta-for-id', id));
+        console.log(venta)
+        const nro_comp = venta.afip.puntoVenta.padStart(4, '0') + '-' + venta.afip.numero.toString().padStart(8, '0');
+
+        cargarNotaCredito(venta, nro_comp);
+
+        asd
         const ventaEliminada = JSON.parse(await ipcRenderer.invoke('delete-venta', id));
         ventas = ventas.filter( elem => elem._id !== ventaEliminada._id);
 
@@ -129,9 +137,6 @@ const eliminarVenta = async(e) => {
         };
 
         tbody.removeChild(trEliminado);
-
-        console.log(total.value)
-        console.log(trEliminado.children[6].innerText)
 
         total.value = redondear(parseFloat(total.value) - parseFloat(trEliminado.children[6].innerText), 2);
     }
@@ -368,11 +373,9 @@ const listarVentas = async (ventas)=>{
 
         tdAccion.classList.add('tool');
         buttonAccion.classList.add('material-icons')
-        buttonAccion.innerText = 'delete';
+        buttonAccion.innerText = venta.F ? 'assignment' : 'delete';
 
         tdAccion.appendChild(buttonAccion);
-
-
 
         tdNumero.innerHTML = venta.numero;
         tdFecha.innerHTML = venta.fecha.slice(0,10).split('-',3).reverse().join('/');

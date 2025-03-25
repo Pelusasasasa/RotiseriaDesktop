@@ -65,7 +65,8 @@ funciones.redondear = (numero,decimales)=>{
     return(parseFloat(Math.round((numero * Math.pow(10,decimales)) + (signo * 0.0001)) / Math.pow(10,decimales)).toFixed(decimales));
 }
 
-funciones.cargarFactura = async (venta,notaCredito)=>{
+funciones.cargarFactura = async (venta, notaCredito)=>{
+
     console.log(venta)
     const fecha = new Date(Date.now()-((new Date()).getTimezoneOffset()*60000)).toISOString().split('T')[0];
     const serverStatus = await afip.ElectronicBilling.getServerStatus();
@@ -74,7 +75,6 @@ funciones.cargarFactura = async (venta,notaCredito)=>{
     let ultimaElectronica = await afip.ElectronicBilling.getLastVoucher(puntoVenta,venta.cod_comp);
     console.log(ultimaElectronica);
 
-    console.log(parseFloat(venta.facturaAnterior));
     let aux = venta.condicionIva === "Inscripo" ? 1 : 6
     let ventaAnterior = venta.facturaAnterior && await afip.ElectronicBilling.getVoucherInfo(parseFloat(venta.facturaAnterior),puntoVenta,aux);
     
@@ -98,6 +98,7 @@ funciones.cargarFactura = async (venta,notaCredito)=>{
         'MonCotiz' 	: 1,
         'Iva':[],
     };
+
     notaCredito && (data.CbtesAsoc = [
         {
             "Tipo":ventaAnterior.CbteTipo,
@@ -138,6 +139,101 @@ funciones.cargarFactura = async (venta,notaCredito)=>{
         cuit: archivo.cuit,
         ptoVta: puntoVenta,
         tipoCmp: venta.cod_comp,
+        nroCmp: ultimaElectronica + 1,
+        importe: data.ImpTotal,
+        moneda: "PES",
+        ctz: 1,
+        tipoDocRec: data.DocTipo,
+        nroDocRec: parseInt(data.DocNro),
+        tipoCodAut: "E",
+        codAut: parseFloat(res.CAE)
+    };
+    const textoQR = btoa(JSON.stringify(qr));//codificamos lo que va en el QR
+    const QR = await generarQR(textoQR);
+
+    return {
+        puntoVenta: puntoVenta,
+        QR,
+        numero:ultimaElectronica + 1,
+        cae: res.CAE,
+        vencimiento:res.CAEFchVto
+    }
+};
+
+funciones.cargarNotaCredito = async (notaCredito, nroVenta) => {
+    console.log({notaCredito, nroVenta})
+    asd
+    const serverStatus =  await afip.ElectronicBilling.getServerStatus();
+    console.log(serverStatus);
+
+    let ultimaElectronica = await afip.ElectronicBilling.getLastVoucher(puntoVenta, notaCredito.cod_comp);
+    console.log(ultimaElectronica);
+
+    let aux = venta.condicionIva === "Inscripo" ? 1 : 6
+    let ventaAnterior = nroVenta && await afip.ElectronicBilling.getVoucherInfo(parseFloat(nroVenta),puntoVenta,aux);
+
+    let data = {
+        'cantReg': 1,
+        'CbteTipo': notaCredito.cod_comp,
+        'Concepto':1,
+        'DocTipo':notaCredito.cod_doc,
+        'DocNro':notaCredito.num_doc,
+        'CbteDesde':ultimaElectronica + 1,
+        'CbteHasta':ultimaElectronica + 1,
+        'CbteFch': parseInt(fecha.replace(/-/g, '')),
+        'ImpTotal':notaCredito.precio,
+        'ImpTotConc':0,
+        'ImpNeto': archivo.condIva === "Inscripto" ? parseFloat(redondear(notaCredito.gravado21 + notaCredito.gravado0 + notaCredito.gravado105,2)) : notaCredito.precio,
+        'ImpOpEx': 0,
+        'ImpIVA': archivo.condIva === "Inscripto" ? parseFloat(redondear(notaCredito.iva21 + notaCredito.iva0 + notaCredito.iva105,2)) : 0,
+        'ImpTrib': 0,
+        'MonId': 'PES',
+        'PtoVta': puntoVenta,
+        'MonCotiz' 	: 1,
+        'Iva':[],
+    };
+
+    data.CbtesAsoc = [
+        {
+            "Tipo":ventaAnterior.CbteTipo,
+            "PtoVta":ventaAnterior.PtoVta,
+            "Nro":ventaAnterior.CbteHasta
+        }
+    ];
+
+     if (archivo.condIva === "Inscripto") {
+        notaCredito.iva105 !== 0 && (data.Iva.push({
+            'Id':4,
+            'BaseImp':notaCredito.gravado105,
+            'Importe':notaCredito.iva105
+        }));
+    
+        notaCredito.iva21 !== 0 && (data.Iva.push({
+            'Id':5,
+            'BaseImp':notaCredito.gravado21,
+            'Importe':notaCredito.iva21
+        }));
+
+        notaCredito.gravado0 !== 0 && (data.Iva.push({
+            'Id':3,
+            'BaseImp':notaCredito.gravado0,
+            'Importe':notaCredito.iva0
+        }));
+    
+    }else{
+        delete data.Iva
+    };
+
+    console.log(data)
+    const res = await afip.ElectronicBilling.createVoucher(data); //creamos la factura electronica
+    console.log(res)
+
+    const qr = {
+        ver: 1,
+        fecha: fecha,
+        cuit: archivo.cuit,
+        ptoVta: puntoVenta,
+        tipoCmp: notaCredito.cod_comp,
         nroCmp: ultimaElectronica + 1,
         importe: data.ImpTotal,
         moneda: "PES",

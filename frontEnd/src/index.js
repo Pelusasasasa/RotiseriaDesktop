@@ -423,6 +423,18 @@ ipcMain.handle('get-ventas-for-day', async (e, args) => {
   return JSON.stringify(ventas)
 });
 
+ipcMain.handle('get-venta-for-id', async (e, id) => {
+  try {
+    const venta = await Venta.findOne({_id: id});
+
+    return JSON.stringify(venta);
+  } catch (error) {
+    console.log(error)
+    return JSON.stringify(error);
+    
+  }
+})
+
 ipcMain.handle('get-ventas-for-month', async (e, args) => {
   const anio = (new Date()).getFullYear();
   let mes = (parseFloat(args) + 1) < 10 ? `0${parseFloat(args) + 1}` : parseFloat(args) + 1;
@@ -665,7 +677,7 @@ ipcMain.on('reiniciar-aplicacion', () => {
   autoUpdater.quitAndInstall();
 });
 
-setInterval(() => {
-  autoUpdater.checkForUpdates()
-  console.log(k);
-}, 60000);
+// setInterval(() => {
+//   autoUpdater.checkForUpdates()
+//   console.log(k);
+// }, 60000);
