@@ -405,7 +405,7 @@ ipcMain.handle('post-venta', async (e, args) => {
   venta.fecha = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString();
   await venta.save();
 
-  return venta;
+  return JSON.stringify(venta);
 });
 
 ipcMain.handle('get-ventas', async () => {

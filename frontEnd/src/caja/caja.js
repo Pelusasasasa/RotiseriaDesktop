@@ -126,17 +126,30 @@ const eliminarVenta = async (e) => {
 
             const infoParaNotaCredito = { cod_doc, num_doc, precio, gravado21, gravado0, gravado105, iva21, iva0, iva105, numero };
 
-            const res = await cargarNotaCredito(infoParaNotaCredito, numero);
+            let res;
 
-            let numeros = JSON.parse(await ipcRenderer.invoke('gets-numeros'));
+            try {
+                res = await cargarNotaCredito(infoParaNotaCredito, numero);
+            } catch (error) {
+                console.log(error);
+                console.log('Error al cargar la nota de credito');
+                Swal.fire('Error al cargar la nota de credito', 'No se pudo cargar la nota de credito', 'error');
+            }
 
-            if (tipo_venta === 'CD') {
-                venta.numero = numeros.Contado + 1;
-                await ipcRenderer.send('put-numeros', ['Contado', venta.numero]);
-            } else if (tipo_venta === 'CC') {
-                venta.numero = numeros['Cuenta Corriente'] + 1;
-                await ipcRenderer.send('put-numeros', ['Cuenta Corriente', venta.numero]);
-            };
+            try {
+                let numeros = JSON.parse(await ipcRenderer.invoke('gets-numeros'));
+
+                if (tipo_venta === 'CD') {
+                    venta.numero = numeros.Contado + 1;
+                    await ipcRenderer.send('put-numeros', ['Contado', venta.numero]);
+                } else if (tipo_venta === 'CC') {
+                    venta.numero = numeros['Cuenta Corriente'] + 1;
+                    await ipcRenderer.send('put-numeros', ['Cuenta Corriente', venta.numero]);
+                };
+            } catch (error) {
+                console.log(error);
+                console.log('Error al traer el numero y modificarlo');
+            }
 
             venta.cod_comp = 13;
             venta.tipo_comp = 'Nota Credito C';
@@ -147,8 +160,21 @@ const eliminarVenta = async (e) => {
             venta.afip.vencimiento = res.vencimiento;
 
             delete venta._id;
-            ipcRenderer.invoke('post-venta', JSON.stringify(venta));
-            console.log(res);
+
+            //Modificamos la lista de prodcutos para hacer que el movimiento se ponga en negativo
+            venta.listaProductos.map(elem => {
+                elem.cantidad = elem.cantidad * -1;
+            });
+
+            try {
+                const nuevaVenta = JSON.parse(await ipcRenderer.invoke('post-venta', JSON.stringify(venta)));
+                ventas.push(nuevaVenta);
+                //Cargamos la venta y luego la listams, que ya seria la nota de credito
+                listarVentas(ventas)
+            } catch (error) {
+                console.log(error);
+                console.log('No se pudo cargar la venta o listarla');
+            }
 
         } else {
 
@@ -169,7 +195,7 @@ const eliminarVenta = async (e) => {
             total.value = redondear(parseFloat(total.value) - parseFloat(trEliminado.children[6].innerText), 2);
         }
     }
-}
+};
 
 const verQueTraer = async () => {
     if (botonSeleccionado.classList.contains("botonDia")) {
@@ -402,7 +428,11 @@ const listarVentas = async (ventas) => {
 
         tdAccion.classList.add('tool');
         buttonAccion.classList.add('material-icons')
-        buttonAccion.innerText = venta.F ? 'assignment' : 'delete';
+        if (venta.F) {
+            buttonAccion.innerText = venta.tipo_comp === 'Factura C' ? 'assignment' : '';
+        } else {
+            buttonAccion.innerText = 'delete';
+        }
 
         tdAccion.appendChild(buttonAccion);
 
@@ -427,7 +457,7 @@ const listarVentas = async (ventas) => {
         tr.appendChild(tdVendedor);
         tr.appendChild(tdCaja);
         tr.appendChild(tdHora);
-        tr.appendChild(tdAccion);
+        venta.tipo_comp !== 'Nota Credito C' && tr.appendChild(tdAccion);
 
         tbody.appendChild(tr);
 
