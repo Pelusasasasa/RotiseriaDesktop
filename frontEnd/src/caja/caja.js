@@ -106,11 +106,11 @@ window.addEventListener('load', async e => {
 });
 
 const eliminarVenta = async (e) => {
-
-    const id = e.target.parentNode.parentNode.id;
+    const target = e.target.parentNode.parentNode;
+    const id = target.id;
 
     const { isConfirmed } = await Swal.fire({
-        title: '¿Seguro queres Eliminar La venta?',
+        title: target.children[3].innerText === 'Factura C' ? '¿Hacer una Nota de Credito?' : '¿Seguro queres Eliminar La venta?',
         confirmButtonText: 'Aceptar',
         showCancelButton: true
     });
