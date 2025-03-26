@@ -117,28 +117,57 @@ const eliminarVenta = async (e) => {
 
     if (isConfirmed) {
 
-        const { cod_doc, num_doc, precio, gravado21, gravado0, gravado105, iva21, iva0, iva105, afip } = JSON.parse(await ipcRenderer.invoke('get-venta-for-id', id));
-        const numero = afip.numero.toString().padStart(8, '0');
+        const venta = JSON.parse(await ipcRenderer.invoke('get-venta-for-id', id));
+        const { cod_doc, tipo_venta, tipo_comp, num_doc, precio, gravado21, gravado0, gravado105, iva21, iva0, iva105, afip } = venta;
 
-        const infoParaNotaCredito = { cod_doc, num_doc, precio, gravado21, gravado0, gravado105, iva21, iva0, iva105, numero };
+        if (tipo_comp === 'Factura C') {
 
-        await cargarNotaCredito(infoParaNotaCredito, numero);
+            const numero = afip.numero.toString().padStart(8, '0');
 
-        const ventaEliminada = JSON.parse(await ipcRenderer.invoke('delete-venta', id));
-        ventas = ventas.filter(elem => elem._id !== ventaEliminada._id);
+            const infoParaNotaCredito = { cod_doc, num_doc, precio, gravado21, gravado0, gravado105, iva21, iva0, iva105, numero };
 
-        const trEliminado = document.getElementById(`${ventaEliminada._id}`);
+            const res = await cargarNotaCredito(infoParaNotaCredito, numero);
 
-        //Son los tr que muestran los productos de una venta
-        const alltrMovEliminados = document.querySelectorAll(`.venta${ventaEliminada._id}`);
+            let numeros = JSON.parse(await ipcRenderer.invoke('gets-numeros'));
 
-        for (let elem of alltrMovEliminados) {
-            tbody.removeChild(elem);
-        };
+            if (tipo_venta === 'CD') {
+                venta.numero = numeros.Contado + 1;
+                await ipcRenderer.send('put-numeros', ['Contado', venta.numero]);
+            } else if (tipo_venta === 'CC') {
+                venta.numero = numeros['Cuenta Corriente'] + 1;
+                await ipcRenderer.send('put-numeros', ['Cuenta Corriente', venta.numero]);
+            };
 
-        tbody.removeChild(trEliminado);
+            venta.cod_comp = 13;
+            venta.tipo_comp = 'Nota Credito C';
+            venta.afip.numero = res.numero;
+            venta.afip.puntoVenta = res.puntoVenta;
+            venta.afip.QR = res.QR;
+            venta.afip.cae = res.cae;
+            venta.afip.vencimiento = res.vencimiento;
 
-        total.value = redondear(parseFloat(total.value) - parseFloat(trEliminado.children[6].innerText), 2);
+            delete venta._id;
+            ipcRenderer.invoke('post-venta', JSON.stringify(venta));
+            console.log(res);
+
+        } else {
+
+            const ventaEliminada = JSON.parse(await ipcRenderer.invoke('delete-venta', id));
+            ventas = ventas.filter(elem => elem._id !== ventaEliminada._id);
+
+            const trEliminado = document.getElementById(`${ventaEliminada._id}`);
+
+            //Son los tr que muestran los productos de una venta
+            const alltrMovEliminados = document.querySelectorAll(`.venta${ventaEliminada._id}`);
+
+            for (let elem of alltrMovEliminados) {
+                tbody.removeChild(elem);
+            };
+
+            tbody.removeChild(trEliminado);
+
+            total.value = redondear(parseFloat(total.value) - parseFloat(trEliminado.children[6].innerText), 2);
+        }
     }
 }
 

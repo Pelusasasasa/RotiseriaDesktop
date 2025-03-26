@@ -399,11 +399,13 @@ ipcMain.on('put-numeros', async (e, args) => {
 //Fin Numeros
 
 //Inicio Ventas
-ipcMain.on('post-venta', async (e, args) => {
+ipcMain.handle('post-venta', async (e, args) => {
   const now = new Date();
-  const venta = new Venta(args);
+  const venta = new Venta(JSON.parse(args));
   venta.fecha = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString();
   await venta.save();
+
+  return venta;
 });
 
 ipcMain.handle('get-ventas', async () => {
@@ -425,13 +427,13 @@ ipcMain.handle('get-ventas-for-day', async (e, args) => {
 
 ipcMain.handle('get-venta-for-id', async (e, id) => {
   try {
-    const venta = await Venta.findOne({_id: id});
+    const venta = await Venta.findOne({ _id: id });
 
     return JSON.stringify(venta);
   } catch (error) {
     console.log(error)
     return JSON.stringify(error);
-    
+
   }
 })
 
