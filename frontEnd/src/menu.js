@@ -192,3 +192,14 @@ ipcRenderer.on('libroIva', async (e, args) => {
 ipcRenderer.on('cartas-empanadas', () => {
     location.href = 'cartas/cartasEmpandas.html'
 });
+
+ipcRenderer.on('actualizacion-disponible', () => {
+    alert('¡Hay una nueva actualización disponible!');
+});
+
+ipcRenderer.on('actualizacion-descargada', () => {
+    const reiniciar = confirm('La actualización se ha descargado. ¿Reiniciar ahora?');
+    if (reiniciar) {
+        ipcRenderer.send('reiniciar-aplicacion');
+    }
+});

@@ -5,12 +5,19 @@
   "description": "My Electron application description",
   "main": "src/index.js",
   "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\"",
+    "start": "electron .",
+    "build": "electron-builder build --publish always",
     "empacar": "electron-packager . --platform=win32 --arch=x64"
+  },
+  "build": {
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "publish": {
+    "provider": "Pelusasasasa",
+    "repo": "Electro_Avenida",
+    "token": "$GH_TOKEN"
   },
   "keywords": [],
   "author": {
@@ -18,33 +25,7 @@
     "email": "agustinlorenzatto@hotmail.com"
   },
   "license": "MIT",
-  "config": {
-    "forge": {
-      "packagerConfig": {},
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "Gestion"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ]
-    }
-  },
+  "config": {},
   "dependencies": {
     "@afipsdk/afip.js": "^0.7.3",
     "autoprefixer": "^10.4.21",
@@ -53,10 +34,10 @@
     "dotenv": "^16.0.1",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-updater": "^6.3.9",
     "internet-available": "^1.0.0",
     "material-icons": "^1.12.2",
     "mongoose": "^7.0.3",
-    "node-abi": "^3.40.0",
     "postcss": "^8.5.3",
     "qrcode": "^1.5.1",
     "sharp": "^0.32.1",
@@ -66,11 +47,7 @@
     "zod": "3.24.2"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.63",
-    "@electron-forge/maker-deb": "^6.0.0-beta.63",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.63",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
-    "@electron-forge/maker-zip": "^6.0.0-beta.63",
-    "electron": "^19.1.9"
+    "electron": "^19.1.9",
+    "electron-builder": "^25.1.8"
   }
 }
