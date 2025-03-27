@@ -26,6 +26,11 @@ const Gasto = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'CategoriaGasto',
         required: [true, 'La categoria de Gasto es Obligatoria']
+    },
+    tipo: {
+        type: String,
+        required: [true, 'El tipo de Gasto es obligatorio'],
+        enum: ['Gasto', 'Egreso']
     }
 });
 
