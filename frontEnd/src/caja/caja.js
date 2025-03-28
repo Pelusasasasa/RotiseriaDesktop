@@ -158,6 +158,7 @@ const eliminarVenta = async (e) => {
             venta.afip.QR = res.QR;
             venta.afip.cae = res.cae;
             venta.afip.vencimiento = res.vencimiento;
+            venta.notaCredito = true;
 
             delete venta._id;
 
@@ -457,7 +458,8 @@ const listarVentas = async (ventas) => {
         tr.appendChild(tdVendedor);
         tr.appendChild(tdCaja);
         tr.appendChild(tdHora);
-        venta.tipo_comp !== 'Nota Credito C' && tr.appendChild(tdAccion);
+        console.log(venta.notaCredito);
+        (venta.tipo_comp !== 'Nota Credito C' && !venta.notaCredito) && tr.appendChild(tdAccion);
 
         tbody.appendChild(tr);
 
