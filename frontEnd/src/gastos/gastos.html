@@ -14,6 +14,10 @@
 <body>
     <section>
         <header>
+            <div class="w-full flex cursor-pointer justify-around m-0 bg-gray text-white ">
+                <p id="gasto" class="seleccionado text-black m-0 border w-full p-0-5 text-center">Gastos</p>
+                <p id="egreso" class="m-0 w-full border p-0-5 text-center">Egresos Particulares</p>
+            </div>
             <div class="flex justify-around align-center">
                 <h1>Control de Gastos</h1>
 
@@ -75,7 +79,7 @@
             <div class="flex flex-col gap-2">
                 <div>
                     <label htmlFor="">Fecha</label>
-                    <input type="date" id="fecha" />
+                    <input type="date" id="fecha" autofocus />
                 </div>
                 <div>
                     <label htmlFor="">Descripcion</label>
@@ -95,9 +99,16 @@
                     <label htmlFor="totalInput">Total</label>
                     <input type="number" disabled id="totalInput" />
                 </div>
+                <div class="flex flex-col">
+                    <label htmlFor="tipo">Tipo</label>
+                    <select name="tipo" id="tipo">
+                        <option value="Gasto">Gasto</option>
+                        <option value="Egreso">Egreso Particular</option>
+                    </select>
+                </div>
                 <div>
                     <label htmlFor="">Categoria</label>
-                    <div class="flex gap-2 justify-around align-start">
+                    <div class="flex gap-2 justify-between align-start">
                         <select name="categoria" id="categoria">
                             <option value="">---Seleccionar Una Opcion---</option>
                         </select>

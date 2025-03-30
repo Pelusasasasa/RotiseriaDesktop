@@ -4,6 +4,9 @@ const { default: Swal } = require("sweetalert2");
 
 const tbody = document.querySelector('tbody');
 
+const gasto = document.getElementById('gasto');
+const egreso = document.getElementById('egreso');
+
 const desde = document.getElementById('desde');
 const hasta = document.getElementById('hasta');
 
@@ -23,10 +26,43 @@ const descripcion = document.getElementById('descripcion');
 const cantidad = document.getElementById('cantidad');
 const importe = document.getElementById('importe');
 const totalInput = document.getElementById('totalInput');
+const tipo = document.getElementById('tipo');
 const categoria = document.getElementById('categoria');
 
 let gastos = [];
+let tipoSeleccionado = 'Gasto';
 let categoriaGastos = [];
+
+
+const clickEgreso = (e) => {
+
+    if(!e.target.classList.contains('seleccionado')){
+        gasto.classList.remove('seleccionado');
+        gasto.classList.remove('text-black');
+
+        tipoSeleccionado = 'Egreso';
+
+        e.target.classList.add('seleccionado');
+        e.target.classList.add('text-black');
+    }
+
+    listarGastos(gastos);
+};
+
+const clickGasto = (e) => {
+ if(!e.target.classList.contains('seleccionado')){
+        egreso.classList.remove('seleccionado');
+        egreso.classList.remove('text-black');
+
+        tipoSeleccionado = 'Gasto';
+
+        e.target.classList.add('seleccionado');
+        e.target.classList.add('text-black');
+
+    }
+
+    listarGastos(gastos);
+};
 
 const fechaUTC = () => {
     const fecha = new Date(`${fechaInput.value}T00:00:00.000Z`);
@@ -69,7 +105,9 @@ const listarGastos = (lista) => {
         return 0;
     });
 
-    for (let elem of lista) {
+    const listaAux = lista.filter(elem => elem.tipo === tipoSeleccionado)
+
+    for (let elem of listaAux) {
         const tr = document.createElement('tr');
         tr.id = elem._id;
 
@@ -232,6 +270,7 @@ const guardarGasto = async () => {
     gasto.importe = importe.value;
     gasto.total = totalInput.value;
     gasto.categoria = categoria.value;
+    gasto.tipo = tipo.value;
 
 
     const newGasto = JSON.parse(await ipcRenderer.invoke('post-gasto', gasto));
@@ -381,6 +420,9 @@ cancelar.addEventListener('click', e => {
 
 });
 
+gasto.addEventListener('click', clickGasto);
+egreso.addEventListener('click', clickEgreso);
+
 document.addEventListener('keyup', e => {
     if (e.keyCode === 27) {
         if (modal.classList.contains('none')) {
@@ -412,6 +454,13 @@ cantidad.addEventListener('keypress', (e) => {
 importe.addEventListener('keypress', e => {
     if (e.keyCode === 13) {
         totalInput.value = (cantidad.value * importe.value).toFixed(2);
+        tipo.focus();
+    }
+});
+
+tipo.addEventListener('keypress', e => {
+    if (e.keyCode === 13) {
+        e.preventDefault();
         categoria.focus();
     }
 });
