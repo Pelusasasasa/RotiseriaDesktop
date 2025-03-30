@@ -36,7 +36,7 @@ let categoriaGastos = [];
 
 const clickEgreso = (e) => {
 
-    if(!e.target.classList.contains('seleccionado')){
+    if (!e.target.classList.contains('seleccionado')) {
         gasto.classList.remove('seleccionado');
         gasto.classList.remove('text-black');
 
@@ -50,7 +50,7 @@ const clickEgreso = (e) => {
 };
 
 const clickGasto = (e) => {
- if(!e.target.classList.contains('seleccionado')){
+    if (!e.target.classList.contains('seleccionado')) {
         egreso.classList.remove('seleccionado');
         egreso.classList.remove('text-black');
 
@@ -111,6 +111,7 @@ const listarGastos = (lista) => {
         const tr = document.createElement('tr');
         tr.id = elem._id;
 
+        const tdT = document.createElement('td');
         const tdFecha = document.createElement('td');
         const tdDescripcion = document.createElement('td');
         const tdCantidad = document.createElement('td');
@@ -133,7 +134,8 @@ const listarGastos = (lista) => {
         const fecha = elem.fecha.slice(0, 10).split('-', 3).reverse().join('/');
         const hora = elem.fecha.slice(11, 19);
 
-        tdFecha.innerText = `${fecha}  ${hora}`
+        tdT.innerText = elem.tipo[0];
+        tdFecha.innerText = `${fecha}  ${hora}`;
         tdDescripcion.innerText = elem.descripcion;
         tdCantidad.innerText = elem.cantidad?.toFixed(2);
         tdImporte.innerText = elem.importe?.toFixed(2);
@@ -154,6 +156,7 @@ const listarGastos = (lista) => {
 
         tdAcciones.appendChild(divAcciones);
 
+        tr.appendChild(tdT)
         tr.appendChild(tdFecha)
         tr.appendChild(tdDescripcion)
         tr.appendChild(tdCantidad)
@@ -271,6 +274,8 @@ const guardarGasto = async () => {
     gasto.total = totalInput.value;
     gasto.categoria = categoria.value;
     gasto.tipo = tipo.value;
+
+    console.log(gasto);
 
 
     const newGasto = JSON.parse(await ipcRenderer.invoke('post-gasto', gasto));

@@ -11,7 +11,7 @@ const Gasto = new mongoose.Schema({
         set: value => value.toUpperCase()
     },
     cantidad: {
-        type: Number, 
+        type: Number,
         required: [true, 'La cantidad es obligatoria']
     },
     importe: {

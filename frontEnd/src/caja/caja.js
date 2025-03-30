@@ -160,6 +160,12 @@ const eliminarVenta = async (e) => {
             venta.afip.vencimiento = res.vencimiento;
             venta.notaCredito = true;
 
+            const aux = JSON.parse(await ipcRenderer.invoke('notaCreditoTrue', venta._id));
+
+            ventaAux = ventas.find(elem => (elem._id === aux._id));
+
+            ventaAux.notaCredito = true;
+
             delete venta._id;
 
             //Modificamos la lista de prodcutos para hacer que el movimiento se ponga en negativo
@@ -458,7 +464,6 @@ const listarVentas = async (ventas) => {
         tr.appendChild(tdVendedor);
         tr.appendChild(tdCaja);
         tr.appendChild(tdHora);
-        console.log(venta.notaCredito);
         (venta.tipo_comp !== 'Nota Credito C' && !venta.notaCredito) && tr.appendChild(tdAccion);
 
         tbody.appendChild(tr);
