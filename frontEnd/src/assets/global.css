@@ -65,6 +65,14 @@ input:disabled {
   color: black;
 }
 
+.text-white{
+  color: white;
+}
+
+.text-black{
+  color: black;
+}
+
 .text-center {
   text-align: center;
 }
@@ -112,6 +120,10 @@ select {
   background-color: white;
 }
 
+.bg-gray {
+  background-color: rgb(114, 114, 114);
+}
+
 /* border */
 
 .border {
@@ -146,6 +158,10 @@ select {
   flex-direction: column;
 }
 
+.justify-between {
+  justify-content: space-between;
+}
+
 .justify-around {
   justify-content: space-around;
 }
@@ -176,6 +192,10 @@ select {
 
 /* margin */
 
+.m-0 {
+  margin: 0rem;
+}
+
 .m-2 {
   margin: 2rem;
 }
@@ -195,6 +215,16 @@ select {
 .mb-2 {
   margin-bottom: 2rem;
 }
+
+/* padding */
+.p-0{
+  padding: 0;
+}
+
+.p-0-5{
+  padding: 0.5rem;
+}
+
 
 .gap-2 {
   gap: 2rem;

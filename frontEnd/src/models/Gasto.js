@@ -11,7 +11,7 @@ const Gasto = new mongoose.Schema({
         set: value => value.toUpperCase()
     },
     cantidad: {
-        type: Number, 
+        type: Number,
         required: [true, 'La cantidad es obligatoria']
     },
     importe: {
@@ -26,6 +26,11 @@ const Gasto = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'CategoriaGasto',
         required: [true, 'La categoria de Gasto es Obligatoria']
+    },
+    tipo: {
+        type: String,
+        required: [true, 'El tipo de Gasto es obligatorio'],
+        enum: ['Gasto', 'Egreso']
     }
 });
 

@@ -408,6 +408,17 @@ ipcMain.handle('post-venta', async (e, args) => {
   return JSON.stringify(venta);
 });
 
+//Lo que hace esta funcion es pasar la Factura como que ya se le hizo una nota de credito algunas vez
+ipcMain.handle('notaCreditoTrue', async (e, id) => {
+  const venta = await Venta.findOneAndUpdate({ _id: id }, {
+    $set: {
+      notaCredito: true
+    }
+  });
+
+  return JSON.stringify(venta)
+})
+
 ipcMain.handle('get-ventas', async () => {
   const ventas = await Venta.find();
   return JSON.stringify(ventas)

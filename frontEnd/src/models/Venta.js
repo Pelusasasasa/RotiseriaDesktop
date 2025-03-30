@@ -102,8 +102,11 @@ const Venta = new mongoose.Schema({
     cantIva:{
         type:Number,
         default:0
-    }
-
+    },
+    notaCredito: {
+        type: Boolean,
+        default: false
+    },
 });
 
 module.exports = mongoose.model('Venta',Venta);

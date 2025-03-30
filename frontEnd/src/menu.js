@@ -173,7 +173,7 @@ gastos.addEventListener('click', async e => {
         input: 'password'
     })
 
-    if ({ isConfirmed }) {
+    if ( isConfirmed ) {
         if (value !== contrasenaGasto) return await Swal.fire('Contraseña Incorrecta', 'La contraseña de Gasto es incorrecta', 'error');
 
         location.href = './gastos/gastos.html';
