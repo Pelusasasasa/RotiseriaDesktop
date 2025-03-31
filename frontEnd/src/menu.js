@@ -170,7 +170,7 @@ gastos.addEventListener('click', async e => {
         title: 'Contraseña',
         confirmButtonText: 'Aceptar',
         showCancelButton: true,
-        input: 'text'
+        input: 'password'
     })
 
     if ( isConfirmed ) {
