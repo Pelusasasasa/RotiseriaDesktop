@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import CategoriaCard from "../../components/CategoriaCard";
+import ProductoCard from "../../components/ProductCard";
 
 let categorias = [
     {
@@ -8,6 +9,35 @@ let categorias = [
     },
     {
         title: 'Carnes'
+    },
+    {
+        title: 'Empanadas'
+    },
+    {
+        title: 'Bebidas'
+    },
+    {
+        title: 'Guarniciones'
+    },
+    {
+        title: 'Postres'
+    },
+];
+
+import PlaceholderImage from '@/assets/images/adaptive-icon.png';
+
+let productos = [
+    {
+        _id: "2",
+        descripcion: 'Pizza',
+        precio: 12000,
+        image: PlaceholderImage
+    },
+    {   
+        _id: "1",
+        descripcion: 'Papas Fritas',
+        precio: 5600,
+        image: PlaceholderImage
     }
 ]
 
@@ -24,6 +54,14 @@ export default function Home(){
                 {
                     categorias.map(elem => (
                         <CategoriaCard title={elem.title} key={elem.title} catSelect={catSelect} setCatSelect={setCatSelect}/>
+                    ))
+                }
+            </View>
+
+            <View style={styles.productoContainer}>
+                {
+                    productos.map(elem => (
+                        <ProductoCard {...elem} key={elem._id}/>
                     ))
                 }
             </View>
@@ -54,5 +92,8 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         borderRadius: 8,
         padding: 10
+    },
+    productoContainer: {
+        width: "100%"
     }
 })
