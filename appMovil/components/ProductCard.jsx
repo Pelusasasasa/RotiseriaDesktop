@@ -1,9 +1,17 @@
 import {  StyleSheet, Text, View } from "react-native";
 import { Image } from 'expo-image';
 import Button from "./Button";
+import { useDispatch } from "react-redux";
+import { agregarItem } from "../store/cart/cartSlice";
 
 
-export default function ProductoCard({descripcion, image, precio, seccion='Empanadas'}){
+export default function ProductoCard({_id, descripcion, image, precio, seccion='Empanadas'}){
+    const dispatch = useDispatch();
+
+    const press = () => {
+        dispatch(agregarItem(_id))    
+    };
+
     return(
         <View style={styles.container}>
             <Image source={image} style={styles.image}/>
@@ -12,7 +20,7 @@ export default function ProductoCard({descripcion, image, precio, seccion='Empan
                 <Text style={styles.info_seccion}>{seccion}</Text>
                 <Text style={styles.info_precio}>{precio.toFixed(2)}</Text>
             </View>
-            <Button style={styles.button} label={"+"}/>
+            <Button style={styles.button} label={"+"} press={press}/>
         </View>
     )
 };

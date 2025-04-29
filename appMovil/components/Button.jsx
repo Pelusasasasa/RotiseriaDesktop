@@ -1,9 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-export default function Button({label}){
+export default function Button({label, press}){
     return(
         <View style={styles.buttonContainer}>
-            <Pressable style={styles.button}>
+            <Pressable style={styles.button} onPress={press}>
                 <Text style={styles.buttonLabel}>{label}</Text>
             </Pressable>
         </View>
