@@ -42,9 +42,8 @@ export default function Carrito(){
                 <Text style={styles.total}>${total}</Text>
             </View>
             <Button label={"Confirmar Pedido"} estilos={styles}/>
-            {
-               modal && <ModalCarrito/>
-            }
+            <ModalCarrito activado={modal}/>
+    
         </View>
     )
 }

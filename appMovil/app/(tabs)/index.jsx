@@ -32,6 +32,7 @@ let categorias = [
 
 import PlaceholderImage from '@/assets/images/adaptive-icon.png';
 import { useSelector } from "react-redux";
+import { useProductStore } from "../../hooks/UseProductStore";
 
 let productos = [
     {
@@ -88,9 +89,14 @@ let productos = [
 export default function Home(){
 
     const {activeSeccion } = useSelector(state => state.section);
+    const {startGetProductos} = useProductStore();
 
     const [text, setText] = useState('');
     const [filterProducts, setFilterProducts] = useState(productos);
+
+    useEffect(() => {
+        startGetProductos()
+    }, []);
 
     useEffect(() => {
         if(text.length > 0){

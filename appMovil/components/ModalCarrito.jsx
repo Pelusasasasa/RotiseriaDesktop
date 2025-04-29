@@ -10,7 +10,7 @@ const initialState = {
     telefono: ''
 };
 
-export default function ModalCarrito(){
+export default function ModalCarrito({activado}){
 
     const { total, items } = useCartStore();
     const {nombre, domicilio, telefono, onInputChange, formState} = useForm(initialState)
@@ -22,7 +22,7 @@ export default function ModalCarrito(){
     };
 
     return (
-        <Modal transparent={true}>
+        <Modal transparent={true} visible={activado}>
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
                     <View style={styles.inputsContainer}>
