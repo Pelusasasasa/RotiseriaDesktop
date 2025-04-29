@@ -128,7 +128,7 @@ export default function Home(){
             <FlatList
                 style={styles.productoContainer}
                 data={filterProducts}
-                keyExtractor={(item) => item.title}
+                keyExtractor={(item) => item._id}
                 renderItem={({item}) => (
                     <ProductoCard {...item} key={item._id} />
                 )}

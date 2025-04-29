@@ -1,10 +1,14 @@
 import { StyleSheet, FlatList, Text, View } from "react-native";
 import { useCartStore } from "../../hooks";
+import { useState } from "react";
+
 import ItemCard from "../../components/ItemCard";
 import Button from "../../components/Button";
+import ModalCarrito from "../../components/ModalCarrito";
 
 export default function Carrito(){
     const { items, total } = useCartStore();
+    const [modal, setModal] = useState('false');
     
     return(
         <View style={styles.container}>
@@ -38,6 +42,9 @@ export default function Carrito(){
                 <Text style={styles.total}>${total}</Text>
             </View>
             <Button label={"Confirmar Pedido"} estilos={styles}/>
+            {
+               modal && <ModalCarrito/>
+            }
         </View>
     )
 }
