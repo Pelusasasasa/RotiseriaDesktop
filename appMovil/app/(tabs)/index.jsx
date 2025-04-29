@@ -58,6 +58,14 @@ export default function Home(){
     const [filterProducts, setFilterProducts] = useState(productos);
 
     useEffect(() => {
+        if(text.length > 0){
+            setFilterProducts(productos.filter(elem => elem.descripcion.toLowerCase().includes(text.toLowerCase())));
+        }else{
+            setFilterProducts(productos);
+        }
+    }, [text])
+
+    useEffect(() => {
             if(activeSeccion.title !== 'Todos'){
                 setFilterProducts(productos.filter(elem => elem.seccion === activeSeccion.title));
             }else{
@@ -69,7 +77,7 @@ export default function Home(){
     return(
         <View style={styles.container}>
             <Text style={styles.title}>Rotiseria - Nuevo Pedido</Text>
-            <TextInput style={styles.input} placeholder="Buscar Producto" value={text} onChangeText={setText}/>
+            <TextInput style={styles.input}  placeholder="Buscar Producto" value={text} onChangeText={setText}/>
             <FlatList 
                 horizontal
                 style={styles.list}

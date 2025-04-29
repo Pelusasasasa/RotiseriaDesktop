@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         gap: 5,
         margin: 10,
-        width: '100%',
+        width: '100vh',
         backgroundColor: '#fff'
     },
     image: {

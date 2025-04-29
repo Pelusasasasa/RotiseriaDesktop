@@ -35,10 +35,19 @@ export const cartSlice = createSlice({
             //calcular el total
             state.total = state.items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
             console.log(state.items);
+        },
+        quitarItem: (state, {payload}) => {
+            const itemExistente = state.items.find(elem => elem._id === payload);
+
+            if(itemExistente){
+                state.items = state.items.filter(elem => elem._id !== payload);
+            };
+
+            state.total = state.items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
         }
     }
 });
 
 
 // Action creators are generated for each case reducer function
-export const { agregarItem } = cartSlice.actions;
+export const { agregarItem, quitarItem } = cartSlice.actions;

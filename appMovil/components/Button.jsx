@@ -1,9 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-export default function Button({label, press}){
+export default function Button({label, press, estilos}){
     return(
         <View style={styles.buttonContainer}>
-            <Pressable style={styles.button} onPress={press}>
+            <Pressable style={estilos ? estilos.button : styles.button} onPress={press}>
                 <Text style={styles.buttonLabel}>{label}</Text>
             </Pressable>
         </View>
@@ -18,7 +18,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: 20,
         marginLeft: 'auto',
         padding: 3,
         
