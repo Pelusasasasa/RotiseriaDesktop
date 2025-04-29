@@ -3,10 +3,11 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import Button from "./Button";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
-import { quitarItem } from "../store/cart/cartSlice";
+import { quitarItem, restarCantItem, sumarCantItem } from "../store/cart/cartSlice";
 
 export default function ItemCard({_id, image, descripcion, precio, cantidad}){
     const dispatch = useDispatch();
+
     const handelDeleteItem = () => {
         dispatch(quitarItem(_id));
     };
@@ -14,14 +15,14 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
     return(
         <View style={styles.container}>
             <Image source={image} style={styles.image}/>
-            <View>
+            <View style={styles.info}>
                 <Text style={styles.descripcion}>{descripcion}</Text>
                 <Text>${precio} c/u</Text>
             </View>
             <View style={styles.acciones}>
-                <Button label={"-"} estilos={styles} press={() => {}}/>
+                <Button label={"-"} estilos={styles} press={() => dispatch(restarCantItem(_id))}/>
                 <Text style={styles.cant}>{cantidad}</Text>
-                <Button label={"+"} estilos={styles} press={() => {}}/>
+                <Button press={() => dispatch(sumarCantItem(_id))} label={"+"} estilos={styles}/>
             </View>
             <Pressable style={styles.buttonDelete} onPress={handelDeleteItem}>
                 <Ionicons name="trash" size={25} color={'red'} style={styles.delete}/>
@@ -42,14 +43,18 @@ const styles = StyleSheet.create({
         height: 70,
         borderRadius: 18,
     },
+    info: {
+        flex: 1,
+        justifyContent: 'center'
+    },
     descripcion: {
         fontWeight: 'bold',
-        fontSize: 20,
+        fontSize: 16,
     },
     acciones: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 5,
+        gap: 2,
         marginLeft: 'auto',
     },
     button: {

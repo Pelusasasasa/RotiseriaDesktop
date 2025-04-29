@@ -1,11 +1,11 @@
 import { StyleSheet, FlatList, Text, View } from "react-native";
 import { useCartStore } from "../../hooks";
 import ItemCard from "../../components/ItemCard";
+import Button from "../../components/Button";
 
 export default function Carrito(){
-    const { items } = useCartStore();
-    console.log(useCartStore())
-    console.log(items)
+    const { items, total } = useCartStore();
+    
     return(
         <View style={styles.container}>
             <View style={styles.header}>
@@ -28,6 +28,16 @@ export default function Carrito(){
                     <Text>No hay productos en el carrito</Text>
                 )
             }
+
+            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text style={styles.subTotal}>Subtotal:</Text>
+                <Text style={styles.subTotal}>${total}</Text>
+            </View>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text style={styles.total}>Total: </Text>
+                <Text style={styles.total}>${total}</Text>
+            </View>
+            <Button label={"Confirmar Pedido"} estilos={styles}/>
         </View>
     )
 }
@@ -57,6 +67,42 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         padding: 5,
         fontSize: 18,
-
+    },
+    subTotal: {
+        fontSize: 20,
+        fontWeight: 'normal',
+        borderWidth: 1,
+        borderRightWidth: 0,
+        borderLeftWidth: 0,
+        borderBottomWidth: 0,
+        borderColor: '#e5e7eb',
+        paddingVertical: 6,
+        paddingHorizontal: 5
+    },  
+    total: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        borderWidth: 1,
+        borderRightWidth: 0,
+        borderLeftWidth: 0,
+        borderColor: '#e5e7eb',
+        paddingVertical: 6,
+        paddingHorizontal: 5
+    },
+    buttonContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 10
+    },
+    button: {
+        borderRadius: 5,
+        width: '90%',
+        backgroundColor: '#000',
+    },
+    buttonLabel: {
+        paddingVertical: 5,
+        fontSize: 20,
+        textAlign: 'center',
+        color: '#fff',
     }
 })

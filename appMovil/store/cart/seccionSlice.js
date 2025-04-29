@@ -26,7 +26,7 @@ let categorias = [
     },
     {
         _id: "2",
-        title: 'Carnes'
+        title: 'Pizzas'
     },
     {
         _id: "3",

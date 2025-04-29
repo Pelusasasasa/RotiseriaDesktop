@@ -10,7 +10,7 @@ let categorias = [
     },
     {
         _id: "2",
-        title: 'Carnes'
+        title: 'Pizzas'
     },
     {
         _id: "3",
@@ -35,18 +35,53 @@ import { useSelector } from "react-redux";
 
 let productos = [
     {
-        _id: "2",
-        descripcion: 'Empanadas',
+        _id: "1",
+        descripcion: 'Pizza 4 Quesos',
         precio: 12000,
-        seccion: 'Empanadas',
-        image: PlaceholderImage
+        image: 'PlaceholderImage',
+        seccion: "Pizzas"
     },
     {   
-        _id: "1",
+        _id: "2",
+        descripcion: 'Pizza Napolitana',
+        precio: 11000,
+        image: 'PlaceholderImage',
+        seccion: "Pizzas"
+    },
+    {   
+        _id: "3",
         descripcion: 'Papas Fritas',
         precio: 5600,
-        seccion: 'Guarniciones',
-        image: PlaceholderImage
+        image: 'PlaceholderImage',
+        seccion: "Guarniciones"
+    },
+    {   
+        _id: "4",
+        descripcion: 'Papas Fritas con Chedar',
+        precio: 6500,
+        seccion: "Guarniciones",
+        image: 'PlaceholderImage'
+    },
+    {   
+        _id: "5",
+        descripcion: 'Papas Fritas a Caballo',
+        precio: 7000,
+        image: 'PlaceholderImage',
+        seccion: "Guarniciones"
+    },
+    {   
+        _id: "6",
+        descripcion: 'Carlito',
+        precio: 4500,
+        image: 'PlaceholderImage',
+        seccion: "Sandwiches"
+    },
+    {   
+        _id: "7",
+        descripcion: 'Flan Casero',
+        precio: 4000,
+        image: 'PlaceholderImage',
+        seccion: "Postres"
     }
 ];
 
@@ -90,13 +125,15 @@ export default function Home(){
                 )}
             />
 
-            <View style={styles.productoContainer}>
-                {
-                    filterProducts.map(elem => (
-                        <ProductoCard {...elem} key={elem._id}/>
-                    ))
-                }
-            </View>
+            <FlatList
+                style={styles.productoContainer}
+                data={filterProducts}
+                keyExtractor={(item) => item.title}
+                renderItem={({item}) => (
+                    <ProductoCard {...item} key={item._id} />
+                )}
+            />
+            
         </View>
     )
 };
@@ -108,7 +145,9 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     list: {
-        flexGrow: 0
+        flexGrow: 0,
+        height: 60,
+        marginTop: 10
     },
     categories: {
         marginVertical: 5,
