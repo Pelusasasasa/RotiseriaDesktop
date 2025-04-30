@@ -1,0 +1,14 @@
+const express = require('express');
+const app = express();
+
+connectDB()
+
+app.use(cors());
+app.use(express.json());
+
+app.use('/rotiseria/producto', require('./routes/producto.routes'));
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+})
