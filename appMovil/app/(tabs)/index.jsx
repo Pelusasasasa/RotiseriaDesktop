@@ -3,36 +3,11 @@ import { View, Text, TextInput, StyleSheet, FlatList } from "react-native";
 import CategoriaCard from "../../components/CategoriaCard";
 import ProductoCard from "../../components/ProductCard";
 
-let categorias = [
-    {
-        _id: "1",
-        title: 'Todos'
-    },
-    {
-        _id: "2",
-        title: 'Pizzas'
-    },
-    {
-        _id: "3",
-        title: 'Empanadas'
-    },
-    {
-        _id: "4",
-        title: 'Bebidas'
-    },
-    {
-        _id: "5",
-        title: 'Guarniciones'
-    },
-    {
-        _id: "6",
-        title: 'Postres'
-    },
-];
 
 import PlaceholderImage from '@/assets/images/adaptive-icon.png';
 import { useSelector } from "react-redux";
 import { useProductStore } from "../../hooks";
+import { useSeccionStore } from "../../hooks/useSeccionStore";
 
 
 
@@ -40,12 +15,14 @@ export default function Home(){
 
     const {activeSeccion } = useSelector(state => state.section);
     const {productos, startGetProductos} = useProductStore();
+    const {secciones, startGetSecciones} = useSeccionStore();
 
     const [text, setText] = useState('');
     const [filterProducts, setFilterProducts] = useState(productos);
 
     useEffect(() => {
         startGetProductos();
+        startGetSecciones();
     }, []);
 
     useEffect(() => {
@@ -61,11 +38,15 @@ export default function Home(){
     }, [text])
 
     useEffect(() => {
-            if(activeSeccion.title !== 'Todos'){
-                setFilterProducts(productos.filter(elem => elem.seccion === activeSeccion.title));
+            if(activeSeccion?.nombre !== 'TODOS'){
+                setFilterProducts(productos.filter(elem => elem.seccion?.nombre === activeSeccion?.nombre));
+                productos.forEach(elem => {
+                    console.log(elem)  
+                })
             }else{
                 setFilterProducts(productos);
-            }
+            };
+
             
     }, [activeSeccion]);
 
@@ -76,11 +57,11 @@ export default function Home(){
             <FlatList 
                 horizontal
                 style={styles.list}
-                data={categorias}
-                keyExtractor={(item) => item.title}
+                data={secciones}
+                keyExtractor={(item) => item.codigo}
                 renderItem={({item}) => (    
                     <View style={styles.categories}>
-                        <CategoriaCard _id={item._id} title={item.title} key={item.title}/>
+                        <CategoriaCard _id={item._id} nombre={item.nombre}/>
                     </View>
                 )}
             />

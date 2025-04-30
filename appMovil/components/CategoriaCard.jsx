@@ -2,21 +2,20 @@ import { Pressable, StyleSheet, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveSeccion } from "../store/cart/seccionSlice";
 
-export default function CategoriaCard({ _id, title, catSelect, setCatSelect }){
+export default function CategoriaCard({ _id, nombre, catSelect, setCatSelect }){
     const dispatch = useDispatch();
     const {activeSeccion} = useSelector(state => state.section);
-
     const handleSecction = () => {
-        dispatch(setActiveSeccion(_id)); 
+        dispatch(setActiveSeccion({_id, nombre})); 
     };
 
     return (
         <Pressable onPress={handleSecction} style={styles.card}>
             <Text style={[
-                styles.title,
-                title === activeSeccion?.title && {backgroundColor: '#000', color: '#fff'}
+                styles.nombre,
+                nombre === activeSeccion?.nombre && {backgroundColor: '#000', color: '#fff'}
             ]}>
-                {title}
+                {nombre}
             </Text>
         </Pressable>
     )
@@ -24,7 +23,7 @@ export default function CategoriaCard({ _id, title, catSelect, setCatSelect }){
 
 
 const styles = StyleSheet.create({
-    title: {
+    nombre: {
         borderWidth: 1,
         borderColor: 'gray',
         paddingVertical: 5,

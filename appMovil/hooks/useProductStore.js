@@ -8,6 +8,7 @@ export const useProductStore = () => {
     const startGetProductos = async() => {
         try {
             const { data } = await axios.get(`http://localhost:3000/rotiseria/producto`);
+            console.log(data)
             dispatch(setProducts(data.productos));
         } catch (error) {
             console.log(error)

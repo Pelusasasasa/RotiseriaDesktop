@@ -17,7 +17,7 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion='
             <Image source={image} style={styles.image}/>
             <View style={styles.info}>
                 <Text style={styles.info_title}>{descripcion}</Text>
-                <Text style={styles.info_seccion}>{seccion}</Text>
+                <Text style={styles.info_seccion}>{seccion.nombre}</Text>
                 <Text style={styles.info_precio}>${precio.toFixed(2)}</Text>
             </View>
             <Button style={styles.button} label={"+"} press={press}/>
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         gap: 5,
         margin: 10,
-        width: '100vh',
+        width: '100%',
         backgroundColor: '#fff'
     },
     image: {
