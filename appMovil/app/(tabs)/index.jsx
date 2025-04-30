@@ -32,71 +32,25 @@ let categorias = [
 
 import PlaceholderImage from '@/assets/images/adaptive-icon.png';
 import { useSelector } from "react-redux";
-import { useProductStore } from "../../hooks/UseProductStore";
+import { useProductStore } from "../../hooks";
 
-let productos = [
-    {
-        _id: "1",
-        descripcion: 'Pizza 4 Quesos',
-        precio: 12000,
-        image: 'PlaceholderImage',
-        seccion: "Pizzas"
-    },
-    {   
-        _id: "2",
-        descripcion: 'Pizza Napolitana',
-        precio: 11000,
-        image: 'PlaceholderImage',
-        seccion: "Pizzas"
-    },
-    {   
-        _id: "3",
-        descripcion: 'Papas Fritas',
-        precio: 5600,
-        image: 'PlaceholderImage',
-        seccion: "Guarniciones"
-    },
-    {   
-        _id: "4",
-        descripcion: 'Papas Fritas con Chedar',
-        precio: 6500,
-        seccion: "Guarniciones",
-        image: 'PlaceholderImage'
-    },
-    {   
-        _id: "5",
-        descripcion: 'Papas Fritas a Caballo',
-        precio: 7000,
-        image: 'PlaceholderImage',
-        seccion: "Guarniciones"
-    },
-    {   
-        _id: "6",
-        descripcion: 'Carlito',
-        precio: 4500,
-        image: 'PlaceholderImage',
-        seccion: "Sandwiches"
-    },
-    {   
-        _id: "7",
-        descripcion: 'Flan Casero',
-        precio: 4000,
-        image: 'PlaceholderImage',
-        seccion: "Postres"
-    }
-];
+
 
 export default function Home(){
 
     const {activeSeccion } = useSelector(state => state.section);
-    const {startGetProductos} = useProductStore();
+    const {productos, startGetProductos} = useProductStore();
 
     const [text, setText] = useState('');
     const [filterProducts, setFilterProducts] = useState(productos);
 
     useEffect(() => {
-        startGetProductos()
+        startGetProductos();
     }, []);
+
+    useEffect(() => {
+        setFilterProducts(productos);
+    }, [productos])
 
     useEffect(() => {
         if(text.length > 0){

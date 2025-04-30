@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Modal, StyleSheet, Text, TextInput, View } from "react-native";
+import { Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useCartStore } from "../hooks";
 import Button from "./Button";
 import { useForm } from "../hooks/UseForm";
@@ -10,7 +10,7 @@ const initialState = {
     telefono: ''
 };
 
-export default function ModalCarrito({activado}){
+export default function ModalCarrito({activado, setModal}){
 
     const { total, items } = useCartStore();
     const {nombre, domicilio, telefono, onInputChange, formState} = useForm(initialState)
@@ -24,7 +24,13 @@ export default function ModalCarrito({activado}){
     return (
         <Modal transparent={true} visible={activado}>
             <View style={styles.modalContainer}>
+                
                 <View style={styles.modalContent}>
+                    <View style={styles.closeButton}>
+                        <Pressable onPress={() => setModal(false)} style={styles} >
+                            <Ionicons name="close" size={29} />
+                        </Pressable>
+                    </View>
                     <View style={styles.inputsContainer}>
                         <Text>Nombre del cliente</Text>
                         <View style={styles.inputs}>
@@ -72,6 +78,9 @@ export default function ModalCarrito({activado}){
 
 
 const styles = StyleSheet.create({
+    closeButton:{
+        alignItems: 'flex-end',
+    },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',

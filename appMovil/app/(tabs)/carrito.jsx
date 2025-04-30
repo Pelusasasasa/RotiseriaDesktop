@@ -8,7 +8,7 @@ import ModalCarrito from "../../components/ModalCarrito";
 
 export default function Carrito(){
     const { items, total } = useCartStore();
-    const [modal, setModal] = useState('false');
+    const [modal, setModal] = useState(false);
     
     return(
         <View style={styles.container}>
@@ -41,8 +41,8 @@ export default function Carrito(){
                 <Text style={styles.total}>Total: </Text>
                 <Text style={styles.total}>${total}</Text>
             </View>
-            <Button label={"Confirmar Pedido"} estilos={styles}/>
-            <ModalCarrito activado={modal}/>
+            <Button label={"Confirmar Pedido"} press={() => setModal(true)} estilos={styles}/>
+            <ModalCarrito activado={modal} setModal={setModal}/>
     
         </View>
     )

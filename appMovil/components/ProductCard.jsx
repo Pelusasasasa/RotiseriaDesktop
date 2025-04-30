@@ -9,7 +9,7 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion='
     const dispatch = useDispatch();
 
     const press = () => {
-        dispatch(agregarItem(_id))    
+        dispatch(agregarItem({_id, descripcion, precio, seccion}));    
     };
 
     return(
@@ -18,7 +18,7 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion='
             <View style={styles.info}>
                 <Text style={styles.info_title}>{descripcion}</Text>
                 <Text style={styles.info_seccion}>{seccion}</Text>
-                <Text style={styles.info_precio}>{precio.toFixed(2)}</Text>
+                <Text style={styles.info_precio}>${precio.toFixed(2)}</Text>
             </View>
             <Button style={styles.button} label={"+"} press={press}/>
         </View>

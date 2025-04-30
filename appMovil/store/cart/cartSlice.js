@@ -1,56 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-let productos = [
-    {
-        _id: "1",
-        descripcion: 'Pizza 4 Quesos',
-        precio: 12000,
-        image: 'PlaceholderImage',
-        seccion: "Pizzas"
-    },
-    {   
-        _id: "2",
-        descripcion: 'Pizza Napolitana',
-        precio: 11000,
-        image: 'PlaceholderImage',
-        seccion: "Pizzas"
-    },
-    {   
-        _id: "3",
-        descripcion: 'Papas Fritas',
-        precio: 5600,
-        image: 'PlaceholderImage',
-        seccion: "Guarniciones"
-    },
-    {   
-        _id: "4",
-        descripcion: 'Papas Fritas con Chedar',
-        precio: 6500,
-        seccion: "Guarniciones",
-        image: 'PlaceholderImage'
-    },
-    {   
-        _id: "5",
-        descripcion: 'Papas Fritas a Caballo',
-        precio: 7000,
-        image: 'PlaceholderImage',
-        seccion: "Guarniciones"
-    },
-    {   
-        _id: "6",
-        descripcion: 'Carlito',
-        precio: 4500,
-        image: 'PlaceholderImage',
-        seccion: "Sandwiches"
-    },
-    {   
-        _id: "7",
-        descripcion: 'Flan Casero',
-        precio: 4000,
-        image: 'PlaceholderImage',
-        seccion: "Postres"
-    }
-];
 
 export const cartSlice = createSlice({
     name: 'cart',
@@ -60,7 +9,7 @@ export const cartSlice = createSlice({
     },
     reducers: {
         agregarItem: (state, {payload}) => {
-            const {_id, descripcion, precio, seccion} = productos.find(elem => elem._id === payload);
+            const {_id, descripcion, precio, seccion} = payload;
             const itemExistente = state.items.find(elem => elem._id === _id);
 
             if(itemExistente){
