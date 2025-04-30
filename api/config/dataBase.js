@@ -1,14 +1,16 @@
 const {  mongoose } = require("mongoose");
+const runSeeders = require("../seed");
 require("dotenv").config();
 
 const connectDB = async() => {
 
     try {
-        mongoose.connect(process.env.MONGO_DB_URI, )    
-            .then(db => console.log("Se conecto a la base de datos de Rotiseria"))
-            .catch(err => console.log(err));
+        await mongoose.connect(process.env.MONGO_DB_URI, );
+            console.log("✅ Se conecto a la base de datos de Rotiseria")
+            await runSeeders();
+
     } catch (error) {
-        console.log(error);
+        console.log('❌ Error conectado MongoDb: ', error);
     }
 
 };
