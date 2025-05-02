@@ -1,8 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { useCartStore } from "../hooks";
+import { useCartStore, useVentaStore } from "../hooks";
 import Button from "./Button";
 import { useForm } from "../hooks/UseForm";
+import { useDispatch } from "react-redux";
+import { savingVenta } from "../store/venta/ventaSlice";
 
 const initialState = {
     nombre: '',
@@ -11,14 +13,24 @@ const initialState = {
 };
 
 export default function ModalCarrito({activado, setModal}){
+    const dispatch = useDispatch();
 
-    const { total, items } = useCartStore();
+    const { emptyCart, total, items } = useCartStore();
+    const { isVentaSaving, startPostVenta} = useVentaStore()
     const {nombre, domicilio, telefono, onInputChange, formState} = useForm(initialState)
 
-    const submitPedido = () => {
+    const submitPedido = async() => {
         if(!nombre) return alert('Falta el nombre del cliente');
 
         //Todo Cargar un Pedido
+        dispatch(savingVenta());
+
+        const ok = await startPostVenta(formState, total, items);
+
+        if(ok){
+            setModal(false);
+            emptyCart()
+        }
     };
 
     return (
@@ -69,7 +81,7 @@ export default function ModalCarrito({activado, setModal}){
                         <Text style={styles.total}>${total}</Text>
                     </View>
 
-                    <Button label='Confirmar' estilos={styles} press={submitPedido} />
+                    <Button label='Confirmar' disabled={isVentaSaving} estilos={styles} press={submitPedido} />
                 </View>
             </View>
         </Modal>

@@ -8,6 +8,10 @@ export const cartSlice = createSlice({
         total: 0
     },
     reducers: {
+        setEmptyCartValues: (state) => {
+            state.items = [];
+            state.total = 0;
+        },
         agregarItem: (state, {payload}) => {
             const {_id, descripcion, precio, seccion} = payload;
             const itemExistente = state.items.find(elem => elem._id === _id);
@@ -60,4 +64,4 @@ export const cartSlice = createSlice({
 
 
 // Action creators are generated for each case reducer function
-export const { agregarItem, quitarItem, restarCantItem, sumarCantItem } = cartSlice.actions;
+export const { agregarItem, quitarItem, restarCantItem, setEmptyCartValues, sumarCantItem } = cartSlice.actions;

@@ -14,6 +14,7 @@ const startGetSecciones = async() => {
             dispatch(getSecciones(data.secciones));
 
         } catch (error) {
+            
             console.log(error);
         }
     };

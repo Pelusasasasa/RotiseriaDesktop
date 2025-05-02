@@ -25,16 +25,19 @@ export default function Layout(){
                     </View>
                 )
                 }}/>
+                
         </Tabs>
     )
 };
 
 const styles = StyleSheet.create({
     container: {
+        width: 100,
         flexDirection: 'row',
-        gap: 5
+        gap: 15
     },
     cant: {
+        marginRight: 'auto',
         width: 20,
         height: 20,
         color: '#fff',

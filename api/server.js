@@ -11,6 +11,7 @@ app.use(express.json());
 
 app.use('/rotiseria/producto', require('./routes/producto.routes'));
 app.use('/rotiseria/seccion', require('./routes/seccion.routes'));
+app.use('/rotiseria/venta', require('./routes/venta.routes'));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

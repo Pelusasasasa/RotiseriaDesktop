@@ -29,17 +29,22 @@ export default function Carrito(){
                         )}
                     />
                 ) : (
-                    <Text>No hay productos en el carrito</Text>
+                    <Text style={{
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        fontSize: 20,
+                        marginTop: 30
+                     }}>No hay productos en el carrito</Text>
                 )
             }
 
-            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 'auto'}}>
                 <Text style={styles.subTotal}>Subtotal:</Text>
-                <Text style={styles.subTotal}>${total}</Text>
+                <Text style={styles.subTotal}>${total.toFixed(2)}</Text>
             </View>
             <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Text style={styles.total}>Total: </Text>
-                <Text style={styles.total}>${total}</Text>
+                <Text style={styles.total}>${total.toFixed(2)}</Text>
             </View>
             <Button label={"Confirmar Pedido"} press={() => setModal(true)} estilos={styles}/>
             <ModalCarrito activado={modal} setModal={setModal}/>
@@ -50,7 +55,6 @@ export default function Carrito(){
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
     },
     header: {
         flexDirection: 'row',
