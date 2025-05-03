@@ -24,7 +24,6 @@ export const cartSlice = createSlice({
 
             //calcular el total
             state.total = state.items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
-            console.log(state.items);
         },
         restarCantItem: (state, {payload}) => {
 

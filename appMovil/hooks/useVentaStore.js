@@ -11,7 +11,7 @@ export const useVentaStore = () => {
         try {
             const venta = {};
             venta.cliente = formState.nombre;
-            venta.direccion = formState.direccion;
+            venta.direccion = formState.domicilio;
             venta.telefono = formState.telefono;
             venta.precio = total;
             venta.listaProductos = items;
@@ -20,8 +20,7 @@ export const useVentaStore = () => {
             const { data} = await seccionApi.post('/venta', venta);
 
             dispatch(postVenta());
-
-            return data.ok
+            return data.ok;
         } catch (error) {
             console.log(error);
             console.log(error.requres.data.msg);

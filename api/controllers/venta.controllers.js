@@ -2,17 +2,22 @@ const ventaCTRL = {};
 
 
 const getNextNumberContado = require('../helpers/getNextNumberContado');
+const getNextNumberPedido = require('../helpers/getNextNumberPedido');
+const imprimirTicketComanda = require('../helpers/imprimirTicketComanda');
 const Venta = require('../models/Venta');
 
 ventaCTRL.postOne = async(req, res) => {
     try {
         const numero = await getNextNumberContado();
+        const nPedido = await getNextNumberPedido();
         const newVenta = new Venta({
             ...req.body,
-            numero
+            numero,
+            nPedido
         });
 
         await newVenta.save();
+        await imprimirTicketComanda(newVenta);
 
         res.status(201).json({
             ok: true,

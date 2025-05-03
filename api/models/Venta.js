@@ -1,9 +1,10 @@
+const moment = require('moment-timezone');
 const {Schema, model} = require('mongoose');
 
 const Venta = new Schema({
     fecha:{
         type:Date,
-        default: Date.now
+        default: () => moment().tz('America/Argentina/Buenos_Aires').toDate()
     },
     nPedido:{
         type:Number,

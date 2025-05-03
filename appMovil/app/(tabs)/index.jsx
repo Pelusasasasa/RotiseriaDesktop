@@ -40,9 +40,6 @@ export default function Home(){
     useEffect(() => {
             if(activeSeccion?.nombre !== 'TODOS'){
                 setFilterProducts(productos.filter(elem => elem.seccion?.nombre === activeSeccion?.nombre));
-                productos.forEach(elem => {
-                    console.log(elem)  
-                })
             }else{
                 setFilterProducts(productos);
             };

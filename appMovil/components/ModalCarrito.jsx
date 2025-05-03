@@ -17,7 +17,7 @@ export default function ModalCarrito({activado, setModal}){
 
     const { emptyCart, total, items } = useCartStore();
     const { isVentaSaving, startPostVenta} = useVentaStore()
-    const {nombre, domicilio, telefono, onInputChange, formState} = useForm(initialState)
+    const {nombre, domicilio, telefono, onInputChange, formState, onResetForm} = useForm(initialState)
 
     const submitPedido = async() => {
         if(!nombre) return alert('Falta el nombre del cliente');
@@ -28,6 +28,7 @@ export default function ModalCarrito({activado, setModal}){
         const ok = await startPostVenta(formState, total, items);
 
         if(ok){
+            onResetForm();
             setModal(false);
             emptyCart()
         }
@@ -70,6 +71,7 @@ export default function ModalCarrito({activado, setModal}){
                         <View style={styles.inputs}>
                             <Ionicons name="call-outline" size={22} />
                             <TextInput 
+                                keyboardType="numeric"
                                 placeholder="Ingresar el Telefono"
                                 style={styles.input}
                                 onChangeText={(text) => onInputChange('telefono', text)}
@@ -78,7 +80,7 @@ export default function ModalCarrito({activado, setModal}){
                     </View>
                     <View style={styles.totalContainer}>
                         <Text style={styles.total}>Total: </Text>
-                        <Text style={styles.total}>${total}</Text>
+                        <Text style={styles.total}>${total.toFixed(2)}</Text>
                     </View>
 
                     <Button label='Confirmar' disabled={isVentaSaving} estilos={styles} press={submitPedido} />
