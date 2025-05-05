@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'
-import {Tabs} from 'expo-router'
-import { StyleSheet, View } from 'react-native';
+import {router, Tabs} from 'expo-router'
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text } from 'react-native';
 import { useSelector } from 'react-redux'
 export default function Layout(){
@@ -11,7 +11,17 @@ export default function Layout(){
                 tabBarActiveTintColor: '#ffd33d'
             }}>
             <Tabs.Screen name='index' options={{
-                title: 'Inicio',
+                title: 'Sabor Urbano',
+                headerRight: () => (
+                    <TouchableOpacity 
+                    onPress={() => {
+                        router.push('/configuracion')
+                    }}
+                    style = {{marginRight: 15}}
+                    >
+                        <Ionicons name='settings-outline' size={24} color='#000' />
+                    </TouchableOpacity>
+                ),
                 tabBarIcon: ({color, focused}) => (
                     <Ionicons name={focused ? 'home-sharp' :'home-outline'} color={color} size={24} />
                 )

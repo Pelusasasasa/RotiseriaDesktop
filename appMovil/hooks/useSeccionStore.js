@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import seccionApi from "../api/rotiseriaApi";
+import  { seccionApiFunction } from "../api/rotiseriaApi";
 import { getSecciones } from "../store/cart/seccionSlice";
 
 export const useSeccionStore = () => {
@@ -9,6 +9,7 @@ export const useSeccionStore = () => {
 const startGetSecciones = async() => {
 
         try {
+            const seccionApi = await seccionApiFunction()
             const { data } = await seccionApi.get('/seccion');
             
             dispatch(getSecciones(data.secciones));

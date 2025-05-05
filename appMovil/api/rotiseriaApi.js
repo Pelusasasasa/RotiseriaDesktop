@@ -1,7 +1,17 @@
 import axios from 'axios';
 
-const seccionApi = axios.create({
-        baseURL: 'http://192.168.0.7:3000/rotiseria/'
-});
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default seccionApi;
+export const seccionApiFunction = async () => {
+        const ip = await AsyncStorage.getItem('server_ip')
+        
+        const api = axios.create({
+                baseURL: ip
+        });
+
+        console.log(await api.get('producto'))
+        return api;
+
+}
+
+export default seccionApiFunction;

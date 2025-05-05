@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import seccionApi from "../api/rotiseriaApi";
+import  { seccionApiFunction } from "../api/rotiseriaApi";
 import { postVenta } from "../store/venta/ventaSlice";
 
 export const useVentaStore = () => {
@@ -17,6 +17,7 @@ export const useVentaStore = () => {
             venta.listaProductos = items;
             venta.tipoComp = 'Comprobante'
 
+            const seccionApi = await seccionApiFunctionn();
             const { data} = await seccionApi.post('/venta', venta);
 
             dispatch(postVenta());
