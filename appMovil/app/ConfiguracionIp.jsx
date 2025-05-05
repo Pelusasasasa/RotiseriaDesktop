@@ -27,7 +27,6 @@ export default function ConfiguracionIp({navigation }) {
         return;
       }
 
-      console.log(ip)
       await AsyncStorage.setItem('server_ip', ip);
       const router = useRouter();
       router.push('/');

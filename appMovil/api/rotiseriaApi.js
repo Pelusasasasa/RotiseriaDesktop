@@ -9,7 +9,6 @@ export const seccionApiFunction = async () => {
                 baseURL: ip
         });
 
-        console.log(await api.get('producto'))
         return api;
 
 }

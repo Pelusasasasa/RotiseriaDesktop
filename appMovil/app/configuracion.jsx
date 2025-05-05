@@ -12,7 +12,7 @@ export default function Configuracion(){
     useEffect(() => {
         const cargarIp = async () => {
                 const ipGuardada = await AsyncStorage.getItem('server_ip');
-                console.log(ipGuardada)
+
                 if(ipGuardada) {
                     setIp(ipGuardada);
                 };

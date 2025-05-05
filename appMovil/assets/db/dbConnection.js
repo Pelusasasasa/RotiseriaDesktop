@@ -11,7 +11,6 @@ async function connectToMongoDB() {
   const db = mongodb.db("rotiseria");
   
   const productos = await db.collection("productos").find({});
-  console.log(productos);
 }
 
 connectToMongoDB();
