@@ -28,28 +28,40 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion='
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        paddingVertical: 10,
+        borderWidth: 1,
+        borderRadius: 18,
+        borderColor: '#555555',
         gap: 5,
         margin: 10,
         width: '100%',
-        backgroundColor: '#fff'
+        backgroundColor: '#25292e'
     },
     image: {
+        backgroundColor: '#fff',
         width: 70,
-        height: 70,
-        borderRadius: 18,
+        height: '100%',
+        borderTopLeftRadius: 18,
+        borderBottomLeftRadius: 18,
     },
     info: {
 
     },
     info_title:{
-        fontSize: 18
+        fontSize: 16,
+        paddingLeft: 5,
+        paddingTop: 5,
+        color: '#fff'
     },
     info_seccion: {
         color: 'gray',
         fontWeight: 'normal'
     },
     info_precio:{
+        color: '#e6c06a',
+        backgroundColor: '#555',
+        textAlign: 'center',
+        marginBottom: 5,
+        borderRadius: 8,
         fontWeight: 'bold',
         fontSize: 16
     },

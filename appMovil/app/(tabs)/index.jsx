@@ -80,7 +80,8 @@ export default function Home(){
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems:'center'
+        alignItems:'center',
+        backgroundColor: '#25292e',
     },
     list: {
         flexGrow: 0,
@@ -95,9 +96,12 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 24,
+        color: '#e6c06a',
         marginBottom: 20,
     },
     input: {
+        color: '#fff',
+        backgroundColor: '#666',
         height: 40,
         width: '90%',
         borderWidth: 1,
@@ -106,6 +110,7 @@ const styles = StyleSheet.create({
         padding: 10
     },
     productoContainer: {
-        width: "100%"
+        width: "100%",
+        paddingHorizontal: 15,
     }
 })

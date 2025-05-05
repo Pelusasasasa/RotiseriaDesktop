@@ -8,7 +8,18 @@ export default function Layout(){
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: '#ffd33d'
+                tabBarActiveTintColor: '#ffd33d',
+                headerStyle: {
+                    backgroundColor: '#25292e'
+                },
+                headerShadowVisible: false,
+                headerTintColor: '#e6c06a',
+                tabBarStyle: {
+                    backgroundColor: '#25292e',
+                    borderTopColor: '#000',
+                    borderTopWidth: 1,
+                }
+
             }}>
             <Tabs.Screen name='index' options={{
                 title: 'Sabor Urbano',

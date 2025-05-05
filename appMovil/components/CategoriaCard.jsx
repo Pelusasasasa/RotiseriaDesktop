@@ -13,7 +13,7 @@ export default function CategoriaCard({ _id, nombre, catSelect, setCatSelect }){
         <Pressable onPress={handleSecction} style={styles.card}>
             <Text style={[
                 styles.nombre,
-                nombre === activeSeccion?.nombre && {backgroundColor: '#000', color: '#fff'}
+                nombre === activeSeccion?.nombre && {backgroundColor: '#555', color: '#e6c06a'}
             ]}>
                 {nombre}
             </Text>

@@ -40,7 +40,6 @@ export default function ConfiguracionIp({navigation }) {
                 placeholder="Ej: 192.168.1.100"
                 value={ip}
                 onChangeText={setIp}
-                keyboardType="numeric"
                 style={{
                 borderWidth: 1,
                 borderColor: '#ccc',
