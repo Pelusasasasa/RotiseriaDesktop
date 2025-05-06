@@ -1,15 +1,13 @@
 import {Stack} from 'expo-router'
 import { Provider } from 'react-redux'
 import { store } from '../store/store'
-import ConfiguracionIp from './ConfiguracionIp';
 import { StatusBar } from 'expo-status-bar';
 export default function Layout(){
     return (
         <Provider store={store}>
             <Stack>
                 <Stack.Screen name='(tabs)' options={{headerShown: false}}/>
-                <Stack.Screen name="ConfiguracionIp" options={{ headerShown: false }} />
-                <Stack.Screen name='Configuracion' />
+                <Stack.Screen name='Configuracion' options={{ headerShown: false }} />
                 <Stack.Screen name='+not-found'/>
             </Stack>
             <StatusBar style='light' />

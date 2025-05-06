@@ -3,18 +3,30 @@ import { Image } from 'expo-image';
 import Button from "./Button";
 import { useDispatch } from "react-redux";
 import { agregarItem } from "../store/cart/cartSlice";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default function ProductoCard({_id, descripcion, image, precio, seccion='Empanadas'}){
     const dispatch = useDispatch();
-    const a = `https://res.cloudinary.com/dyo36foif/image/upload/v1746533278/Sabor%20Urbano/${_id}.webp`;
+    const [urlImg, setUrlImg] = useState('');
+
+    useEffect(() => {
+        const cargar = async() => {
+             let urlImgGuardada = await AsyncStorage.getItem('server_url_img');
+             setUrlImg(urlImgGuardada);
+        };
+
+        cargar();
+    }, []);
+
     const press = () => {
         dispatch(agregarItem({_id, descripcion, precio, seccion}));    
     };
 
     return(
         <View style={styles.container}>
-            <Image source={a} style={styles.image}/>
+            <Image source={`${urlImg}${_id}.webp`} style={styles.image}/>
             <View style={styles.info}>
                 <Text style={styles.info_title}>{descripcion}</Text>
                 <Text style={styles.info_seccion}>{seccion.nombre}</Text>

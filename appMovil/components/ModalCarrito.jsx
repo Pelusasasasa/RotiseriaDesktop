@@ -41,14 +41,15 @@ export default function ModalCarrito({activado, setModal}){
                 <View style={styles.modalContent}>
                     <View style={styles.closeButton}>
                         <Pressable onPress={() => setModal(false)} style={styles} >
-                            <Ionicons name="close" size={29} />
+                            <Ionicons name="close" color='#fff' size={29} />
                         </Pressable>
                     </View>
                     <View style={styles.inputsContainer}>
-                        <Text>Nombre del cliente</Text>
+                        <Text style={styles.text}>Nombre del cliente</Text>
                         <View style={styles.inputs}>
-                            <Ionicons name="person-outline" size={22} />
+                            <Ionicons name="person-outline" color='#fff' size={22} />
                             <TextInput 
+                            placeholderTextColor={'#e5e7eb'}
                             placeholder="Ingresar el Nombre del Cliente" 
                             style={styles.input} 
                             onChangeText={(text) => onInputChange('nombre', text)} 
@@ -56,10 +57,11 @@ export default function ModalCarrito({activado, setModal}){
                         </View>
                     </View>
                     <View style={styles.inputsContainer}>
-                        <Text>Domicilio</Text>
+                        <Text style={styles.text}>Domicilio</Text>
                         <View style={styles.inputs}>
-                            <Ionicons name="home-outline" size={22} />
+                            <Ionicons name="home-outline" color='#fff' size={22} />
                             <TextInput 
+                            placeholderTextColor={'#e5e7eb'}
                             placeholder="Ingresar el Nombre del Cliente" 
                             style={styles.input} 
                             onChangeText={(text) => onInputChange('domicilio', text)} 
@@ -67,10 +69,11 @@ export default function ModalCarrito({activado, setModal}){
                         </View>
                     </View>
                     <View style={styles.inputsContainer}>
-                        <Text>Telefono</Text>
+                        <Text style={styles.text}>Telefono</Text>
                         <View style={styles.inputs}>
-                            <Ionicons name="call-outline" size={22} />
+                            <Ionicons name="call-outline" color='#fff' size={22} />
                             <TextInput 
+                                placeholderTextColor={'#e5e7eb'}
                                 keyboardType="numeric"
                                 placeholder="Ingresar el Telefono"
                                 style={styles.input}
@@ -79,7 +82,7 @@ export default function ModalCarrito({activado, setModal}){
                         </View>
                     </View>
                     <View style={styles.totalContainer}>
-                        <Text style={styles.total}>Total: </Text>
+                        <Text style={[styles.total, {color: '#ffff'}]}>Total: </Text>
                         <Text style={styles.total}>${total.toFixed(2)}</Text>
                     </View>
 
@@ -104,7 +107,7 @@ const styles = StyleSheet.create({
     modalContent: {
         width: '90%',
         height: '90%',
-        backgroundColor: '#fff',
+        backgroundColor: '#25292e',
         borderRadius: 10,
         padding: 20,
         position: 'relative'
@@ -118,7 +121,12 @@ const styles = StyleSheet.create({
         gap: 5,
         marginTop: 5
 
-    },  
+    },
+    text: {
+        color: '#e5e7eb',
+        fontSize: 20,
+
+    },
     input: {
         padding: 10,
         borderWidth: 1,
@@ -128,11 +136,16 @@ const styles = StyleSheet.create({
     },
     totalContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        backgroundColor: '#222222',
+        paddingHorizontal: 10,
+        borderRadius: 25,
+        paddingVertical: 10,
     },
     total: {
         fontSize: 24,
         fontWeight: 'bold',
+        color: '#e6c06a',
     },
     buttonContainer: {
         justifyContent: 'center',
@@ -143,12 +156,13 @@ const styles = StyleSheet.create({
     button: {
         borderRadius: 10,
         width: '90%',
-        backgroundColor: '#000'
+        backgroundColor: '#e6c06a'
     },
     buttonLabel: {
-        fontSize: 15,
+        fontSize: 20,
         paddingVertical: 5,
-        color: '#e5e7eb',
+        color: '#25292e',
+        fontWeight: 'bold',
         textAlign: 'center'
 
     }

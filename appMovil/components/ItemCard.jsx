@@ -17,7 +17,7 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
             <Image source={image} style={styles.image}/>
             <View style={styles.info}>
                 <Text style={styles.descripcion}>{descripcion}</Text>
-                <Text>${precio} c/u</Text>
+                <Text style={styles.precio}>${precio.toFixed(2)}</Text>
             </View>
             <View style={styles.acciones}>
                 <Button label={"-"} estilos={styles} press={() => dispatch(restarCantItem(_id))}/>
@@ -34,35 +34,50 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
 const styles = StyleSheet.create({
     container:{
         flexDirection: 'row',
+        backgroundColor: '#444',
         width: '100%',
-        justifyContent: 'space-around',
+        marginTop: 10,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
         gap: 15
     },
     image: {
         width: 70,
         height: 70,
         borderRadius: 18,
+        backgroundColor: '#fff',
     },
     info: {
         flex: 1,
         justifyContent: 'center'
     },
     descripcion: {
+        color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
     },
+    precio:{
+        fontSize: 20,
+        color: '#e6c06a',
+        fontWeight: 'bold',
+    },  
     acciones: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 2,
         marginLeft: 'auto',
+        backgroundColor: '#25292e',
+        borderRadius: 25,
     },
+    buttonLabel: {
+        color: '#fff',
+        fontSize: 30,
+    },
+    cant: {
+        color: '#fff',
+    },  
     button: {
-        backgroundColor: '#fff',
-        color: '#000',
-        borderColor: 'gray',
-        borderRadius: 5,
-        borderWidth: 1,
         width: '100%',
         height: '100%',
         alignItems: 'center',

@@ -5,6 +5,7 @@ import { useState } from "react";
 import ItemCard from "../../components/ItemCard";
 import Button from "../../components/Button";
 import ModalCarrito from "../../components/ModalCarrito";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Carrito(){
     const { items, total } = useCartStore();
@@ -20,6 +21,7 @@ export default function Carrito(){
                 items.length > 0 ? (
                     
                     <FlatList
+                        style={{width: '100%'}}
                         data={items}
                         keyExtractor={(item) => item._id}
                         renderItem= {({item}) => (
@@ -29,12 +31,24 @@ export default function Carrito(){
                         )}
                     />
                 ) : (
-                    <Text style={{
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        fontSize: 20,
-                        marginTop: 30
-                     }}>No hay productos en el carrito</Text>
+                    <View style={styles.emptyCart}>
+                        <Ionicons name="cart-outline" color='#fff' size={50}/>
+                        <Text style={{
+                            alignItems: 'center',
+                            textAlign: 'center',
+                            fontSize: 25,
+                            fontWeight: 'bold',
+                            color: '#bbbbbb',
+                            marginTop: 30
+                        }}>No hay productos en el carrito</Text>
+                        <Text style={{
+                            alignItems: 'center',
+                            textAlign: 'center',
+                            fontSize: 20,
+                            color: '#777777',
+                            marginTop: 30
+                        }}>Agrega productos para comenzar</Text>
+                    </View>
                 )
             }
 
@@ -42,7 +56,7 @@ export default function Carrito(){
                 <Text style={styles.subTotal}>Subtotal:</Text>
                 <Text style={styles.subTotal}>${total.toFixed(2)}</Text>
             </View>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', borderBottomWidth: 1, borderTopWidth: 1, borderColor: '#e5e7eb'}}>
                 <Text style={styles.total}>Total: </Text>
                 <Text style={styles.total}>${total.toFixed(2)}</Text>
             </View>
@@ -55,6 +69,7 @@ export default function Carrito(){
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#25292e'
     },
     header: {
         flexDirection: 'row',
@@ -62,40 +77,40 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
         padding: 20,
-        backgroundColor: '#f8f8f8',
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
     },
     title: {
         fontSize: 24,
+        color: '#e6c06a',
         fontWeight: 'bold',
         marginBottom: 20,
     },
     cantItems: {
-        borderWidth: 1,
-        borderRadius: 5,
+        borderRadius: 18,
+        fontWeight: 'bold',
+        color: '#e6c06a',
+        backgroundColor: '#444',
         textAlign: 'center',
         padding: 5,
         fontSize: 18,
     },
+    emptyCart:{ 
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20
+    },  
     subTotal: {
         fontSize: 20,
-        fontWeight: 'normal',
-        borderWidth: 1,
-        borderRightWidth: 0,
-        borderLeftWidth: 0,
-        borderBottomWidth: 0,
-        borderColor: '#e5e7eb',
+        color: '#cccccc',
+        fontWeight: 'light',
         paddingVertical: 6,
         paddingHorizontal: 5
     },  
     total: {
         fontSize: 22,
+        color: '#fff',
         fontWeight: 'bold',
-        borderWidth: 1,
-        borderRightWidth: 0,
-        borderLeftWidth: 0,
-        borderColor: '#e5e7eb',
         paddingVertical: 6,
         paddingHorizontal: 5
     },
@@ -107,12 +122,14 @@ const styles = StyleSheet.create({
     button: {
         borderRadius: 5,
         width: '90%',
-        backgroundColor: '#000',
+        marginTop: 10,
+        backgroundColor: '#e6c06a',
     },
     buttonLabel: {
         paddingVertical: 5,
-        fontSize: 20,
+        fontSize: 25,
         textAlign: 'center',
-        color: '#fff',
+        fontWeight: 'bold',
+        color: '#333',
     }
 })

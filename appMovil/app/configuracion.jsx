@@ -1,23 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
-import Button from "../components/Button";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
-import { useDispatch } from "react-redux";
-import { emptySetProducts } from "../store/product/productSlice";
+
+import Button from "../components/Button";
 
 
 export default function Configuracion(){
 
-    const dispatch = useDispatch();
 
     const [ip, setIp] = useState('');
     const [urlImg, setUrlImg] = useState('');
     
 
     useEffect(() => {
-        dispatch(emptySetProducts())
         const cargarIp = async () => {
                 const ipGuardada = await AsyncStorage.getItem('server_ip');
                 const urlImgGuardada = await AsyncStorage.getItem('server_url_img');
@@ -54,7 +51,7 @@ export default function Configuracion(){
 
 
     return(
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             
             {/* //Informacion Negocio */}
 
@@ -103,9 +100,9 @@ export default function Configuracion(){
                 </View>
             </View>
             
-        </View>
+        </ScrollView>
     )
-}
+};
 
 
 const styles =StyleSheet.create({

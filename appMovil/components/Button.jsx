@@ -3,11 +3,13 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 export default function Button({label, disabled, press, estilos, button}){
     return(
         <View style={estilos?.buttonContainer ? estilos.buttonContainer : styles.buttonContainer}>
-            <Pressable disabled={disabled} style={estilos?.button ? [
+            <Pressable disabled={disabled} style={estilos?.button ? ({pressed}) => [
                 estilos.button,
+                {backgroundColor: pressed ? '#4CAF50' : '#2196F3'},
                 {button}
-                ] : [
+                ] : ({pressed}) => [
                     styles.button,
+                    {backgroundColor: pressed ? '#4CAF50' : '#2196F3'},
                     button,
                 ]} onPress={press}>
                 <Text style={estilos?.buttonLabel ? estilos.buttonLabel : styles.buttonLabel}>{label}</Text>
