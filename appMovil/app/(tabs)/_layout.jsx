@@ -30,7 +30,7 @@ export default function Layout(){
                     }}
                     style = {{marginRight: 15}}
                     >
-                        <Ionicons name='settings-outline' size={24} color='#000' />
+                        <Ionicons name='settings-outline' size={24} color='#e6c06a' />
                     </TouchableOpacity>
                 ),
                 tabBarIcon: ({color, focused}) => (

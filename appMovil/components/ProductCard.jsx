@@ -7,14 +7,14 @@ import { agregarItem } from "../store/cart/cartSlice";
 
 export default function ProductoCard({_id, descripcion, image, precio, seccion='Empanadas'}){
     const dispatch = useDispatch();
-
+    const a = `https://res.cloudinary.com/dyo36foif/image/upload/v1746533278/Sabor%20Urbano/${_id}.webp`;
     const press = () => {
         dispatch(agregarItem({_id, descripcion, precio, seccion}));    
     };
 
     return(
         <View style={styles.container}>
-            <Image source={image} style={styles.image}/>
+            <Image source={a} style={styles.image}/>
             <View style={styles.info}>
                 <Text style={styles.info_title}>{descripcion}</Text>
                 <Text style={styles.info_seccion}>{seccion.nombre}</Text>
@@ -43,9 +43,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 18,
         borderBottomLeftRadius: 18,
     },
-    info: {
-
-    },
     info_title:{
         fontSize: 16,
         paddingLeft: 5,
@@ -63,9 +60,12 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         borderRadius: 8,
         fontWeight: 'bold',
-        fontSize: 16
+        fontSize: 16,
+        width: 90,
     },
     button: {
-        marginRight: 20
+        marginRight: 20,
+        backgroundColor: '#e6c06a',
+        borderRadius: 8,
     }
 });

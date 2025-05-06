@@ -6,6 +6,9 @@ export const productSlice = createSlice({
         productos: []
     },
     reducers: {
+        emptySetProducts: (state) => {
+            state.productos = [];
+        },
         setProducts: (state, {payload} ) => {
             state.productos = payload;
         },
@@ -14,4 +17,4 @@ export const productSlice = createSlice({
 
 
 // Action creators are generated for each case reducer function
-export const { setProducts } = productSlice.actions;
+export const { emptySetProducts, setProducts } = productSlice.actions;

@@ -2,15 +2,29 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import Button from "../components/Button";
+import { useRouter } from "expo-router";
+import { useDispatch } from "react-redux";
+import { emptySetProducts } from "../store/product/productSlice";
 
 
 export default function Configuracion(){
 
+    const dispatch = useDispatch();
+
     const [ip, setIp] = useState('');
+    const [urlImg, setUrlImg] = useState('');
+    
 
     useEffect(() => {
+        dispatch(emptySetProducts())
         const cargarIp = async () => {
                 const ipGuardada = await AsyncStorage.getItem('server_ip');
+                const urlImgGuardada = await AsyncStorage.getItem('server_url_img');
+
+                if(urlImgGuardada){
+                    setUrlImg(urlImgGuardada);
+                };
 
                 if(ipGuardada) {
                     setIp(ipGuardada);
@@ -18,7 +32,25 @@ export default function Configuracion(){
             };
 
             cargarIp();
-    }, [])
+    }, []);
+
+
+    const handleDatosServidor = async() => {
+        
+    if (!ip) {
+        Alert.alert('Error', 'Por favor, ingrese una IP válida');
+        return;
+    };
+
+    if(urlImg){
+        await AsyncStorage.setItem('server_url_img', urlImg);
+    }
+
+    await AsyncStorage.setItem('server_ip', ip);
+    
+    const router = useRouter();
+     router.push('/');
+    };
 
 
     return(
@@ -58,9 +90,19 @@ export default function Configuracion(){
 
                 <View style={styles.campos}>
                     <Text style={styles.campoLabel}>Ip del servidor</Text>
-                    <TextInput value={ip} style={styles.campoInput} placeholder="ip://localhost:4000"/>
+                    <TextInput value={ip} style={styles.campoInput} onChangeText={setIp} placeholder="ip://localhost:4000"/>
+                </View>
+
+                <View style={styles.campos}>
+                    <Text style={styles.campoLabel}>URL del servidor de imagenes</Text>
+                    <TextInput value={urlImg} style={styles.campoInput} onChangeText={setUrlImg} placeholder="http://eemplo.com.ar"/>
+                </View>
+
+                <View>
+                    <Button press={handleDatosServidor} label='Guardar' estilos={styles}/>
                 </View>
             </View>
+            
         </View>
     )
 }
@@ -102,5 +144,15 @@ const styles =StyleSheet.create({
         borderColor: '#fff',
         padding: 10,
         borderRadius: 5,
+    },
+    buttonContainer: {
+        width: '100%',
+        marginTop: 15,
+        alignItems: 'flex-end',
+    },
+    button: {
+        backgroundColor: '#e6c06a',
+        padding: 10,
+        borderRadius: 8,
     },
 })

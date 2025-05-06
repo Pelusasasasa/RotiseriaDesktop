@@ -25,6 +25,7 @@ export default function CategoriaCard({ _id, nombre, catSelect, setCatSelect }){
 const styles = StyleSheet.create({
     nombre: {
         borderWidth: 1,
+        color: '#fff',
         borderColor: 'gray',
         paddingVertical: 5,
         paddingHorizontal: 10,
