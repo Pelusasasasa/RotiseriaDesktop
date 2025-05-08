@@ -10,6 +10,9 @@ export const ventaSlice = createSlice({
         savingVenta: (state) => {
             state.isVentaSaving = true;
         },
+        savingVentaFalse: (state) => {
+            state.isVentaSaving = false;
+        },
         postVenta: (state) => {
             state.isVentaSaving = false;
         },
@@ -18,4 +21,4 @@ export const ventaSlice = createSlice({
 
 
 // Action creators are generated for each case reducer function
-export const { postVenta, savingVenta } = ventaSlice.actions;
+export const { postVenta, savingVenta, savingVentaFalse } = ventaSlice.actions;

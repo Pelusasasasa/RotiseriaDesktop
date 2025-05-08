@@ -130,6 +130,6 @@ const styles = StyleSheet.create({
         fontSize: 25,
         textAlign: 'center',
         fontWeight: 'bold',
-        color: '#333',
+        color: '#fff',
     }
 })

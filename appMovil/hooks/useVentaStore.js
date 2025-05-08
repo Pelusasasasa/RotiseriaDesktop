@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import  { seccionApiFunction } from "../api/rotiseriaApi";
-import { postVenta } from "../store/venta/ventaSlice";
+import { postVenta, savingVentaFalse } from "../store/venta/ventaSlice";
 
 export const useVentaStore = () => {
 
@@ -16,13 +16,13 @@ export const useVentaStore = () => {
             venta.precio = total;
             venta.listaProductos = items;
             venta.tipoComp = 'Comprobante'
-
-            const seccionApi = await seccionApiFunctionn();
+            const seccionApi = await seccionApiFunction();
             const { data} = await seccionApi.post('/venta', venta);
 
             dispatch(postVenta());
             return data.ok;
         } catch (error) {
+            dispatch(savingVentaFalse())
             console.log(error);
             console.log(error.requres.data.msg);
         }

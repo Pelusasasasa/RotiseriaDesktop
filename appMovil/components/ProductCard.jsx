@@ -32,7 +32,7 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion='
                 <Text style={styles.info_seccion}>{seccion.nombre}</Text>
                 <Text style={styles.info_precio}>${precio.toFixed(2)}</Text>
             </View>
-            <Button label={"+"} press={press} button={styles.button}/>
+            <Button label={"+"} press={press}  estilos={styles}/>
         </View>
     )
 };
@@ -76,6 +76,9 @@ const styles = StyleSheet.create({
         width: 90,
     },
     button: {
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
         marginRight: 20,
         backgroundColor: '#e6c06a',
         borderRadius: 8,

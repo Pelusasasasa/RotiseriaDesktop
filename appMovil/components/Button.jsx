@@ -5,12 +5,11 @@ export default function Button({label, disabled, press, estilos, button}){
         <View style={estilos?.buttonContainer ? estilos.buttonContainer : styles.buttonContainer}>
             <Pressable disabled={disabled} style={estilos?.button ? ({pressed}) => [
                 estilos.button,
-                {backgroundColor: pressed ? '#4CAF50' : '#2196F3'},
-                {button}
+                {backgroundColor: pressed ? '#4CAF50' : estilos.button.backgroundColor},
                 ] : ({pressed}) => [
-                    styles.button,
-                    {backgroundColor: pressed ? '#4CAF50' : '#2196F3'},
                     button,
+                    {backgroundColor: pressed ? '#4CAF50' : button.backgroundColor},
+                    
                 ]} onPress={press}>
                 <Text style={estilos?.buttonLabel ? estilos.buttonLabel : styles.buttonLabel}>{label}</Text>
             </Pressable>
@@ -32,10 +31,10 @@ const styles = StyleSheet.create({
     },
     button: {
         borderRadius: 5,
-        backgroundColor: '#000',
         width: '100%',
         height: '100%',
         alignItems: 'center',
+        backgroundColor: '#e6c06a',
         justifyContent: 'center',
         flexDirection: 'row',
     },

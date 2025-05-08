@@ -1,12 +1,26 @@
-import { Image } from "expo-image";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import Button from "./Button";
-import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { Image } from "expo-image";
+
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { quitarItem, restarCantItem, sumarCantItem } from "../store/cart/cartSlice";
+import Button from "./Button";
 
 export default function ItemCard({_id, image, descripcion, precio, cantidad}){
     const dispatch = useDispatch();
+    const [urlImg, setUrlImg] = useState('');
+
+    useEffect(() => {
+        const cargar = async() => {
+            let urlImgGuardada = await AsyncStorage.getItem('server_url_img');
+            setUrlImg(urlImgGuardada);
+        };
+
+        cargar();
+    })
 
     const handelDeleteItem = () => {
         dispatch(quitarItem(_id));
@@ -14,7 +28,7 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
 
     return(
         <View style={styles.container}>
-            <Image source={image} style={styles.image}/>
+            <Image source={`${urlImg}${_id}.webp`} style={styles.image}/>
             <View style={styles.info}>
                 <Text style={styles.descripcion}>{descripcion}</Text>
                 <Text style={styles.precio}>${precio.toFixed(2)}</Text>
