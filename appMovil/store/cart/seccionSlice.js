@@ -11,7 +11,6 @@ export const seccionSlice = createSlice({
     reducers: {
         setActiveSeccion: (state, {payload}) =>{
             state.activeSeccion = state.secciones.find(elem => elem._id === payload._id);
-            console.log(state.activeSeccion)
         },
         getSecciones: (state, { payload }) => {
             state.secciones = payload;

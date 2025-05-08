@@ -9,8 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "plugins": [
+      "expo-router",
       [
-        "expo-router",
         "expo-build-properties",
         {
           "android": {

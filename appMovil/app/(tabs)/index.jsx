@@ -3,8 +3,6 @@ import { View, Text, TextInput, StyleSheet, FlatList } from "react-native";
 import CategoriaCard from "../../components/CategoriaCard";
 import ProductoCard from "../../components/ProductCard";
 
-
-import PlaceholderImage from '@/assets/images/adaptive-icon.png';
 import { useSelector } from "react-redux";
 import { useProductStore } from "../../hooks";
 import { useSeccionStore } from "../../hooks/useSeccionStore";
