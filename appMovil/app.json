@@ -20,7 +20,7 @@
       ]
     ],
     "splash": {
-      "image": "./assets/images/splash-icon.png",
+      "image": "./assets/images/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -31,7 +31,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.pelusaaal.appMovil"
     },
     "web": {
       "bundler": "metro",
@@ -40,6 +41,12 @@
     },
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2e94eb9f-a79f-4200-9611-01b6ef93edef"
+      }
     }
   }
 }
