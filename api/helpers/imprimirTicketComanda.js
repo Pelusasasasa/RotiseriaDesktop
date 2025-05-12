@@ -67,6 +67,8 @@ const imprimirTicketComanda = async(venta) => {
 
     //Total
     printer.alignRight();
+    printer.setTextDoubleHeight(),
+    printer.setTextDoubleWidth(),
     printer.println(`Total: $${venta.precio.toFixed(2)}`);
 
 
