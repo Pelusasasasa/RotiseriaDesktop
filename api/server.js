@@ -1,13 +1,16 @@
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./config/dataBase');
+const path = require('node:path');
 
+const connectDB = require('./config/dataBase');
 require('dotenv').config();
 
 const app = express();
 
 
 connectDB()
+
+app.use('/img', express.static(path.join(__dirname, 'imgProductos')));
 
 app.use(cors());
 app.use(express.json());

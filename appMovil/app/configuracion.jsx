@@ -11,17 +11,12 @@ export default function Configuracion(){
 
 
     const [ip, setIp] = useState('');
-    const [urlImg, setUrlImg] = useState('');
+
     
 
     useEffect(() => {
         const cargarIp = async () => {
                 const ipGuardada = await AsyncStorage.getItem('server_ip');
-                const urlImgGuardada = await AsyncStorage.getItem('server_url_img');
-
-                if(urlImgGuardada){
-                    setUrlImg(urlImgGuardada);
-                };
 
                 if(ipGuardada) {
                     setIp(ipGuardada);
@@ -38,10 +33,6 @@ export default function Configuracion(){
         Alert.alert('Error', 'Por favor, ingrese una IP válida');
         return;
     };
-
-    if(urlImg){
-        await AsyncStorage.setItem('server_url_img', urlImg);
-    }
 
     await AsyncStorage.setItem('server_ip', ip);
     
@@ -88,11 +79,6 @@ export default function Configuracion(){
                 <View style={styles.campos}>
                     <Text style={styles.campoLabel}>Ip del servidor</Text>
                     <TextInput value={ip} style={styles.campoInput} onChangeText={setIp} placeholder="ip://localhost:4000"/>
-                </View>
-
-                <View style={styles.campos}>
-                    <Text style={styles.campoLabel}>URL del servidor de imagenes</Text>
-                    <TextInput value={urlImg} style={styles.campoInput} onChangeText={setUrlImg} placeholder="http://eemplo.com.ar"/>
                 </View>
 
                 <View>

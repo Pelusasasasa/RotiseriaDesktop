@@ -35,6 +35,10 @@ body{
   margin: 0;
 }
 
+input[type="checkbox"]{
+  transform: scale(2);
+}
+
 .filtro{
   display: flex;
   justify-content: space-around;
@@ -70,6 +74,7 @@ body{
   height: 75vh;
   overflow: scroll;
 }
+
 
 table{
   width: 100%;

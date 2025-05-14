@@ -6,7 +6,7 @@ export const seccionApiFunction = async () => {
         const ip = await AsyncStorage.getItem('server_ip')
         
         const api = axios.create({
-                baseURL: ip
+                baseURL: `${ip}/rotiseria/`
         });
 
         return api;

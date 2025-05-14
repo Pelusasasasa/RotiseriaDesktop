@@ -60,7 +60,7 @@ export default function Carrito(){
                 <Text style={styles.total}>Total: </Text>
                 <Text style={styles.total}>${total.toFixed(2)}</Text>
             </View>
-            <Button label={"Confirmar Pedido"} press={() => setModal(true)} estilos={styles}/>
+            <Button disabled={items.length === 0 ? true : false} label={"Confirmar Pedido"} press={() => setModal(true)} estilos={styles}/>
             <ModalCarrito activado={modal} setModal={setModal}/>
     
         </View>

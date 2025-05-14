@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { agregarItem } from "../store/cart/cartSlice";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import seccionApiFunction from "../api/rotiseriaApi";
 
 
 export default function ProductoCard({_id, descripcion, image, precio, seccion='Empanadas'}){
@@ -13,8 +14,8 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion='
 
     useEffect(() => {
         const cargar = async() => {
-             let urlImgGuardada = await AsyncStorage.getItem('server_url_img');
-             setUrlImg(urlImgGuardada);
+             const ip = await AsyncStorage.getItem('server_ip')
+             setUrlImg(ip);
         };
 
         cargar();
@@ -26,7 +27,8 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion='
 
     return(
         <View style={styles.container}>
-            <Image source={`${urlImg}${_id}.webp`} style={styles.image}/>
+            <Image source={`${urlImg}/img/${_id}.png`} style={styles.image}/>
+            {/* <Image source={`${urlImg}${_id}.webp`} style={styles.image}/> */}
             <View style={styles.info}>
                 <Text style={styles.info_title}>{descripcion}</Text>
                 <Text style={styles.info_seccion}>{seccion.nombre}</Text>
@@ -55,8 +57,12 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 18,
         borderBottomLeftRadius: 18,
     },
+    info: {
+        width: '65%'
+    },
     info_title:{
-        fontSize: 16,
+        fontSize: 14,
+        flexWrap: 'wrap',
         paddingLeft: 5,
         paddingTop: 5,
         color: '#fff'

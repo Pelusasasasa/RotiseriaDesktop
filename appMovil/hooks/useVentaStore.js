@@ -17,8 +17,9 @@ export const useVentaStore = () => {
             venta.listaProductos = items;
             venta.tipoComp = 'Comprobante'
             const seccionApi = await seccionApiFunction();
-            const { data} = await seccionApi.post('/venta', venta);
+            const { data } = await seccionApi.post('/venta', venta);
 
+            
             dispatch(postVenta());
             return data.ok;
         } catch (error) {

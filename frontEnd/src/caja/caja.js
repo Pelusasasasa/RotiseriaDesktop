@@ -18,6 +18,8 @@ let subSeleccionado;
 const tarjeta = document.querySelector('.tarjeta');
 const contado = document.querySelector('.contado');
 
+const facturas = document.getElementById('facturas');
+
 const botonDia = document.querySelector('.botonDia');
 const botonMes = document.querySelector('.botonMes');
 const botonAnio = document.querySelector('.botonAnio');
@@ -391,6 +393,7 @@ tbodyGastos.addEventListener('click', e => {
 const listarVentas = async (ventas) => {
     tbody.innerHTML = ``;
     let lista = [];
+    console.log(ventas);
     //organizamos las ventas por fecha
     ventas.sort((a, b) => {
         if (a.fecha > b.fecha) {
@@ -400,6 +403,8 @@ const listarVentas = async (ventas) => {
         }
         return 0;
     });
+
+
     //filtramos las ventas si son contadas o tarjeta
     if (tipoVenta === "CD") {
         lista = ventas.filter(venta => (venta.tipo_venta === "CD"));
@@ -409,10 +414,16 @@ const listarVentas = async (ventas) => {
         lista = ventas.filter(venta => venta.tipo_venta === "T");
     } else {
         lista = ventas;
-    }
-    let totalVenta = 0;
-    for await (let venta of lista) {
+    };
 
+
+    if(facturas.checked){
+        lista = lista.filter(venta => venta.tipo_comp === 'Factura C' || venta.tipo_comp === 'Nota Credito C')
+    };
+
+    let totalVenta = 0;
+    const fragment = document.createDocumentFragment();
+    for await (let venta of lista) {
         const tr = document.createElement('tr');
         tr.id = venta._id;
         tr.classList.add('bold')
@@ -443,16 +454,16 @@ const listarVentas = async (ventas) => {
 
         tdAccion.appendChild(buttonAccion);
 
-        tdNumero.innerHTML = venta.numero;
-        tdFecha.innerHTML = venta.fecha.slice(0, 10).split('-', 3).reverse().join('/');
-        tdHora.innerHTML = venta.fecha.slice(11, 19).split(':', 3).join(':');
-        tdCliente.innerHTML = venta.cliente;
-        tdCodProducto.innerHTML = venta.tipo_comp;
-        tdProducto.innerHTML = venta.direccion;
+        tdNumero.innerText = venta.numero;
+        tdFecha.innerText = venta.fecha.slice(0, 10).split('-', 3).reverse().join('/');
+        tdHora.innerText = venta.fecha.slice(11, 19).split(':', 3).join(':');
+        tdCliente.innerText = venta.cliente;
+        tdCodProducto.innerText = venta.tipo_comp;
+        tdProducto.innerText = venta.direccion;
         tdCantidad.innerText = venta.telefono;
-        tdPrecioTotal.innerHTML = venta.tipo_comp === "Nota Credito C" ? redondear(venta.precio * -1, 2) : venta.precio.toFixed(2);
-        tdVendedor.innerHTML = venta.vendedor ? venta.vendedor : "";
-        tdCaja.innerHTML = venta.caja;
+        tdPrecioTotal.innerText = venta.tipo_comp === "Nota Credito C" ? redondear(venta.precio * -1, 2) : venta.precio.toFixed(2);
+        tdVendedor.innerText = venta.vendedor ? venta.vendedor : "";
+        tdCaja.innerText = venta.caja;
 
         tr.appendChild(tdNumero);
         tr.appendChild(tdFecha);
@@ -466,12 +477,12 @@ const listarVentas = async (ventas) => {
         tr.appendChild(tdHora);
         (venta.tipo_comp !== 'Nota Credito C' && !venta.notaCredito) && tr.appendChild(tdAccion);
 
-        tbody.appendChild(tr);
+        fragment.appendChild(tr);
 
         //aca listamos los productos de cada venta
         if (venta.listaProductos) {
             for await (let { cantidad, producto } of venta.listaProductos) {
-                if (producto.length !== 0) {
+                if (producto) {
                     const trProducto = document.createElement('tr');
                     trProducto.classList.add('none');
                     trProducto.classList.add(`venta${venta._id}`);
@@ -484,13 +495,13 @@ const listarVentas = async (ventas) => {
                     const tdCantidad = document.createElement('td');
                     const tdTotalProducto = document.createElement('td');
 
-                    tdNumeroProducto.innerHTML = venta.numero;
-                    tdFechaProducto.innerHTML = tdFecha.innerText;
-                    tdClienteProducto.innerHTML = venta.cliente;
-                    tdIdProducto.innerHTML = producto._id === undefined ? " " : producto._id;
-                    tdDescripcion.innerHTML = producto.descripcion;
-                    tdCantidad.innerHTML = cantidad.toFixed(2);
-                    tdTotalProducto.innerHTML = (cantidad * producto.precio).toFixed(2);
+                    tdNumeroProducto.innerText = venta.numero;
+                    tdFechaProducto.innerText = tdFecha.innerText;
+                    tdClienteProducto.innerText = venta.cliente;
+                    tdIdProducto.innerText = producto._id === undefined ? " " : producto._id;
+                    tdDescripcion.innerText = producto.descripcion;
+                    tdCantidad.innerText = cantidad.toFixed(2);
+                    tdTotalProducto.innerText = (cantidad * producto.precio).toFixed(2);
 
                     trProducto.appendChild(tdNumeroProducto);
                     trProducto.appendChild(tdFechaProducto);
@@ -500,7 +511,7 @@ const listarVentas = async (ventas) => {
                     trProducto.appendChild(tdCantidad);
                     trProducto.appendChild(tdTotalProducto);
 
-                    tbody.appendChild(trProducto);
+                    fragment.appendChild(trProducto);
                 };
             };
         }
@@ -508,8 +519,9 @@ const listarVentas = async (ventas) => {
 
         totalVenta += venta.tipo_comp === "Nota Credito C" ? venta.precio * -1 : venta.precio;
     };
+    tbody.appendChild(fragment)
     total.value = totalVenta.toFixed(2);
-}
+};
 
 const listarGastos = (gastos) => {
     tbodyGastos.innerHTML = "";
@@ -539,4 +551,6 @@ document.addEventListener('keyup', e => {
     }
 });
 
-
+facturas.addEventListener('change', () => {
+    listarVentas(ventas)
+});

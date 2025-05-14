@@ -5,6 +5,7 @@ import Button from "./Button";
 import { useForm } from "../hooks/UseForm";
 import { useDispatch } from "react-redux";
 import { savingVenta } from "../store/venta/ventaSlice";
+import CargandoPantalla from "./CargandoPantalla";
 
 const initialState = {
     nombre: '',
@@ -30,7 +31,7 @@ export default function ModalCarrito({activado, setModal}){
         if(ok){
             onResetForm();
             setModal(false);
-            emptyCart()
+            emptyCart();
         }
     };
 
@@ -89,6 +90,8 @@ export default function ModalCarrito({activado, setModal}){
                     <Button label='Confirmar' disabled={isVentaSaving} estilos={styles} press={submitPedido} />
                 </View>
             </View>
+
+            {isVentaSaving && <CargandoPantalla/>}
         </Modal>
     )
 };

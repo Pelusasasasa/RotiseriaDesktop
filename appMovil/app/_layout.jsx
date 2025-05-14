@@ -7,7 +7,7 @@ export default function Layout(){
         <Provider store={store}>
             <Stack>
                 <Stack.Screen name='(tabs)' options={{headerShown: false}}/>
-                <Stack.Screen name='Configuracion' options={{ headerShown: false }} />
+                <Stack.Screen name='configuracion' options={{ headerShown: false }} />
                 <Stack.Screen name='+not-found'/>
             </Stack>
             <StatusBar style='light' />

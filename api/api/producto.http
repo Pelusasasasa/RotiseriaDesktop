@@ -1,2 +1,2 @@
 ###GET All
-GET http://localhost:3000/rotiseria/producto
+GET http://localhost:3000/rotiseria/producto/img/probando

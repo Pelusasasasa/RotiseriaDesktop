@@ -19,10 +19,12 @@ ventaCTRL.postOne = async(req, res) => {
         await newVenta.save();
         await imprimirTicketComanda(newVenta);
 
+
         res.status(201).json({
             ok: true,
             venta: newVenta
-        });
+        });    
+        
     } catch (error) {
         console.log(error);
         res.status(500).json({

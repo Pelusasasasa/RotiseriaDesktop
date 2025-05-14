@@ -15,8 +15,8 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
 
     useEffect(() => {
         const cargar = async() => {
-            let urlImgGuardada = await AsyncStorage.getItem('server_url_img');
-            setUrlImg(urlImgGuardada);
+            const ip = await AsyncStorage.getItem('server_ip')
+            setUrlImg(ip);
         };
 
         cargar();
@@ -28,7 +28,7 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
 
     return(
         <View style={styles.container}>
-            <Image source={`${urlImg}${_id}.webp`} style={styles.image}/>
+            <Image source={`${urlImg}/img/${_id}.png`} style={styles.image}/>
             <View style={styles.info}>
                 <Text style={styles.descripcion}>{descripcion}</Text>
                 <Text style={styles.precio}>${precio.toFixed(2)}</Text>
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
         gap: 2,
         marginLeft: 'auto',
         backgroundColor: '#25292e',
-        borderRadius: 25,
+        borderRadius: 15,
     },
     buttonLabel: {
         color: '#fff',
@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
+        borderRadius: 15
     },
     buttonDelete: {
         justifyContent: 'center',
