@@ -8,10 +8,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { quitarItem, restarCantItem, sumarCantItem } from "../store/cart/cartSlice";
 import Button from "./Button";
+import ModalPrecio from "./ModalPrecio";
 
 export default function ItemCard({_id, image, descripcion, precio, cantidad}){
     const dispatch = useDispatch();
     const [urlImg, setUrlImg] = useState('');
+    const [modal, setModal] = useState(false);
     const timeOutRef = useRef(null);
 
     useEffect(() => {
@@ -29,8 +31,12 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
 
     const manejarPresionado = () => {
         timeOutRef.current = setTimeout(() => {
-            console.log('Presion LArga');
+            handleModalPrecio()
         }, 1000);
+    };
+
+    const handleModalPrecio = () => {
+        setModal(true);
     };
 
     const cancelarPresionado = () => {
@@ -38,23 +44,29 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
     };
 
     return(
-        <Pressable 
-            style={styles.container}
-             onPressIn={() => console.log(_id)}>
-            <Image source={`${urlImg}/img/${_id}.png`} style={styles.image}/>
-            <View style={styles.info}>
-                <Text style={styles.descripcion}>{descripcion}</Text>
-                <Text style={styles.precio}>${precio.toFixed(2)}</Text>
-            </View>
-            <View style={styles.acciones}>
-                <Button label={"-"} estilos={styles} press={() => dispatch(restarCantItem(_id))}/>
-                <Text style={styles.cant}>{cantidad}</Text>
-                <Button press={() => dispatch(sumarCantItem(_id))} label={"+"} estilos={styles}/>
-            </View>
-            <Pressable style={styles.buttonDelete} onPress={handelDeleteItem}>
-                <Ionicons name="trash" size={25} color={'red'} style={styles.delete}/>
+        <>
+            <Pressable 
+                style={styles.container}
+                onPressIn={manejarPresionado}
+                onPressOut={cancelarPresionado} 
+                >
+                <Image source={`${urlImg}/img/${_id}.png`} style={styles.image}/>
+                <View style={styles.info}>
+                    <Text style={styles.descripcion}>{descripcion}</Text>
+                    <Text style={styles.precio}>${precio.toFixed(2)}</Text>
+                </View>
+                <View style={styles.acciones}>
+                    <Button label={"-"} estilos={styles} press={() => dispatch(restarCantItem(_id))}/>
+                    <Text style={styles.cant}>{cantidad}</Text>
+                    <Button press={() => dispatch(sumarCantItem(_id))} label={"+"} estilos={styles}/>
+                </View>
+                <Pressable style={styles.buttonDelete} onPress={handelDeleteItem}>
+                    <Ionicons name="trash" size={25} color={'red'} style={styles.delete}/>
+                </Pressable>
             </Pressable>
-        </Pressable>
+            
+            <ModalPrecio activado={modal} id={_id} precio={precio} setModal={setModal} />
+        </>
     )
 };
 

@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setProducts } from "../store/product/productSlice";
+import { setProducts, updateProducto } from "../store/product/productSlice";
 import seccionApiFunction from "../api/rotiseriaApi";
+import {  updatePrecioItem } from "../store/cart/cartSlice";
 
 export const useProductStore = () => {
     const dispatch = useDispatch();
@@ -19,11 +20,21 @@ export const useProductStore = () => {
         
     };
 
+    const startHandlePrecio = async(id, precio) => {
+        const seccionApi = await seccionApiFunction();
+        const { data } = await seccionApi.patch(`producto/precio/${id}`, {precio});
+        if(data.ok){
+            dispatch(updateProducto(data.newProducto));
+            dispatch(updatePrecioItem(data.newProducto));
+        }
+    };
+
     return {
         //Atributos
         productos,
 
         //Metodos
-        startGetProductos
+        startGetProductos,
+        startHandlePrecio
     }
 }
