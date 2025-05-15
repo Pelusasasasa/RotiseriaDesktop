@@ -1,2 +1,10 @@
 ###GET All
-GET http://localhost:3000/rotiseria/producto/img/probando
+GET http://localhost:3000/rotiseria/producto
+
+###Patch
+PATCH http://localhost:3000/rotiseria/producto/precio/1
+Content-Type: application/json
+
+{
+    "precio": 200
+}
