@@ -31,7 +31,7 @@
     "autoprefixer": "^10.4.21",
     "axios": "^0.26.1",
     "cuit-validator": "^1.0.0",
-    "dotenv": "^16.0.1",
+    "dotenv": "^16.5.0",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-squirrel-startup": "^1.0.0",
     "electron-updater": "^6.3.9",

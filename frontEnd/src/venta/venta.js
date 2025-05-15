@@ -1,3 +1,6 @@
+require('dotenv').config();
+const URL = process.env.ROTISERIA_URL;
+
 function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -1019,8 +1022,7 @@ const listarTarjetas = async (productos) => {
                             <span id=add class=material-icons>1k</span><p class=tooltip>Docena</p>
                         </div>`
 
-        const pathIMG = path.join(__dirname, `../imgProductos/${producto._id}`);
-        img.setAttribute('src', pathIMG + ".png");
+        img.setAttribute('src', `${URL}img/${producto._id}.png`);
         img.setAttribute('alt', producto.descripcion);
 
         titulo.innerText = producto.descripcion;

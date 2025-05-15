@@ -1,3 +1,6 @@
+require('dotenv').config();
+const URL = process.env.ROTISERIA_URL;
+
 function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
@@ -25,35 +28,50 @@ const salir = document.querySelector('.salir');
 const buscador = document.querySelector('#buscarProducto');
 const seccionTarjetas = document.querySelector('.tarjetas');
 
-window.addEventListener('load',async e=>{
-    filtrar();
-    copiar();
-    categorias();
-});
+const clickEnTarjetas = (e) => {
+    
+    seleccionado && seleccionado.classList.toggle('seleccionado');
+    subSeleccionado && subSeleccionado.classList.remove('subSeleccionado');
 
+    if (e.target.classList.contains('tarjeta')) {
+        seleccionado = e.target;
+    }else if(e.target.nodeName === "IMG"){
+        seleccionado = e.target.parentNode;
+    }else if(e.target.nodeName === "H4"){
+        seleccionado = e.target.parentNode;
+    }else if(e.target.id === "precio"){
+        seleccionado = e.target.parentNode;
+    }else if(e.target.classList.contains('divBotones')){
+        seleccionado = e.target.parentNode;
+    }else if(e.target.nodeName === "BUTTON"){
+        seleccionado = e.target.parentNode.parentNode;
+    }else if(e.target.nodeName === "SPAN"){
+        seleccionado = e.target.parentNode.parentNode.parentNode.parentNode;
+    };
 
-ipcRenderer.on('informacion-a-ventana',(e,args)=>{
-    const producto = JSON.parse(args);
-    console.log(producto)
-    if (mostrarLista) {
-        const trModificado = document.getElementById(producto._id);
-        trModificado.children[1].innerHTML = producto.descripcion;
-        trModificado.children[2].innerHTML = producto.precio.toFixed(2);
-        trModificado.children[3].innerHTML = producto.stock.toFixed(2);
-        if(producto.textBold){
-            trModificado.classList.add('text-bold');
-        }else{
-            trModificado.classList.remove('text-bold');
+    if (e.target.innerHTML === "delete") {
+        sweet.fire({
+            title:"Seguro Borrar " + seleccionado.children[1].innerHTML,
+            "showCancelButton":true,
+            "confirmButtonText":"Aceptar"
+        }).then(async (result)=>{
+            if (result.isConfirmed) {
+                ipcRenderer.send('delete-producto',seleccionado.id);
+                seccionTarjetas.removeChild(seleccionado);
+            }
+        })
+    }else if(e.target.innerHTML === "edit"){
+        const opciones = {
+            path: "./productos/modificarProducto.html",
+            botones:true,
+            informacion:seleccionado.id,
+            altura:600,
+            vendedor:vendedor
         }
-    }else{
-        const divModificado = seccionTarjetas.querySelector(`.tarjetas #${CSS.escape(producto._id)}`);
-        divModificado.children[1].innerText = producto.descripcion;
-        divModificado.children[0].setAttribute('src',producto.img + "?timestamp=" + new Date().getTime())
-        document.querySelector(`.tarjetas #${CSS.escape(producto._id)} #precio`).innerText = producto.precio.toFixed(2);
-        document.querySelector(`.tarjetas #${CSS.escape(producto._id)} #stock`).innerText = producto.stock.toFixed(2);
+        ipcRenderer.send('abrir-ventana',opciones);
+        
     }
-});
-
+};
 
 const listarTarjetas = async (productos)=>{
     seccionTarjetas.innerText = "";
@@ -99,10 +117,10 @@ const listarTarjetas = async (productos)=>{
                             <span id=add class=material-icons>1k</span><p class=tooltip>Docena</p>
                         </div>`
 
-        const pathIMG = path.join(__dirname,`../imgProductos/${producto._id}`);
-        img.setAttribute('src',pathIMG + ".png");
+        
+
+        img.setAttribute('src', `${URL}img/${producto._id}.png`);
         img.setAttribute('alt',producto.descripcion);
-        img.addEventListener('click',mandarProducto);
         agregar.addEventListener('click',mandarProducto);
         x6.addEventListener('click',mandarMediaDocena);
         x12.addEventListener('click',mandarDocena);
@@ -154,7 +172,7 @@ const listarTarjetas = async (productos)=>{
 
         seccionTarjetas.appendChild(div);
     }
-}
+};
 
 const filtrar = async()=>{
     let condicion = seleccion.value;
@@ -169,99 +187,60 @@ const filtrar = async()=>{
     producto.length !== 0 && listarTarjetas(producto);
 };
 
-buscador.addEventListener('keyup',e=>{
-    if ((buscador.value === "" && e.keyCode === 40) || (buscador.value === "" && e.keyCode === 39)) {
-        buscador.blur();
+const categorias = async() => {
+    const divCategorias = document.querySelector('.categorias');
+    const secciones = JSON.parse(await ipcRenderer.invoke('get-secciones'));
+    for await(let seccion of secciones){
+        const button = document.createElement('button');
+        button.innerText = seccion.nombre;
+        button.id = seccion._id;
+        divCategorias.appendChild(button);
+
+
+        button.addEventListener('click',mostrarProductosPorCategoria);
     }
-});
+};
 
-buscador.addEventListener('keyup',filtrar);
+//funcion para enviar docena de empanadas de un sabor
+const mandarDocena = async(e) => {
+    seleccionado = e.target.parentNode.parentNode.parentNode.parentNode;
+    const {isConfirmed} = await sweet.fire({
+        title:`Docena de ${seleccionado.children[1].innerText}?`,
+        showCancelButton:true,
+        confirmButtonText:"Aceptar"
+    });
 
-
-seccionTarjetas.addEventListener('click',clickEnTarjetas);
-
-agregar.addEventListener('click',e=>{
-    const opciones = {
-        path: "./productos/agregarProducto.html",
-        botones:true,
-        altura:600,
-        vendedor:vendedor
-    }
-    ipcRenderer.send('abrir-ventana',opciones);
-});
-
-//Vemos si llega una informacion de que se abrio desde otra ventana 
-ipcRenderer.on('informacion',async (e,args)=>{
-    const botones = args.botones;
-    if(!botones){
-        const botones = document.querySelector('.botones');
-        botones.classList.add('none');
-        ventanaSecundaria = true;
-        seleccion.value = "descripcion";
-        await filtrar();
-    }
-});
-
-body.addEventListener('keypress',e=>{
-    if (document.activeElement.nodeName !== "INPUT") {
-        if (e.key === "Enter" && ventanaSecundaria){
-            console.log(seleccionado)
-            if (seleccionado) {
-            }else{
-                sweet.fire({title:"Producto no seleccionado"});
-            }
-        }
-    }
-});
-
-
-function clickEnTarjetas(e) {
-    
-    seleccionado && seleccionado.classList.toggle('seleccionado');
-    subSeleccionado && subSeleccionado.classList.remove('subSeleccionado');
-
-    if (e.target.classList.contains('tarjeta')) {
-        seleccionado = e.target;
-    }else if(e.target.nodeName === "IMG"){
-        seleccionado = e.target.parentNode;
-    }else if(e.target.nodeName === "H4"){
-        seleccionado = e.target.parentNode;
-    }else if(e.target.id === "precio"){
-        seleccionado = e.target.parentNode;
-    }else if(e.target.classList.contains('divBotones')){
-        seleccionado = e.target.parentNode;
-    }else if(e.target.nodeName === "BUTTON"){
-        seleccionado = e.target.parentNode.parentNode;
-    }else if(e.target.nodeName === "SPAN"){
-        seleccionado = e.target.parentNode.parentNode.parentNode.parentNode;
-    };
-
-    if (e.target.innerHTML === "delete") {
-        sweet.fire({
-            title:"Seguro Borrar " + seleccionado.children[1].innerHTML,
-            "showCancelButton":true,
-            "confirmButtonText":"Aceptar"
-        }).then(async (result)=>{
-            if (result.isConfirmed) {
-                ipcRenderer.send('delete-producto',seleccionado.id);
-                seccionTarjetas.removeChild(seleccionado);
-            }
-        })
-    }else if(e.target.innerHTML === "edit"){
-        const opciones = {
-            path: "./productos/modificarProducto.html",
-            botones:true,
+    if (isConfirmed) {
+        ipcRenderer.send('enviar',{
             informacion:seleccionado.id,
-            altura:600,
-            vendedor:vendedor
-        }
-        ipcRenderer.send('abrir-ventana',opciones);
-        
+            cantidad:"12",
+            tipo:"producto",
+            descripcion:seleccionado.children[1].innerHTML
+        })
+    }
+};
+
+//funcion para enviar media docena de empanadas de un sabor
+const mandarMediaDocena = async(e) => {
+    seleccionado = e.target.parentNode.parentNode.parentNode.parentNode
+    const {isConfirmed} = await sweet.fire({
+        title:`Media Docena de ${seleccionado.children[1].innerText}?`,
+        showCancelButton:true,
+        confirmButtonText:"Aceptar"
+    });
+
+    if (isConfirmed) {
+        ipcRenderer.send('enviar',{
+            informacion:seleccionado.id,
+            cantidad:"6",
+            tipo:"producto",
+            descripcion:seleccionado.children[1].innerHTML
+        })
     }
 };
 
 
-async function mandarProducto(e) {
+const mandarProducto = async(e) => {
     if (ventanaSecundaria) {
         const {isConfirmed,value} = await sweet.fire({
             title:"Cantidad a Agregar",
@@ -282,43 +261,81 @@ async function mandarProducto(e) {
     buscador.focus();
 };
 
-//funcion para enviar media docena de empanadas de un sabor
-async function mandarMediaDocena(e) {
-    seleccionado = e.target.parentNode.parentNode.parentNode.parentNode
-    const {isConfirmed} = await sweet.fire({
-        title:`Media Docena de ${seleccionado.children[1].innerText}?`,
-        showCancelButton:true,
-        confirmButtonText:"Aceptar"
-    });
+const mostrarProductosPorCategoria = async(e) => {
+    const id = e.target.id;
 
-    if (isConfirmed) {
-        ipcRenderer.send('enviar',{
-            informacion:seleccionado.id,
-            cantidad:"6",
-            tipo:"producto",
-            descripcion:seleccionado.children[1].innerHTML
-        })
-    }
+    if(e.target.innerText === 'TODOS'){
+        filtrar();
+    }else{
+        const productos = JSON.parse(await ipcRenderer.invoke('gets-productos-for-seccion',id));
+        listarTarjetas(productos);
+    };
+    
+
 };
 
-//funcion para enviar docena de empanadas de un sabor
-async function mandarDocena(e){
-    seleccionado = e.target.parentNode.parentNode.parentNode.parentNode;
-    const {isConfirmed} = await sweet.fire({
-        title:`Docena de ${seleccionado.children[1].innerText}?`,
-        showCancelButton:true,
-        confirmButtonText:"Aceptar"
-    });
 
-    if (isConfirmed) {
-        ipcRenderer.send('enviar',{
-            informacion:seleccionado.id,
-            cantidad:"12",
-            tipo:"producto",
-            descripcion:seleccionado.children[1].innerHTML
-        })
+ipcRenderer.on('informacion-a-ventana',(e,args)=>{
+    const producto = JSON.parse(args);
+    if (mostrarLista) {
+        const trModificado = document.getElementById(producto._id);
+        trModificado.children[1].innerHTML = producto.descripcion;
+        trModificado.children[2].innerHTML = producto.precio.toFixed(2);
+        trModificado.children[3].innerHTML = producto.stock.toFixed(2);
+        if(producto.textBold){
+            trModificado.classList.add('text-bold');
+        }else{
+            trModificado.classList.remove('text-bold');
+        }
+    }else{
+        const divModificado = seccionTarjetas.querySelector(`.tarjetas #${CSS.escape(producto._id)}`);
+        divModificado.children[1].innerText = producto.descripcion;
+        divModificado.children[0].setAttribute('src',producto.img + "?timestamp=" + new Date().getTime())
+        document.querySelector(`.tarjetas #${CSS.escape(producto._id)} #precio`).innerText = producto.precio.toFixed(2);
+        document.querySelector(`.tarjetas #${CSS.escape(producto._id)} #stock`).innerText = producto.stock.toFixed(2);
     }
-};
+});
+
+buscador.addEventListener('keyup',e=>{
+    if ((buscador.value === "" && e.keyCode === 40) || (buscador.value === "" && e.keyCode === 39)) {
+        buscador.blur();
+    }
+});
+
+buscador.addEventListener('keyup',filtrar);
+seccionTarjetas.addEventListener('click',clickEnTarjetas);
+
+agregar.addEventListener('click',e=>{
+    const opciones = {
+        path: "./productos/agregarProducto.html",
+        botones:true,
+        altura:600,
+        vendedor:vendedor
+    }
+    ipcRenderer.send('abrir-ventana',opciones);
+});
+
+//Vemos si llega una informacion de que se abrio desde otra ventana 
+
+body.addEventListener('keypress',e=>{
+    if (document.activeElement.nodeName !== "INPUT") {
+        if (e.key === "Enter" && ventanaSecundaria){
+            console.log(seleccionado)
+            if (seleccionado) {
+            }else{
+                sweet.fire({title:"Producto no seleccionado"});
+            }
+        }
+    }
+});
+
+
+window.addEventListener('load',async e=>{
+    filtrar();
+    copiar();
+    categorias();
+});
+
 
 salir.addEventListener('click',e=>{
     location.href = "../menu.html";
@@ -333,23 +350,14 @@ document.addEventListener("keydown",e=>{
     recorrerFlechas(e.keyCode);
 });
 
-async function categorias(){
-    const divCategorias = document.querySelector('.categorias');
-    const secciones = JSON.parse(await ipcRenderer.invoke('get-secciones'));
-    for await(let seccion of secciones){
-        const button = document.createElement('button');
-        button.innerText = seccion.nombre;
-        button.id = seccion.nombre;
-        divCategorias.appendChild(button);
 
-
-        button.addEventListener('click',mostrarProductosPorCategoria);
+ipcRenderer.on('informacion',async (e,args)=>{
+    const botones = args.botones;
+    if(!botones){
+        const botones = document.querySelector('.botones');
+        botones.classList.add('none');
+        ventanaSecundaria = true;
+        seleccion.value = "descripcion";
+        await filtrar();
     }
-};
-
-async function mostrarProductosPorCategoria(e){
-    const id = e.target.id;
-    const productos = JSON.parse(await ipcRenderer.invoke('gets-productos-for-seccion',id));
-    listarTarjetas(productos)
-
-}
+});

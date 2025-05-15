@@ -10,7 +10,7 @@ const app = express();
 
 connectDB()
 
-app.use('/img', express.static(path.join(__dirname, 'imgProductos')));
+app.use('/rotiseria/img', express.static(path.join(__dirname, 'imgProductos')));
 
 app.use(cors());
 app.use(express.json());
