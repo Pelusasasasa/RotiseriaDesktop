@@ -1,4 +1,4 @@
-import {  StyleSheet, Text, View } from "react-native";
+import {  StyleSheet, Pressable, Text, View } from "react-native";
 import { Image } from 'expo-image';
 import Button from "./Button";
 import { useDispatch } from "react-redux";
@@ -26,7 +26,12 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion='
     };
 
     return(
-        <View style={styles.container}>
+        <Pressable style={
+            ({pressed}) => [
+                styles.container,
+                {opacity: pressed ? 0.3 : 1}
+            ]
+        } onPress={press}>
             <Image source={`${urlImg}/img/${_id}.png`} style={styles.image}/>
             {/* <Image source={`${urlImg}${_id}.webp`} style={styles.image}/> */}
             <View style={styles.info}>
@@ -35,7 +40,7 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion='
                 <Text style={styles.info_precio}>${precio.toFixed(2)}</Text>
             </View>
             <Button label={"+"} press={press}  estilos={styles}/>
-        </View>
+        </Pressable>
     )
 };
 

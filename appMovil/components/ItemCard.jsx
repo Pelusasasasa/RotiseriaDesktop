@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Image } from "expo-image";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -12,6 +12,7 @@ import Button from "./Button";
 export default function ItemCard({_id, image, descripcion, precio, cantidad}){
     const dispatch = useDispatch();
     const [urlImg, setUrlImg] = useState('');
+    const timeOutRef = useRef(null);
 
     useEffect(() => {
         const cargar = async() => {
@@ -20,14 +21,26 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
         };
 
         cargar();
-    })
+    });
 
     const handelDeleteItem = () => {
         dispatch(quitarItem(_id));
     };
 
+    const manejarPresionado = () => {
+        timeOutRef.current = setTimeout(() => {
+            console.log('Presion LArga');
+        }, 1000);
+    };
+
+    const cancelarPresionado = () => {
+        clearTimeout(timeOutRef.current)
+    };
+
     return(
-        <View style={styles.container}>
+        <Pressable 
+            style={styles.container}
+             onPressIn={() => console.log(_id)}>
             <Image source={`${urlImg}/img/${_id}.png`} style={styles.image}/>
             <View style={styles.info}>
                 <Text style={styles.descripcion}>{descripcion}</Text>
@@ -41,7 +54,7 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
             <Pressable style={styles.buttonDelete} onPress={handelDeleteItem}>
                 <Ionicons name="trash" size={25} color={'red'} style={styles.delete}/>
             </Pressable>
-        </View>
+        </Pressable>
     )
 };
 
@@ -59,7 +72,8 @@ const styles = StyleSheet.create({
     image: {
         width: 70,
         height: 70,
-        borderRadius: 18,
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
         backgroundColor: '#fff',
     },
     info: {
