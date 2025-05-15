@@ -1,10 +1,10 @@
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 
-export default function CargandoPantalla() {
+export default function CargandoPantalla({label = 'Procesando Pedido'}) {
   return (
     <View style={styles.container}>
       <ActivityIndicator size={90} color="red" />
-      <Text style={styles.text}>Procesando Pedido</Text>
+      <Text style={styles.text}>{label}</Text>
     </View>
   );
 }

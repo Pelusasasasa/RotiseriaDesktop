@@ -5,9 +5,13 @@ export const cartSlice = createSlice({
     name: 'cart',
     initialState: {
         items: [],
-        total: 0
+        total: 0,
+        isCartSaving: false
     },
     reducers: {
+        savingCart: (state) => {
+            state.isCartSaving = true
+        },
         setEmptyCartValues: (state) => {
             state.items = [];
             state.total = 0;
@@ -68,10 +72,11 @@ export const cartSlice = createSlice({
                 return elem
             });
             state.total = state.items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            state.isCartSaving = false
         }
     }
 });
 
 
 // Action creators are generated for each case reducer function
-export const { agregarItem, quitarItem, restarCantItem, setEmptyCartValues, sumarCantItem, updatePrecioItem } = cartSlice.actions;
+export const { agregarItem, quitarItem, restarCantItem, savingCart, setEmptyCartValues, sumarCantItem, updatePrecioItem } = cartSlice.actions;

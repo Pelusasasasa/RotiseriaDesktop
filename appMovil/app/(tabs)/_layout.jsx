@@ -37,14 +37,16 @@ export default function Layout(){
                     <Ionicons name={focused ? 'home-sharp' :'home-outline'} color={color} size={24} />
                 )
             }}/>
-            <Tabs.Screen name='carrito' options={{
-                title: 'Carrito',
-                tabBarIcon: ({color, focused}) => (
-                    <View style={styles.container}>
-                        <Ionicons name={focused ? 'cart' :'cart-outline'} color={color} size={24} />
-                        <Text style={styles.cant}>{items.reduce((sum, item) => sum + item.cantidad, 0 )}</Text>
-                    </View>
-                )
+            <Tabs.Screen 
+                name='carrito' 
+                options={{
+                    headerShown: false,
+                    tabBarIcon: ({color, focused}) => (
+                        <View style={styles.container}>
+                            <Ionicons name={focused ? 'cart' :'cart-outline'} color={color} size={24} />
+                            <Text style={styles.cant}>{items.reduce((sum, item) => sum + item.cantidad, 0 )}</Text>
+                        </View>
+                    )
                 }}/>
                 
         </Tabs>

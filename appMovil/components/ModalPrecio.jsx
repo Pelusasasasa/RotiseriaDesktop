@@ -4,11 +4,11 @@ import { useProductStore } from "../hooks/useProductStore";
 import { useState } from "react";
 
 export default function ModalPrecio({activado, id, setModal, precio = 0}){
-    const  { startHandlePrecio } = useProductStore();
+    const  {startHandlePrecio } = useProductStore();
     const [newPrecio, setNewPrecio] = useState(precio);
 
     const cambiarPrecio = () => {
-        startHandlePrecio(id, newPrecio);
+        startHandlePrecio(id, !newPrecio ? precio : newPrecio );
         setModal(false);
     };
 

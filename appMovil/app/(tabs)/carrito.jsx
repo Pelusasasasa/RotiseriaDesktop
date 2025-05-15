@@ -1,18 +1,22 @@
 import { StyleSheet, FlatList, Text, View } from "react-native";
-import { useCartStore } from "../../hooks";
+import { useCartStore, useProductStore } from "../../hooks";
 import { useState } from "react";
 
 import ItemCard from "../../components/ItemCard";
 import Button from "../../components/Button";
 import ModalCarrito from "../../components/ModalCarrito";
 import { Ionicons } from "@expo/vector-icons";
+import CargandoPantalla from "../../components/CargandoPantalla";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Carrito(){
     const { items, total } = useCartStore();
+    const { isSavingProduct } = useProductStore();
     const [modal, setModal] = useState(false);
     
     return(
-        <View style={styles.container}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#25292e' }}>
+            <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>Pedido Actual</Text>
                 <Text style={styles.cantItems}>{items.reduce((sum, item) => sum + item.cantidad, 0)} items</Text>
@@ -62,8 +66,10 @@ export default function Carrito(){
             </View>
             <Button disabled={items.length === 0 ? true : false} label={"Confirmar Pedido"} press={() => setModal(true)} estilos={styles}/>
             <ModalCarrito activado={modal} setModal={setModal}/>
-    
+            {isSavingProduct && <CargandoPantalla label='Cambiando Precio'/>}
         </View>
+        </SafeAreaView>
+        
     )
 }
 const styles = StyleSheet.create({

@@ -3,11 +3,15 @@ import { createSlice } from '@reduxjs/toolkit';
 export const productSlice = createSlice({
     name: 'product',
     initialState: {
-        productos: []
+        productos: [],
+        isSavingProduct: false
     },
     reducers: {
         emptySetProducts: (state) => {
             state.productos = [];
+        },
+        savingProduct: (state) => {
+            state.isSavingProduct = true
         },
         setProducts: (state, {payload} ) => {
             state.productos = payload;
@@ -20,10 +24,11 @@ export const productSlice = createSlice({
 
                 return elem;
             });
-        }
+            state.isSavingProduct = false
+        },
     }
 });
 
 
 // Action creators are generated for each case reducer function
-export const { emptySetProducts, setProducts, updateProducto } = productSlice.actions;
+export const { emptySetProducts, savingProduct, setProducts, updateProducto } = productSlice.actions;

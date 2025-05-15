@@ -16,6 +16,7 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
     const [modal, setModal] = useState(false);
     const timeOutRef = useRef(null);
 
+    //Cargamos la ip inicial
     useEffect(() => {
         const cargar = async() => {
             const ip = await AsyncStorage.getItem('server_ip')
@@ -23,22 +24,25 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
         };
 
         cargar();
-    });
+    }, []);
 
     const handelDeleteItem = () => {
         dispatch(quitarItem(_id));
     };
 
+    //Es para saber si se mantiene presionado el card
     const manejarPresionado = () => {
         timeOutRef.current = setTimeout(() => {
             handleModalPrecio()
-        }, 1000);
+        }, 750);
     };
 
+    //Si se presiona por cierto tiempo se abre el mdoal para cambiar el precio
     const handleModalPrecio = () => {
         setModal(true);
     };
 
+    //Cundo soltamos el card se reinicial el contador
     const cancelarPresionado = () => {
         clearTimeout(timeOutRef.current)
     };
