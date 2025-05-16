@@ -38,7 +38,8 @@ const Producto = new mongoose.Schema({
         default:""
     },
     seccion:{
-        type:String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Seccion',
         default:""
     }
 

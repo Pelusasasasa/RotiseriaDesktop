@@ -337,7 +337,7 @@ ipcMain.handle('get-producto', async (e, id) => {
 });
 
 ipcMain.handle('gets-productos', async (e, args) => {
-  const productos = await Producto.find().sort({ _id: 1 });
+  const productos = await Producto.find().sort({ _id: 1 }).populate('Seccion');
   return JSON.stringify(productos);
 });
 
