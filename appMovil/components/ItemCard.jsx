@@ -54,7 +54,7 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
                 onPressIn={manejarPresionado}
                 onPressOut={cancelarPresionado} 
                 >
-                <Image source={`${urlImg}/img/${_id}.png`} style={styles.image}/>
+                <Image source={`${urlImg}/rotiseria/img/${_id}.png`} style={styles.image}/>
                 <View style={styles.info}>
                     <Text style={styles.descripcion}>{descripcion}</Text>
                     <Text style={styles.precio}>${precio.toFixed(2)}</Text>

@@ -32,7 +32,7 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion='
                 {opacity: pressed ? 0.3 : 1}
             ]
         } onPress={press}>
-            <Image source={`${urlImg}/img/${_id}.png`} style={styles.image}/>
+            <Image source={`${urlImg}/rotiseria/img/${_id}.png`} style={styles.image}/>
             {/* <Image source={`${urlImg}${_id}.webp`} style={styles.image}/> */}
             <View style={styles.info}>
                 <Text style={styles.info_title}>{descripcion}</Text>

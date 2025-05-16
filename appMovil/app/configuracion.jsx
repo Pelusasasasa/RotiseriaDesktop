@@ -51,7 +51,7 @@ export default function Configuracion(){
                         <Ionicons name="people-outline" size={24}  />
                         Informacion del negocio
                     </Text>
-                <Text style={styles.subTitle}>configura la informacio basica del negocio</Text>
+                <Text style={styles.subTitle}>configura la informacio basica del negocios</Text>
 
                 <View >
                     <View style={styles.campos}>
