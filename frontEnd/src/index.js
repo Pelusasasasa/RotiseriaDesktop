@@ -332,17 +332,18 @@ ipcMain.on('post-producto', async (e, args) => {
 });
 
 ipcMain.handle('get-producto', async (e, id) => {
-  const producto = await Producto.findOne({ _id: id });
+  const producto = await Producto.findOne({ _id: id }).populate('seccion', ["codigo", "nombre"]);
   return JSON.stringify(producto)
 });
 
 ipcMain.handle('gets-productos', async (e, args) => {
-  const productos = await Producto.find().sort({ _id: 1 }).populate('Seccion');
+  const productos = await Producto.find().populate('seccion', ["codigo", "nombre"]).sort({ _id: 1 });
+  console.log(productos);
   return JSON.stringify(productos);
 });
 
 ipcMain.handle('gets-productos-for-seccion', async (e, seccion) => {
-  const productos = await Producto.find({ seccion: seccion });
+  const productos = await Producto.find({ seccion: seccion }).populate('seccion', ["codigo", "nombre"]);
   return JSON.stringify(productos);
 })
 
@@ -358,7 +359,7 @@ ipcMain.handle('gets-productos-for-descripcion-and-seleccion', async (e, args) =
     } else {
       re = new RegExp(`${descripcion}`);
     };
-    productos = await Producto.find({ [condicion]: { $regex: re, $options: 'i' } });
+    productos = await Producto.find({ [condicion]: { $regex: re, $options: 'i' } }).populate('seccion', ["codigo", "nombre"]);
   }
   return JSON.stringify(productos);
 });

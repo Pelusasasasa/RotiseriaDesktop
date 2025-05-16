@@ -161,8 +161,8 @@ const listarTarjetas = async (productos)=>{
         divBotones.appendChild(modificar);
         divBotones.appendChild(eliminar);
         divBotones.appendChild(agregar);
-        producto.seccion === "EMPANADAS" && divBotones.appendChild(x6);
-        producto.seccion === "EMPANADAS" && divBotones.appendChild(x12);
+        producto.seccion.nombre === "EMPANADAS" && divBotones.appendChild(x6);
+        producto.seccion.nombre === "EMPANADAS" && divBotones.appendChild(x12);
 
         div.appendChild(img)
         div.appendChild(titulo);

@@ -486,10 +486,8 @@ const listarProducto = async (id) => {
             totalGlobal = parseFloat(total.value);
         };
 
-
-        if (producto.seccion === "EMPANADAS") {
+        if (producto.seccion?.nombre === "EMPANADAS") {
             await calcularTotal();
-
             await calcularEmpanadas(producto, cantidad);
         };
 
@@ -583,8 +581,7 @@ tbody.addEventListener('click', async e => {
                 tbody.removeChild(seleccionado);
                 calcularTotal();
                 const productoABorrar = listaProductos.findIndex(({ producto, cantidad }) => seleccionado.id === producto.idTabla);
-                console.log(listaProductos[productoABorrar])
-                if (listaProductos[productoABorrar].producto.seccion === "EMPANADAS") {
+                if (listaProductos[productoABorrar].producto.seccion?.nombre === "EMPANADAS") {
                     empanadas -= parseFloat(seleccionado.children[1].innerText)
                 }
                 listaProductos.splice(productoABorrar, 1);
@@ -729,7 +726,6 @@ cuit.addEventListener('keypress', e => {
 telefono.addEventListener('keypress', async e => {
     if (e.keyCode === 13) {
         const cliente = JSON.parse(await ipcRenderer.invoke('trearClientePorTelefono', (telefono.value).trim()));
-        console.log(cliente)
         codigo.value = cliente._id;
         nombre.value = cliente.nombre;
         cuit.value = cliente.cuit;
@@ -804,33 +800,15 @@ async function calcularTotal() {
     };
 
     total.value = redondear(aux, 2);
-    // console.log(total.value)
 };
 
 async function calcularEmpanadas(producto, cantidadProducto) {
-    empanadas = producto.seccion === "EMPANADAS" ? empanadas + parseFloat(cantidad.value) : empanadas;
-
-    // console.log(empanadas)
-
-    // let adicioanles;
-    // let total = 0;
-    // if (empanadas >= 12){
-    //     const docenas = Math.floor( empanadas / 12);
-    //     total += docenas * precioEmpanadas.docena;
-    //     adicioanles = empanadas - 12;
-    // };
-
-    // if (empanadas >= 6){
-    //     total += precioEmpanadas.mediaDocena;
-    //     empanadas -= 6;
-    // };
-
-    // return total;
+    empanadas = producto.seccion?.nombre === "EMPANADAS" ? empanadas + parseFloat(cantidad.value) : empanadas;
 
     if (empanadas % 12 === 0 && empanadas !== 0) {
         let aux = precioEmpanadas.docena / 12;
         for await (let { cantidad, producto } of listaProductos) {
-            if (producto.seccion === "EMPANADAS") {
+            if (producto.seccion?.nombre === "EMPANADAS") {
                 producto.precio = aux;
                 cambiarTr(producto.idTabla, producto.precio, cantidad)
             }
@@ -841,7 +819,7 @@ async function calcularEmpanadas(producto, cantidadProducto) {
         //Si es media docena
         let aux = precioEmpanadas.mediaDocena / 6;
         for await (let { cantidad, producto } of listaProductos) {
-            if (producto.seccion === "EMPANADAS") {
+            if (producto.seccion?.nombre === "EMPANADAS") {
                 producto.precio = aux;
                 cambiarTr(producto.idTabla, producto.precio, cantidad);
             }
@@ -859,7 +837,7 @@ async function calcularEmpanadas(producto, cantidadProducto) {
         }
 
         for await (let { cantidad: cant, producto } of listaProductos) {
-            if (producto.seccion === "EMPANADAS") {
+            if (producto.seccion?.nombre === "EMPANADAS") {
                 producto.precio = precioEmpanadas.mediaDocena / 6;
                 cambiarTr(producto.idTabla, producto.precio, cant);
                 totalEmpanadas += (producto.precio * cant);
@@ -893,7 +871,7 @@ async function calcularEmpanadas(producto, cantidadProducto) {
 
 
         for await (let { cantidad, producto } of listaProductos) {
-            if (producto.seccion === "EMPANADAS") {
+            if (producto.seccion?.nombre === "EMPANADAS") {
                 const precio = JSON.parse(await ipcRenderer.invoke('get-producto', producto._id)).precio;
                 producto.precio = precio;
                 cambiarTr(producto.idTabla, producto.precio, cantidad);
@@ -934,8 +912,6 @@ const filtrar = async (e) => {
 const clickEnTarjetas = async (e) => {
 
     seleccionado && seleccionado.classList.toggle('seleccionado');
-
-    // console.log(e.target)
 
     if (e.target.classList.contains('tarjeta')) {
         seleccionado = e.target;
@@ -1045,10 +1021,9 @@ const listarTarjetas = async (productos) => {
                 <p id=stock>${stock.innerHTML}</p>
             </div>
         `;
-
         divBotones.appendChild(agregar);
-        producto.seccion === "EMPANADAS" && divBotones.appendChild(x6);
-        producto.seccion === "EMPANADAS" && divBotones.appendChild(x12);
+        producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x6);
+        producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x12);
 
         div.appendChild(img);
         div.appendChild(titulo);

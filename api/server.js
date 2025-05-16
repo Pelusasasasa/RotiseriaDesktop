@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('node:path');
 
 const connectDB = require('./config/dataBase');
+const convertirIds = require('./helpers/PasarAObjectId');
 require('dotenv').config();
 
 const app = express();
@@ -22,5 +23,6 @@ app.use('/rotiseria/venta', require('./routes/venta.routes'));
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
+    convertirIds()
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 })
