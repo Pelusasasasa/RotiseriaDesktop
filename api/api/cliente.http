@@ -1,0 +1,20 @@
+###POST One Cliente
+
+POST http://localhost:3000/rotiseria/cliente
+Content-Type: application/json
+
+{
+    "nombre": "Juan Perez",
+    "telefono": "123456789",
+    "direccion": "Calle Falsa 123",
+    "localidad": "CABA",
+    "cuit": "27165767433",
+    "condicionIva": "Consumidor Final"
+}
+
+
+###GET All Clientes
+GET http://localhost:3000/rotiseria/cliente
+
+###GET One Cliente
+GET http://localhost:3000/rotiseria/cliente/128

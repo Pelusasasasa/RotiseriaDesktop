@@ -4,7 +4,7 @@ const Producto = require('../models/Producto');
 
 productoCTRL.getAll = async(req, res) => {
     try {
-        const productos = await Producto.find().populate('seccion');
+        const productos = await Producto.find().populate('seccion', ['nombre', 'codigo']);
 
         res.status(200).json({
             ok: true,
