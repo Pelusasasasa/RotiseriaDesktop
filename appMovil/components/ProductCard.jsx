@@ -36,7 +36,7 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion='
             {/* <Image source={`${urlImg}${_id}.webp`} style={styles.image}/> */}
             <View style={styles.info}>
                 <Text style={styles.info_title}>{descripcion}</Text>
-                <Text style={styles.info_seccion}>{seccion.nombre}</Text>
+                <Text style={styles.info_seccion}>{seccion?.nombre}</Text>
                 <Text style={styles.info_precio}>${precio.toFixed(2)}</Text>
             </View>
             <Button label={"+"} press={press}  estilos={styles}/>

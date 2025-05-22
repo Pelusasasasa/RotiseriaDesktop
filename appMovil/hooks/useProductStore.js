@@ -3,10 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { savingProduct, setProducts, updateProducto } from "../store/product/productSlice";
 import seccionApiFunction from "../api/rotiseriaApi";
 import {  updatePrecioItem } from "../store/cart/cartSlice";
+import { useState } from "react";
 
 export const useProductStore = () => {
     const dispatch = useDispatch();
     const {productos, isSavingProduct} = useSelector(state => state.product);
+    const [error, setError] = useState(false);
 
     const startSaving = async() => {
         dispatch(savingProduct());
@@ -18,7 +20,11 @@ export const useProductStore = () => {
             const { data } = await seccionApi.get('producto')
             dispatch(setProducts(data.productos));
         } catch (error) {
-            console.log(error.request)
+            if (err.message.includes("Failed to connect") || err.message.includes("Network request failed") || err.message.includes("ERR_NETWORK")) {
+                setError('Error con el servidor, fijese si esta conectado a la red o el servidor esta funcionando')
+            }else{
+                setError(error)
+            }
         }
 
         

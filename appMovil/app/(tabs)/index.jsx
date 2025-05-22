@@ -6,6 +6,7 @@ import ProductoCard from "../../components/ProductCard";
 import { useSelector } from "react-redux";
 import { useProductStore } from "../../hooks";
 import { useSeccionStore } from "../../hooks/useSeccionStore";
+import CargandoPantalla from "../../components/CargandoPantalla";
 
 
 
@@ -45,6 +46,15 @@ export default function Home(){
             
     }, [activeSeccion]);
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            startGetProductos()
+        }, 10000);
+
+        return () => clearInterval(interval);
+    }, [])
+    
+
     return(
         <View style={styles.container}>
             <Text style={styles.title}>Rotiseria - Nuevo Pedido</Text>
@@ -61,14 +71,17 @@ export default function Home(){
                 )}
             />
 
-            <FlatList
+            {filterProducts.length === 0 
+            ? <CargandoPantalla label="Cargando Productos" />
+            : <FlatList
                 style={styles.productoContainer}
                 data={filterProducts}
                 keyExtractor={(item) => item._id}
                 renderItem={({item}) => (
                     <ProductoCard {...item} key={item._id} />
                 )}
-            />
+            />}
+            
             
         </View>
     )

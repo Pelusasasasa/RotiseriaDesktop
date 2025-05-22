@@ -9,14 +9,35 @@ const Producto = new Schema({
         type: String,
         required:true
     },
-    
+    provedor: {
+        type: String,
+        default: ''
+    },
+    stock: {
+        type: Number,
+        required: true,
+    },
+    costo: {
+        type: Number,
+        required: true,
+    },
+    ganancia:{
+        type: Number,
+        required:true
+    },
     precio:{
         type:Number,
         required:true
     },
+    textBold:{
+        type:Boolean,
+        default: false
+    },
+    
     seccion:{
         type: Schema.Types.ObjectId,
         ref: 'Seccion',
+        default: ''
     }
 }, {
     timestamps: true,

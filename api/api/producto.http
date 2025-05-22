@@ -1,6 +1,23 @@
 ###GET All
 GET http://localhost:3000/rotiseria/producto
 
+###GET ONE
+GET http://localhost:3000/rotiseria/producto/15
+
+###GET FOR SECCION
+GET http://localhost:3000/rotiseria/producto/forSeccion/66e846d2402a00027f297b4a
+
+###PUT ONE
+PATCH http://localhost:3000/rotiseria/producto/1
+Content-Type: application/json
+
+{
+    "provedor": "AGUSTIN"
+}
+
+###Delete One
+DELETE http://localhost:3000/rotiseria/producto/128
+
 ###Patch
 PATCH http://localhost:3000/rotiseria/producto/precio/1
 Content-Type: application/json
@@ -8,3 +25,16 @@ Content-Type: application/json
 {
     "precio": 200
 }
+
+###Descontar Stock
+PATCH http://localhost:3000/rotiseria/producto/forStock
+Content-Type: application/json
+
+[
+    {
+        "producto": {
+            "_id": "1",
+            "stock": 1,
+        }
+    }
+]

@@ -278,6 +278,8 @@ const hacerMenu = () => {
 
 
 //Base de datos
+
+//Clientes
 ipcMain.handle('ultimo-Id-Cliente', async (e, args) => {
   const clientesId = (await Cliente.find({}, { _id: 1 }));
   let arreglo = clientesId.map((e) => {
@@ -325,7 +327,6 @@ ipcMain.handle('trearClientePorTelefono', async (e, telefono) => {
 //Fin Cliente
 
 //Inicio Producto
-
 ipcMain.on('post-producto', async (e, args) => {
   const producto = new Producto(args);
   await producto.save();
@@ -347,6 +348,7 @@ ipcMain.handle('gets-productos-for-seccion', async (e, seccion) => {
   return JSON.stringify(productos);
 })
 
+//falta
 ipcMain.handle('gets-productos-for-descripcion-and-seleccion', async (e, args) => {
   const [descripcion, condicion] = args;
   let productos = [];
