@@ -543,6 +543,7 @@ ipcMain.handle('get-secciones', async e => {
   return JSON.stringify(secciones);
 });
 
+//Revisar
 ipcMain.handle('get-forCodigo-seccion', async (e, codigo) => {
   const seccion = await Seccion.findOne({ codigo: codigo });
   return (JSON.stringify(seccion));
@@ -576,6 +577,8 @@ ipcMain.handle('get-cartaEmpanada', async () => {
 });
 
 //Fin CartaEmpanada
+
+
 
 //Inicio Gastos
 ipcMain.handle('get-gastos', async (e, args) => {
