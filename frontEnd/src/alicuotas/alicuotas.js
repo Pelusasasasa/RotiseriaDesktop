@@ -62,12 +62,11 @@ const descargarArchivo = async(contenidoBlob,nombreArchivo)=>{
     }
     console.log(contenidoBlob)
     reader.readAsDataURL(contenidoBlob);
-}
+};
 
 document.querySelector('.venta').addEventListener('click',async e=>{
     descargarArchivo(await generarTexto(ventas),nombreArchivoVentas)
 });
-
 
 document.querySelector('.alicuota').addEventListener('click',async e=>{
     descargarArchivo(await generarTexto(alicuotas),nombreArchivoAlicuotas)

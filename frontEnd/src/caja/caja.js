@@ -1,16 +1,9 @@
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
+const { cerrarVentana, redondear, agregarMovimientoVendedores, cargarNotaCredito, getParameterByName } = require("../helpers");
 
-let vendedor = getParameterByName('vendedor');
-
-const { ipcRenderer } = require("electron");
-const { cerrarVentana, redondear, agregarMovimientoVendedores, cargarNotaCredito } = require("../helpers");
 const sweet = require('sweetalert2');
-const { default: Swal } = require("sweetalert2");
+const axios = require('axios');
+require('dotenv').config();
+const URL = process.env.ROTISERIA_URL;
 
 let seleccionado;
 let subSeleccionado;
@@ -101,17 +94,21 @@ window.addEventListener('load', async e => {
     fecha.value = `${a}-${m}-${d}`;
     selectMes.value = m;
     inputAnio.value = a;
-    await ipcRenderer.invoke('get-ventas-for-day', fecha.value).then((result) => {
-        ventas = JSON.parse(result);
-    });
-    listarVentas(ventas);
+
+    const  { data } = await axios.get(`${URL}venta/day/${fecha.value}`);
+    if(data.ok){
+        listarVentas(data.ventas);
+    }else{
+        await sweet.fire('Error al traer las ventas', 'No se pudieron obtener las ventas', 'error');
+    }
+    
 });
 
 const eliminarVenta = async (e) => {
     const target = e.target.parentNode.parentNode;
     const id = target.id;
 
-    const { isConfirmed } = await Swal.fire({
+    const { isConfirmed } = await sweet.fire({
         title: target.children[3].innerText === 'Factura C' ? '¿Hacer una Nota de Credito?' : '¿Seguro queres Eliminar La venta?',
         confirmButtonText: 'Aceptar',
         showCancelButton: true
@@ -119,8 +116,8 @@ const eliminarVenta = async (e) => {
 
     if (isConfirmed) {
 
-        const venta = JSON.parse(await ipcRenderer.invoke('get-venta-for-id', id));
-        const { cod_doc, tipo_venta, tipo_comp, num_doc, precio, gravado21, gravado0, gravado105, iva21, iva0, iva105, afip } = venta;
+        const { data } = await axios.get(`${URL}venta/${id}`);
+        const { cod_doc, tipo_venta, tipo_comp, num_doc, precio, gravado21, gravado0, gravado105, iva21, iva0, iva105, afip } = data.venta;
 
         if (tipo_comp === 'Factura C') {
 
@@ -133,24 +130,7 @@ const eliminarVenta = async (e) => {
             try {
                 res = await cargarNotaCredito(infoParaNotaCredito, numero);
             } catch (error) {
-                console.log(error);
-                console.log('Error al cargar la nota de credito');
-                Swal.fire('Error al cargar la nota de credito', 'No se pudo cargar la nota de credito', 'error');
-            }
-
-            try {
-                let numeros = JSON.parse(await ipcRenderer.invoke('gets-numeros'));
-
-                if (tipo_venta === 'CD') {
-                    venta.numero = numeros.Contado + 1;
-                    await ipcRenderer.send('put-numeros', ['Contado', venta.numero]);
-                } else if (tipo_venta === 'CC') {
-                    venta.numero = numeros['Cuenta Corriente'] + 1;
-                    await ipcRenderer.send('put-numeros', ['Cuenta Corriente', venta.numero]);
-                };
-            } catch (error) {
-                console.log(error);
-                console.log('Error al traer el numero y modificarlo');
+                await sweet.fire('Error al cargar la nota de credito', 'No se pudo cargar la nota de credito', 'error');
             }
 
             venta.cod_comp = 13;
@@ -162,7 +142,8 @@ const eliminarVenta = async (e) => {
             venta.afip.vencimiento = res.vencimiento;
             venta.notaCredito = true;
 
-            const aux = JSON.parse(await ipcRenderer.invoke('notaCreditoTrue', venta._id));
+            const { data } = await axios.patch(`${URL}venta/notaCredito/${venta._id}`);
+            console.log(data);
 
             ventaAux = ventas.find(elem => (elem._id === aux._id));
 
@@ -176,8 +157,8 @@ const eliminarVenta = async (e) => {
             });
 
             try {
-                const nuevaVenta = JSON.parse(await ipcRenderer.invoke('post-venta', JSON.stringify(venta)));
-                ventas.push(nuevaVenta);
+                const { data } = await axios.post(`${URL}venta`, venta);
+                ventas.push(data.newVenta);
                 //Cargamos la venta y luego la listams, que ya seria la nota de credito
                 listarVentas(ventas)
             } catch (error) {
@@ -187,21 +168,23 @@ const eliminarVenta = async (e) => {
 
         } else {
 
-            const ventaEliminada = JSON.parse(await ipcRenderer.invoke('delete-venta', id));
-            ventas = ventas.filter(elem => elem._id !== ventaEliminada._id);
+            const { data } = await axios.delete(`${URL}venta/${id}`);
 
-            const trEliminado = document.getElementById(`${ventaEliminada._id}`);
+            if(data.ok){
+                ventas = ventas.filter(elem => elem._id !== data.ventaEliminada._id);
+                const trEliminado = document.getElementById(`${data.ventaEliminada._id}`);
 
-            //Son los tr que muestran los productos de una venta
-            const alltrMovEliminados = document.querySelectorAll(`.venta${ventaEliminada._id}`);
+                //Son los tr que muestran los productos de una venta
+                const alltrMovEliminados = document.querySelectorAll(`.venta${data.ventaEliminada._id}`);
 
-            for (let elem of alltrMovEliminados) {
-                tbody.removeChild(elem);
-            };
-
-            tbody.removeChild(trEliminado);
-
-            total.value = redondear(parseFloat(total.value) - parseFloat(trEliminado.children[6].innerText), 2);
+                for (let elem of alltrMovEliminados) {
+                    tbody.removeChild(elem);
+                };
+                tbody.removeChild(trEliminado);
+                total.value = redondear(parseFloat(total.value) - parseFloat(trEliminado.children[6].innerText), 2);
+            }else{
+                await sweet.fire('Error al eliminar la venta', 'No se pudo eliminar la venta', 'error');
+            }
         }
     }
 };
@@ -266,9 +249,8 @@ botonDia.addEventListener('click', async e => {
     anio.classList.add('none');
     botonSeleccionado.classList.add('seleccionado');
     if (filtro === "Ingresos" || filtro === "Cuenta Corriente") {
-        ventas = JSON.parse(await ipcRenderer.invoke('get-ventas-for-day', fecha.value));
-        // recibos = (await axios.get(`${URL}recibo/dia/${fecha.value}`)).data;
-        // cuentasCorrientes = ventas.filter(venta=>venta.tipo_venta === "CC");
+        const { data } = await axios.get(`${URL}ventas/day/${fecha.value}`);
+
         if (filtro === "Ingresos") {
             listarVentas([...ventas, ...recibos]);
         } else {
@@ -277,10 +259,7 @@ botonDia.addEventListener('click', async e => {
     } else if (filtro === "Presupuestos") {
         presupuestos = (await axios.get(`${URL}presupuesto/forDay/${fecha.value}`)).data;
         listarVentas(presupuestos);
-    } else {
-        gastos = JSON.parse(await ipcRenderer.invoke('get-gastos-for-day', fecha.value));
-        listarGastos(gastos);
-    }
+    };
 });
 
 //muestra las ventas del mes cuando tocamos en el boton
@@ -296,11 +275,15 @@ botonMes.addEventListener('click', async e => {
 
     //vemos que tipo de filtro es y ahi vemos si traemos los ingresos o gastos
     if (filtro === "Ingresos") {
-        await ipcRenderer.invoke('get-ventas-for-month', selectMes.value).then((result) => {
-            ventas = JSON.parse(result);
-        });
-        console.log(ventas)
-        listarVentas(ventas);
+        const { data } = await axios.get(`${URL}venta/mes/${selectMes.value}`);
+        if(data.ok){
+            ventas = data.ventas;
+            listarVentas(ventas);
+        }else{
+            await sweet.fire('Error al traer las ventas', 'No se pudieron obtener las ventas', 'error');
+        };
+
+        
     } else {
         gastos = (await axios.get(`${URL}gastos/mes/${selectMes.value}`)).data;
         listarGastos(gastos);
@@ -316,51 +299,47 @@ botonAnio.addEventListener('click', async e => {
     mes.classList.add('none');
 
     botonSeleccionado.classList.add('seleccionado');
-    if (filtro === "Ingresos") {
-        await ipcRenderer.invoke('get-ventas-for-year', inputAnio.value).then((result) => {
-            ventas = JSON.parse(result);
-        });
-        listarVentas(ventas);
-    } else {
-        gastos = (await axios.get(`${URL}gastos/anio/${inputAnio.value}`)).data;
-        listarGastos(gastos);
+    
+    const { data } = await axios.get(`${URL}venta/anio/${inputAnio.value}`);
+    if(data.ok){
+        ventas = data.ventas;
     }
+    
+    listarVentas(ventas);
 });
 
 fecha.addEventListener('keypress', async e => {
     if ((e.key === "Enter")) {
-        await ipcRenderer.invoke('get-ventas-for-day', fecha.value).then((result) => {
-            ventas = JSON.parse(result);
-        });
-        if (filtro === "Ingresos") {
+        const { data } = await axios.get(`${URL}venta/day/${fecha.value}`);
+        if (data.ok) {
+            ventas = data.ventas;
             listarVentas(ventas);
-        }
+        }else{
+            await sweet.fire('Error al traer las ventas', 'No se pudieron obtener las ventas', 'error');
+        };    
+        
     }
 });
 
 selectMes.addEventListener('click', async e => {
-    if (filtro === "Ingresos") {
-        await ipcRenderer.invoke('get-ventas-for-month', selectMes.value).then((result) => {
-            ventas = JSON.parse(result);
-        });
-        listarVentas(ventas);
-    } else {
-        gastos = (await axios.get(`${URL}gastos/mes/${selectMes.value}`)).data;
-        listarGastos(gastos);
-    }
+    const  { data } = await axios.get(`${URL}venta/mes/${selectMes.value}`);
+    if(data.ok){
+        ventas = data.ventas;
+        listarVentas(ventas);   
+    }else{
+        await sweet.fire('Error al traer las ventas', 'No se pudieron obtener las ventas', 'error');
+    };
 });
 
 inputAnio.addEventListener('keypress', async e => {
     if (e.key === "Enter") {
-        if (filtro === "Ingresos") {
-            await ipcRenderer.invoke('get-ventas-for-year', inputAnio.value).then((result) => {
-                ventas = JSON.parse(result);
-            });
-            listarVentas(ventas)
-        } else {
-            gastos = (await axios.get(`${URL}gastos/anio/${inputAnio.value}`)).data;
-            listarGastos(gastos)
+        const { data } = await axios.get(`${URL}venta/anio/${inputAnio.value}`);
+
+        if(data.ok){
+            ventas = data.ventas;
+            listarVentas(ventas);
         }
+        
     }
 });
 

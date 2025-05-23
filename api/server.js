@@ -16,6 +16,7 @@ app.use('/rotiseria/img', express.static(path.join(__dirname, 'imgProductos')));
 app.use(cors());
 app.use(express.json());
 
+app.use('/rotiseria/carta', require('./routes/carta.routes'));
 app.use('/rotiseria/cliente', require('./routes/cliente.routes'));
 app.use('/rotiseria/numero', require('./routes/numero.routes'));
 app.use('/rotiseria/producto', require('./routes/producto.routes'));

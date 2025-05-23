@@ -1,3 +1,8 @@
+const sweet = require('sweetalert2');
+const axios = require('axios');
+require('dotenv').config();
+const URL = process.env.ROTISERIA_URL;
+
 const { ipcRenderer } = require("electron");
 const { cerrarVentana, apretarEnter } = require("../helpers");
 
@@ -14,8 +19,14 @@ let cartaEmpanada = {};
 modificar.addEventListener('click',sacarDisabled);
 guardar.addEventListener('click',modificarCarta);
 
-window.addEventListener('load',async e=>{
-    cartaEmpanada = JSON.parse(await ipcRenderer.invoke('get-cartaEmpanada'));
+window.addEventListener('load',async e =>{
+    const { data } = await axios.get(`${URL}carta`);
+    if(data.ok){
+        cartaEmpanada = data.carta;
+    }else{
+        await sweet.fire('Error Carta Empanada', 'No se pudo obtener la carta de empanadas','error');
+    };
+     
     if (cartaEmpanada) {
         docena.value = cartaEmpanada.docena.toFixed(2);
         mediaDocena.value = cartaEmpanada.mediaDocena.toFixed(2);
@@ -65,10 +76,13 @@ docena.addEventListener('focus',()=>{
 async function modificarCarta() {
     cartaEmpanada.docena = docena.value;
     cartaEmpanada.mediaDocena = mediaDocena.value;
-    if (creado) {
-        await ipcRenderer.send('put-CartaEmpanada',cartaEmpanada);
+    
+    const {data} = await axios.patch(`${URL}carta/${cartaEmpanada._id}`, cartaEmpanada);
+
+    if(data.ok){
+        await sweet.fire('Modificado', 'Se modificó la carta de empanadas','success');
+        window.close();
     }else{
-        await ipcRenderer.send('post-CartaEmpanada',cartaEmpanada);
-    };
-    window.close();
+        await sweet.fire('Error Modificado', 'No se pudo modificar la carta de empanadas','error');
+    }
 };

@@ -11,15 +11,15 @@ ventaCTRL.deleteVenta = async(req, res) => {
     const { id } = req.params;
 
     try {
-        const ventaDelete = await Venta.findByIdAndDelete(id);
-        if(!ventaDelete) return res.status(404).json({
+        const ventaEliminada = await Venta.findByIdAndDelete(id);
+        if(!ventaEliminada) return res.status(404).json({
             ok: false,
             msg: 'No se encontró la venta',
         });
 
         res.status(200).json({
             ok: true,
-            ventaDelete
+            ventaEliminada
         })
     } catch (error) {
         console.log(error);
@@ -83,7 +83,6 @@ ventaCTRL.getFacturas = async(req, res) => {
 
 ventaCTRL.getForDia = async(req, res) => {
     const {fecha} = req.params;
-
     try {
         const inicioDia = new Date(`${fecha}T00:00:00`);
         const finDia = new Date(`${fecha}T23:59:59`);
@@ -94,13 +93,6 @@ ventaCTRL.getForDia = async(req, res) => {
                 { fecha: { $lte: finDia } }
             ]
         });
-
-        if(!ventas || ventas.length === 0){
-            return res.status(404).json({
-                ok: false,
-                msg: 'No se encontraron ventas para esta fecha',
-            });
-        };
 
         res.status(200).json({
             ok: true,

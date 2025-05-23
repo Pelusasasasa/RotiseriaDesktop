@@ -1,3 +1,7 @@
+const axios = require('axios');
+require('dotenv').config();
+const URL = process.env.ROTISERIA_URL;
+
 const salir = document.querySelector('.salir');
 const codigo = document.querySelector('#codigo');
 const descripcion = document.querySelector('#descripcion');
@@ -55,18 +59,26 @@ guardar.addEventListener('click',async ()=>{
         producto.ganancia = parseFloat(ganancia.value);
         producto.precio = parseFloat(total.value);
         producto.seccion = secciones.value;
-        ipcRenderer.send('post-producto',producto);
-        window.close();
+        const { data } = await axios.post(`${URL}producto`, producto);
+        console.log(data);
+        if(data.ok){
+            await sweet.fire('Producto Creado', 'El producto fue creado correctamente', 'success');
+            window.close();
+        }else{
+            await sweet.fire('Error al cargar prodcucto', `${data.msg}`, 'error');
+        };
+        
     }
 });
 
 codigo.addEventListener('keypress',async e=>{
     if (e.keyCode === 13) {
         let productoYaCreado;
-        await ipcRenderer.invoke('get-producto',codigo.value).then((result)=>{
-            productoYaCreado = JSON.parse(result);
-        });
-        console.log(productoYaCreado)
+        const {data} = await axios.get(`${URL}producto/${codigo.value}`);
+        if (data.ok) {
+            productoYaCreado = data.producto;
+        };
+
         if (productoYaCreado) {
             await sweet.fire({
                 title:`Codigo ya utilizado en ${productoYaCreado.descripcion}` 
@@ -152,7 +164,10 @@ total.addEventListener('focus',e=>{
 
 //Lo usamos para cargar las selecciones
 async function cargarSelecciones(){
-    const lista = JSON.parse(await ipcRenderer.invoke('get-secciones'));
+    const { data } = await axios.get(`${URL}seccion`);
+    if(!data.ok) return sweet.fire('Error al cargar secciones', `${data.msg}`, 'error');
+    const lista = data.secciones;
+
     for await (let seccion of lista){
         const option = document.createElement('option');
         option.value = seccion._id;

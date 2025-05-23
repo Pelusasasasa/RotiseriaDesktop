@@ -201,25 +201,7 @@ const hacerMenu = () => {
           click() {
             abrirVentana("productos/cambio.html", 750, 900)
           }
-        },
-        // {
-        //   label:"Aumento Por Marcas",
-        //   click(){
-        //     abrirVentana('productos/marcas.html',300,500,true);
-        //   }
-        // },
-        // {
-        //   label:"Aumento Por Provedores",
-        //   click(){
-        //     abrirVentana('productos/aumentoPorProvedor.html',300,500,true);
-        //   }
-        // },
-        // {
-        //   label:"Lista de Precios",
-        //   click(){
-        //     abrirVentana('productos/listaPrecios.html',1000,1000)
-        //   }
-        // }
+        }
       ]
     },
     {
@@ -230,19 +212,7 @@ const hacerMenu = () => {
           click() {
             abrirVentana("clientes/agregarCliente.html", 1200, 900);
           }
-        },
-        // {
-        //   label:"Listado Saldos",
-        //   click(){
-        //     abrirVentana("clientes/listadoSaldo.html",1000,1200)
-        //   }
-        // },
-        // {
-        //   label:"Arreglar Saldo",
-        //   click(){
-        //     abrirVentana("clientes/arreglarSaldo.html",500,600)
-        //   }
-        // }
+        }
       ]
     },
     {
