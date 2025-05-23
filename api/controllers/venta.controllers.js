@@ -3,7 +3,9 @@ const ventaCTRL = {};
 const getNextNumberContado = require('../helpers/getNextNumberContado');
 const getNextNumberPedido = require('../helpers/getNextNumberPedido');
 const imprimirTicketComanda = require('../helpers/imprimirTicketComanda');
+
 const Venta = require('../models/Venta');
+const Producto = require('../models/Producto');
 
 ventaCTRL.deleteVenta = async(req, res) => {
     const { id } = req.params;
@@ -237,9 +239,28 @@ ventaCTRL.notaCreditoTrue = async(req, res) => {
 };
 
 ventaCTRL.postOne = async(req, res) => {
+
+    const { listaProductos } = req.body;
+
     try {
         const numero = await getNextNumberContado();
         const nPedido = await getNextNumberPedido();
+
+        listaProductos.forEach(async(producto) => {
+            const productoActualizado = await Producto.findOneAndUpdate(
+                { _id: producto._id },
+                { $inc: { stock: -producto.cantidad } },
+                { new: true }
+            );
+
+            if(!productoActualizado){
+                return res.status(404).json({
+                    ok: false,
+                    msg: 'No se encontró el producto',
+                });
+            };
+        })
+
         const newVenta = new Venta({
             ...req.body,
             numero,

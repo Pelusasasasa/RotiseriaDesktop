@@ -58,6 +58,7 @@ const imprimirTicketComanda = async(venta) => {
     printer.bold(true);
     printer.setTextDoubleHeight(),
     printer.setTextDoubleWidth(),
+    console.log(venta);
     venta.listaProductos.forEach(producto => {
         printer.println(`${producto.cantidad.toFixed(2)} - ${producto.descripcion}`);
         printer.alignRight();
