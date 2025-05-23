@@ -1,10 +1,12 @@
-const sweet = require('sweetalert2');
+
 const { ipcRenderer } = require('electron');
 const {cerrarVentana,apretarEnter,selecciona_value, agregarMovimientoVendedores} = require('../helpers');
 
-// const axios = require('axios');
-// require("dotenv").config();
-// const URL = process.env.GESTIONURL;
+const sweet = require('sweetalert2');
+const axios = require('axios');
+
+require("dotenv").config();
+const URL = process.env.ROTISERIA_URL;
 
 let vendedor;
 
@@ -114,19 +116,17 @@ modificar.addEventListener('click',async e=>{
     cliente.condicionIva = condicionIva.value;
     cliente.observaciones = observaciones.value.toUpperCase();
     
-    ipcRenderer.send('put-cliente',cliente);
-    ipcRenderer.send('enviar-ventana-principal',cliente);
+    const { data } = await axios.patch(`${URL}cliente/${cliente._id}`, cliente);
+
+    if(!data.ok){
+        await sweet.fire('Error al modificar Cliente', data.msg, 'error');
+    }else{
+        await sweet.fire('Cliente Modificado', data.clienteModificado.nombre, 'success');
+    }
+
+    ipcRenderer.send('enviar-ventana-principal', data.clienteModificado);
+
     window.close();
-    // try {
-    //     const mensaje = (await axios.put(`${URL}clientes/id/${cliente._id}`,cliente)).data;
-    //     vendedor && await agregarMovimientoVendedores(`Modifico el cliente ${cliente.nombre} con direccion en ${cliente.direccion}`,vendedor);
-    //     await sweet.fire({title:mensaje});
-    //     ipcRenderer.send('enviar-ventana-principal',cliente);
-    //     window.close();
-    // } catch (error) {
-    //     sweet.fire({title:"No se pudo modificar el cliente"});
-    //     console.log(error)
-    // }
 })
 
 document.addEventListener('keydown',e=>{

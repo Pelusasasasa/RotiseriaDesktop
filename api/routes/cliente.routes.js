@@ -1,6 +1,5 @@
 const { Router } = require('express');
-const { postOne, getClientes, getCliente, getForFilter, updateCliente, getForTelefono } = require('../controllers/cliente.controllers');
-const { deleteOne } = require('../models/Cliente');
+const { postOne, deleteOne, getClientes, getCliente, getForFilter, updateCliente, getForTelefono } = require('../controllers/cliente.controllers');
 const router = Router()
 
 router.route('/')

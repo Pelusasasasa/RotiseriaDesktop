@@ -1,12 +1,12 @@
+
 const {cerrarVentana,apretarEnter, agregarMovimientoVendedores} = require('../helpers');
-const sweet = require('sweetalert2');
 const {default:validarCuit} = require('cuit-validator');
 
-// const { ipcRenderer } = require('electron');
-// require("dotenv").config();
-// const URL = process.env.GESTIONURL;
+const sweet = require('sweetalert2');
+const axios = require('axios');
 
-const { ipcRenderer } = require('electron');
+require("dotenv").config();
+const URL = process.env.ROTISERIA_URL;
 
 const codigo = document.querySelector('#codigo');
 const nombre = document.querySelector('#nombre');
@@ -22,16 +22,27 @@ const salir = document.querySelector('.salir');
 
 let vendedor;
 
-window.addEventListener('load',async e=>{
-    // const id = (await axios.get(`${URL}clientes`)).data;
-    ipcRenderer.invoke('ultimo-Id-Cliente').then((id)=>{
-        codigo.value = id + 1;
-    });
-});
+agregar.addEventListener('click',async e=>{
+    const cliente = {};
+    cliente.nombre = nombre.value.trim().toUpperCase();
+    cliente.localidad = localidad.value.trim().toUpperCase();
+    cliente.telefono = telefono.value.trim();
+    cliente.direccion = direccion.value.trim().toUpperCase();
+    cliente.cuit = cuit.value;
+    cliente.condicionIva = condicionIva.value;
+    cliente.condicionFacturacion = parseFloat(condicionFacturacion.value);
+    cliente.saldo = 0;
+    cliente.observaciones = observaciones.value.trim().toUpperCase();
 
-// ipcRenderer.on('informacion',(e,args)=>{
-//     vendedor = args.vendedor;
-// });
+    const { data } = await axios.post(`${URL}cliente`, cliente);
+    console.log(data);
+    if(!data.ok){
+        await sweet.fire('Error al cargar Cliente', data.msg, 'error');;
+    }else{
+        await sweet.fire('Cliente Agregado', data.cliente.nombre, 'success');
+    }
+    window.close();
+});
 
 
 nombre.addEventListener('keypress',e=>{
@@ -91,38 +102,6 @@ cuit.addEventListener('blur',async e=>{
     }
 });
 
-agregar.addEventListener('click',async e=>{
-    const cliente = {};
-    cliente._id = parseFloat(codigo.value);
-    cliente.nombre = nombre.value.trim().toUpperCase();
-    cliente.localidad = localidad.value.trim().toUpperCase();
-    cliente.telefono = telefono.value.trim();
-    cliente.direccion = direccion.value.trim().toUpperCase();
-    cliente.cuit = cuit.value;
-    cliente.condicionIva = condicionIva.value;
-    cliente.condicionFacturacion = parseFloat(condicionFacturacion.value);
-    cliente.saldo = 0;
-    cliente.observaciones = observaciones.value.trim().toUpperCase();
-
-    ipcRenderer.send('agregar-cliente',JSON.stringify(cliente));
-    window.close();
-    // try {
-    //     const {mensaje,estado} = (await axios.post(`${URL}clientes`,cliente)).data;
-    //     vendedor && await agregarMovimientoVendedores(`Agrego el  liente ${cliente.nombre} con direccion ${cliente.direccion}`,vendedor);
-    //     await sweet.fire({
-    //         title:mensaje
-    //     });
-    //     if (estado) {
-    //         window.close();
-    //     }
-    // } catch (error) {
-    //     console.log(error)
-    //     sweet.fire({
-    //         title:"No se pudo agregar un cliente"
-    //     })
-    // }
-
-});
 
 salir.addEventListener('click',e=>{
     window.close();

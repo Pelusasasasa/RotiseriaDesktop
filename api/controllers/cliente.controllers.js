@@ -4,15 +4,15 @@ const Cliente = require('../models/Cliente');
 clienteCTRL.deleteOne = async(req, res) => {
     const { id } = req.params;
     try {
-        const clienteDelete = await Cliente.findByIdAndDelete(id);
-        if(!clienteDelete) return res.status(404).json({
+        const clienteEliminado = await Cliente.findByIdAndDelete(id);
+        if(!clienteEliminado) return res.status(404).json({
             ok: false,
             msg: 'No se encontró el cliente'
         });
 
         res.status(200).json({
             ok: true,
-            clienteDelete
+            clienteEliminado
         })
     } catch (error) {
         console.log(error);
@@ -96,12 +96,12 @@ clienteCTRL.postOne = async(req, res) => {
         const clienteId = await Cliente.findOne().sort({ _id: -1 }).limit(1);
         req.body._id = clienteId.length === 0 ? 1 : clienteId._id + 1;
 
-        const newCliente = new Cliente(req.body);
-        await newCliente.save();
+        const cliente = new Cliente(req.body);
+        await cliente.save();
 
         res.status(201).json({
             ok: true,
-            newCliente
+            cliente
         });
     } catch (error) {
         console.log(error);
@@ -116,15 +116,15 @@ clienteCTRL.postOne = async(req, res) => {
 clienteCTRL.updateCliente = async(req, res) => {
     const { id } = req.params;
     try {
-        const clienteUpdate = await Cliente.findByIdAndUpdate(id, req.body, { new: true });
-        if(!clienteUpdate) return res.status(404).json({
+        const clienteModificado = await Cliente.findByIdAndUpdate(id, req.body, { new: true });
+        if(!clienteModificado) return res.status(404).json({
             ok: false,
             msg: 'No se encontró el cliente'
         });
 
         res.status(200).json({
             ok: true,
-            clienteUpdate
+            clienteModificado
         });
     } catch (error) {
         console.log(error);

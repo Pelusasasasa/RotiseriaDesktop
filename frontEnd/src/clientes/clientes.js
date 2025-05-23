@@ -1,22 +1,15 @@
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-    results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
+const axios = require('axios');
+const sweet = require('sweetalert2');
+const { ipcRenderer } = require('electron');
+require('dotenv').config()
+const {recorrerFlechas, copiar, agregarMovimientoVendedores, getParameterByName} = require('../helpers');
+
+const URL = process.env.ROTISERIA_URL;
 
 let vendedor = getParameterByName("vendedor")
 let permiso = getParameterByName("permiso");
 permiso = permiso === "" ? 0 : parseInt(permiso);
 
-const sweet = require('sweetalert2');
-const { ipcRenderer } = require('electron');
-
-// const axios = require('axios');
-// require('dotenv').config()
-// const URL = process.env.GESTIONURL;
-
-const {recorrerFlechas, copiar, agregarMovimientoVendedores} = require('../helpers');
 
 const thead = document.querySelector('thead');
 const tbody = document.querySelector('tbody');
@@ -40,17 +33,15 @@ const filtrar = async()=>{
     tbody.innerHTML = "";
     let clientes;
     if (nombre.value !== "") {
-        await ipcRenderer.invoke('gets-clientes-con-filtro',nombre.value.toUpperCase()).then((result)=>{
-           clientes = JSON.parse(result);
-           console.log(clientes) 
-        })
+        const { data } = await axios.get(`${URL}cliente/forText/${nombre.value}`);
+        clientes = data.clientes;
     }else{
-        await ipcRenderer.invoke('gets-clientes').then((result)=>{
-            clientes = JSON.parse(result);
-        });
-    }
+        const { data } = await axios.get(`${URL}cliente`);
+        clientes = data.clientes;
+    };
+
     listarClientes(clientes);
-}
+};
 
 nombre.addEventListener('keyup',filtrar);
 
@@ -163,21 +154,14 @@ tbody.addEventListener('click',async e=>{
                 showCancelButton:true
             }).then(async({isConfirmed})=>{
                 if (isConfirmed) {
-                    ipcRenderer.send('eliminar-Cliente',seleccionado.id);
-                    tbody.removeChild(seleccionado);
-                    // try {
-                    //     const mensaje = (await axios.delete(`${URL}clientes/id/${seleccionado.id}`)).data;
-                    //     vendedor && agregarMovimientoVendedores(`Elimino el cliente ${seleccionado.children[1].innerHTML} con direccion en ${seleccionado.children[2].innerHTML}`,vendedor);
-                    //     await sweet.fire({
-                    //         title:mensaje
-                    //     });
-                    //     tbody.removeChild(seleccionado);
-                    // } catch (error) {
-                    //     console.log(error)
-                    //     sweet.fire({
-                    //         title:"No se pudo Eliminar el cliente"
-                    //     })
-                    // }
+                    const { data } = await axios.delete(`${URL}cliente/${seleccionado.id}`);
+                    
+                    if(data.ok){
+                        await sweet.fire('Eliminar Cliente', `Cliente ${data.clienteEliminado.nombre} eliminado`, 'success');
+                        tbody.removeChild(seleccionado);
+                    }else{
+                        await sweet.fire('Error al Eliminar Cliente', `No se pudo eliminar el cliente`, 'error');
+                    }
                 }
             })
         }else if(e.target.innerHTML === "edit"){
