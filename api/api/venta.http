@@ -1,0 +1,31 @@
+POST http://localhost:3000/rotiseria/venta
+Content-Type: application/json
+
+{
+  "id": 1,
+  "fecha": "2023-10-01",
+  "idCliente": 1,
+  "cliente": "A Consumidor Final",
+  "tipo_venta": "CD",
+  "tipo_comp": "Comprobante",
+  "F": false,
+  "listaProductos": [
+    {
+        "cantidad": 2,
+        "producto": {
+            "_id": 1,
+            "nombre": "Pollo Asado",
+            "precio_unitario": 10.0
+        }
+    },
+    {
+      "cantidad": 1,
+      "producto": {
+        "_id": 2,
+        "nombre": "Ensalada",
+        "precio_unitario": 5.0
+      }
+    }
+  ],
+  "precio": 125.0
+}
