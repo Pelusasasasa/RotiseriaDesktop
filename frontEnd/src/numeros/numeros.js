@@ -1,6 +1,6 @@
 const axios = require('axios');
 require("dotenv").config();
-const URL = process.env.GESTIONURL;
+const URL = process.env.ROTISERIA_URL;
 
 const sweet = require('sweetalert2');
 
@@ -23,7 +23,6 @@ const notaC = document.querySelector('#notaC');
 
 const modificar = document.querySelector('.modificar');
 const guardar = document.querySelector('.guardar');
-const cargar = document.querySelector('.cargar');
 const salir = document.querySelector('.salir');
 
 let id;
@@ -56,9 +55,14 @@ window.addEventListener('load',async e=>{
     }
 
     let numeros;
-    await ipcRenderer.invoke('gets-numeros').then((result)=>{
-        numeros = JSON.parse(result);
-    });
+    try {
+        const { data } = await axios.get(`${URL}numero`);
+        if (!data.ok) return await sweet.fire('Error al obtener Numeros', data.msg, 'error');
+        numeros = data.numero;
+    } catch (error) {
+        console.log(error.response.data.msg);
+        return await sweet.fire("Error al obtener los numeros", error.response.data.msg, 'error');
+    }
 
     try {
         setTimeout(async()=>{
@@ -75,7 +79,6 @@ window.addEventListener('load',async e=>{
         console.log(error)
     }
 
-    (numeros.Contado === 0 || numeros["Cuenta Corriente"] === 0 || numeros.Recibo === 0 || numeros !== "") && cargar.classList.add('none');
     if (numeros !== "") {
         id = numeros._id;
         dolarTraido = numeros.Dolar;
@@ -87,18 +90,6 @@ window.addEventListener('load',async e=>{
     }
 });
 
-//aca lo que hacemos es poner un boton para que si los numeros no estan cargados se carguen por primera vez
-cargar.addEventListener('click',async e=>{
-    const numero = {
-        "Cuenta Corriente": 0,
-        "Contado": 0,
-        "Recibo": 0,
-        "Dolar":0,
-        "Presupuesto":0
-    }
-    await ipcRenderer.send('post-numeros',numero);
-    location.reload();
-});
 
 //cuando apretamos habilitamos para que se modifiquen los numeros
 modificar.addEventListener('click',e=>{

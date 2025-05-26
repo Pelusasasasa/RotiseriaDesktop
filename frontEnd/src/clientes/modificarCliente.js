@@ -12,9 +12,11 @@ let vendedor;
 
 ipcRenderer.on('informacion',async(e,{informacion,vendedor:vende})=>{
     let cliente;
-    await ipcRenderer.invoke('get-cliente',informacion).then((result)=>{
-        cliente = JSON.parse(result)
-    });
+    const { data } = await axios.get(`${URL}cliente/${informacion}`);
+    
+    if(!data.ok) return await sweet.fire('Error al obtener Cliente', data.msg, 'error');
+    
+    cliente = data.cliente;
     ponerInputs(informacion,cliente);
     vendedor = vende;
 });

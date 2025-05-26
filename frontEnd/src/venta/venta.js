@@ -350,9 +350,9 @@ const listarProducto = async (id) => {
         //TODO
         await sweet.fire('Error al obtener el producto', error.response.data.msg)
     }
-    await ipcRenderer.invoke('get-producto', id).then((result) => {
-        producto = JSON.parse(result);
-    });
+    const { data } = await axios.get(`${URL}producto/${id}`);
+    if(!data.ok) return await sweet.fire('Error al obtener el producto', data.msg, 'error');
+    producto = data.producto;
 
     if (producto) {
         //Vemos si el producto ya fue usado
@@ -658,7 +658,10 @@ cuit.addEventListener('keypress', e => {
 
 telefono.addEventListener('keypress', async e => {
     if (e.keyCode === 13) {
-        const cliente = JSON.parse(await ipcRenderer.invoke('trearClientePorTelefono', (telefono.value).trim()));
+        const { data } = await axios.get(`${URL}cliente/forTelefono/${telefono.value.trim()}`);
+        if(!data.ok) return await sweet.fire('Error al obtener el cliente por telefono', data.msg, 'error');
+
+        const cliente = data.cliente;
         codigo.value = cliente._id;
         nombre.value = cliente.nombre;
         cuit.value = cliente.cuit;
@@ -805,7 +808,10 @@ async function calcularEmpanadas(producto, cantidadProducto) {
 
         for await (let { cantidad, producto } of listaProductos) {
             if (producto.seccion?.nombre === "EMPANADAS") {
-                const precio = JSON.parse(await ipcRenderer.invoke('get-producto', producto._id)).precio;
+                const { data } = await axios.get(`${URL}producto/${producto._id}`);
+                if(!data.ok) return await sweet.fire('Error al obtener el producto', data.msg, 'error');
+
+                const precio = data.producto.precio;
                 producto.precio = precio;
                 cambiarTr(producto.idTabla, producto.precio, cantidad);
             } else {
@@ -837,8 +843,10 @@ const filtrar = async (e) => {
         condicion = "_id";
     };
     const descripcion = buscador.value !== "" ? buscador.value : "textoVacio";
-    const productos = JSON.parse(await ipcRenderer.invoke('gets-productos-for-descripcion-and-seleccion', [descripcion, condicion]));
-    productos.length !== 0 && listarTarjetas(productos);
+    const {data} = await axios.get(`${URL}producto/forSeccionAndDescription/${descripcion}/${condicion}`);
+    if(!data.ok) return await sweet.fire('Error al filtrar los productos', data.msg, 'error');
+    
+    listarTarjetas(data.productos);
 
 };
 

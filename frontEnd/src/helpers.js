@@ -371,6 +371,7 @@ funciones.ultimaAB = async () => {
 }
 
 funciones.ponerNumero = async () => {
+    console.log("a");
     sweet.fire({
         html: `
             <section id=imprimirVenta>

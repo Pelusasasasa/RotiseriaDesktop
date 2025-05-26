@@ -1,3 +1,6 @@
+require('dotenv').config();
+const axios = require('axios');
+const URL = process.env.ROTISERIA_URL
 const { ipcRenderer } = require("electron");
 
 
@@ -13,11 +16,11 @@ const cargarPagina = async() => {
     desde.value = date.slice(0,10);
     hasta.value = date.slice(0,10);
 
-    facturas = JSON.parse(await ipcRenderer.invoke('get-facturas', {
-        desde: desde.value,
-        hasta: hasta.value
-    }));
+    const { data } = await axios.get(`${URL}venta/factura`);
 
+    if(!data.ok) return await sweet.fire('Error al cargar Facturas', data.msg, 'error');
+
+    facturas = data.ventas;
     listarFacturas(facturas)
 };
 
@@ -25,7 +28,10 @@ const imprimirTicket = async(e) => {
     const id = e.target.parentNode.parentNode.id;
 
     const venta = facturas.find(e => e._id === id);
-    const cliente = JSON.parse(await ipcRenderer.invoke('get-cliente', venta.idCliente));
+    const { data } = await axios.get(`${URL}cliente/${venta.idCliente}`);
+    if(!data.ok) return await sweet.fire('Error al obtener Cliente', data.msg, 'error');
+
+    const cliente = data.cliente;
     ipcRenderer.send('imprimir', [venta, cliente]);
 }
 
