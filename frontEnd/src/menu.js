@@ -1,5 +1,9 @@
+require('dotenv').config(); 
 const { ipcRenderer } = require("electron");
+const axios = require('axios');
 const sweet = require('sweetalert2');
+
+const URL = process.env.ROTISERIA_URL;
 
 const archivo = require('./configuracion.json');
 
@@ -21,22 +25,42 @@ let verVendedores;
 let contrasenaGasto;
 
 window.addEventListener('load', async e => {
-    await ipcRenderer.send('cargar-numero-pedido');
-    ipcRenderer.invoke('get-numero-pedido').then((result) => {
-        const pedido = JSON.parse(result)
-        const diaPedido = pedido.fecha.slice(8, 10)
-        const fecha = new Date();
-        const hoy = (new Date(fecha.getTime() - fecha.getTimezoneOffset() * 60000).toISOString());
-        const diaHoy = hoy.slice(8, 10)
-        if (!(diaPedido === diaHoy)) {
-            pedido.numero = 0;
-            console.log("a")
-            pedido.fecha = hoy;
-            ipcRenderer.send('put-pedido', pedido);
-        }
-    });
+    let pedido;
+    try {
+        const { data } = await axios.get(`${URL}pedido`);
+        if(!data.ok ) return await sweet.fire('Error al traer pedido numeros', data.msg, 'error');
 
-    contrasenaGasto = JSON.parse(await ipcRenderer.invoke('get-contrasenaGasto'))?.contrasenaGasto;
+        pedido = data.pedido;
+    } catch (error) {
+        console.log(error.respnse.data.msg);
+        return await sweet.fire('Error al traer pedido numeros', error.response.data.msg, 'error');
+    };
+
+    const diaPedido = pedido.fecha.slice(8, 10)
+    const fecha = new Date();
+    const hoy = (new Date(fecha.getTime() - fecha.getTimezoneOffset() * 60000).toISOString());
+    const diaHoy = hoy.slice(8, 10);
+    
+    if (!(diaPedido === diaHoy)) {
+        pedido.numero = 0;
+        pedido.fecha = hoy;
+        try {
+            const { data } = await axios.patch(`${URL}pedido/${pedido._id}`, pedido);
+            if (!data.ok) return await sweet.fire('Error al actualizar pedido', data.msg, 'error');
+        } catch (error) {
+            console.log(error.response.data.msg);
+            return await sweet.fire('Error al actualizar pedido', error.response.data.msg, 'error');
+        }
+    }
+
+    try {
+        const { data } = await axios.get(`${URL}variable`);
+        if(!data.ok) return await sweet.fire('Error al traer variables', data.msg, 'error');
+        contrasenaGasto = data.variable.contrasenaGasto;
+    } catch (error) {
+        console.log(error.response.data.msg);
+        return await sweet.fire('Error al traer variables', error.response.data.msg, 'error');
+    }
 
     if (!contrasenaGasto) {
         const { isConfirmed, value } = await Swal.fire({
@@ -47,7 +71,14 @@ window.addEventListener('load', async e => {
         });
 
         if (isConfirmed) {
-            contrasenaGasto = JSON.parse(await ipcRenderer.invoke('post-variables-and-contrasenaGasto', { contrasenaGasto: value })).contrasenaGasto;
+            try {
+                const {data} = await axios.post(`${URL}variable`, { contrasenaGasto: value });
+                if (!data.ok) return await sweet.fire('Error al guardar la contraseña', data.msg, 'error');
+                contrasenaGasto = data.variable.contrasenaGasto;
+            } catch (error) {
+                console.log(error.response.data.msg);
+                return await sweet.fire('Error al guardar la contraseña', error.response.data.msg, 'error');
+            }
         };
     };
 });
@@ -171,6 +202,7 @@ gastos.addEventListener('click', async e => {
 
         location.href = './gastos/gastos.html';
     }
+
 });
 
 //ponemos un numero para la venta y luego mandamos a imprimirla

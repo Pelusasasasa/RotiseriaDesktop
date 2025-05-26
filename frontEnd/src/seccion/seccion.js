@@ -1,6 +1,11 @@
-const { ipcRenderer } = require("electron");
-const { apretarEnter, cerrarVentana } = require("../helpers");
+require('dotenv').config();
+const axios = require('axios');
+const URL = process.env.ROTISERIA_URL;
 const sweet = require('sweetalert2');
+
+const { ipcRenderer } = require("electron");
+const { cerrarVentana } = require("../helpers");
+
 
 let seleccionado;
 
@@ -19,10 +24,17 @@ tbody.addEventListener('click',clickLista);
 agregar.addEventListener('click',agregarSeccion);
 
 async function traerSecciones() {
-    const secciones = JSON.parse(await ipcRenderer.invoke('get-secciones'));
-    secciones.forEach(seccion => {
-        listarSeccion(seccion)
-    });
+    try {
+        const { data } = await axios.get(`${URL}seccion`);
+        if (!data.ok) return await sweet.fire('Error al traer secciones', data.msg, 'error');
+
+        data.secciones.forEach(seccion => {
+            listarSeccion(seccion)
+        });
+    } catch (error) {
+        console.log(error.response.data.msg);
+        return await sweet.fire('Error al traer secciones', error.response.data.msg, 'error');
+    };  
 }
 
 async function agregarSeccion() {
@@ -32,7 +44,8 @@ async function agregarSeccion() {
     
     listarSeccion(seccion);
 
-    ipcRenderer.send('post-seccion',seccion);
+    const { data } = await axios.post(`${URL}seccion`, seccion);
+    if (!data.ok) return await sweet.fire('Error al agregar seccion', data.msg, 'error');
 
     codigo.value = "";
     nombre.value = "";
@@ -95,19 +108,34 @@ async function clickLista(e) {
 
 //En esta funcion se actia ccuando queremos eliminar una seccion
 async function eliminarSeccion(tr){
-    const borrar = await ipcRenderer.invoke('delete-seccion',seleccionado.id)
-    if (borrar) {
-        tbody.removeChild(seleccionado);
-    }else{
-        sweet.fire({
-            title:"No se pudo borrar la seccion"
-        })
+    try {
+        const { data } = await axios.delete(`${URL}seccion/${seleccionado.id}`);
+        if (!data.ok) return await sweet.fire('Error al eliminar seccion', data.msg, 'error');
+        if (data.seccionEliminado) {
+            tbody.removeChild(seleccionado);
+        }else{
+            sweet.fire({
+                title:"No se pudo borrar la seccion"
+            })
+        }
+    } catch (error) {
+        console.log(error.response.data.msg);
+        return await sweet.fire('Error al eliminar seccion', error.response.data.msg, 'error');
     }
+    
 }   
 
 codigo.addEventListener('keypress',async e=>{
+    let seccion;
     if ((e.keyCode === 13)) {
-        const seccion = JSON.parse(await ipcRenderer.invoke('get-forCodigo-seccion',codigo.value));
+        try {
+            const { data } = await axios.get(`${URL}seccion/forCodigo/${codigo.value}`);
+            if(!data.ok) return await sweet.fire('Error al buscar seccion', data.msg, 'error');
+            seccion = data.seccion;
+        } catch (error) {
+            console.log(error.response.data.msg);
+            await sweet.fire('Error al buscar seccion', error.response.data.msg, 'error');
+        }
         if (seccion) {
             await sweet.fire({
                 title:"Codigo ya utilizado"

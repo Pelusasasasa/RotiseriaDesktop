@@ -1,6 +1,8 @@
-const { ipcRenderer } = require("electron");
+require('dotenv').config();
+const axios = require('axios');
 const { default: Swal } = require("sweetalert2");
 
+const URL = process.env.ROTISERIA_URL;
 
 const tbody = document.querySelector('tbody');
 
@@ -166,8 +168,8 @@ const listarGastos = (lista) => {
         tr.appendChild(tdAcciones)
 
         tbody.appendChild(tr);
-
-        suma += elem.total;
+        
+        suma += elem.total ? elem.total : 0;
     };
 
     total.value = suma.toFixed(2);
@@ -191,11 +193,18 @@ const deleteGasto = async (e) => {
             id = e.target.parentNode.parentNode.parentNode.parentNode.id;
         };
 
-        await ipcRenderer.invoke('delete-gasto', id);
+        try {
+            const { data } = await axios.delete(`${URL}gasto/${id}`);
+            if (!data.ok) return await Swal.fire('Error al eliminar el gasto', data.msg, 'error');
+            gastos = gastos.filter(elem => elem._id !== data.gastoEliminado._id);
 
-        gastos = gastos.filter(elem => elem._id !== id);
+            listarGastos(gastos);
+        } catch (error) {
+            console.log(error.response.data.msg);
+            return await Swal.fire('Error al eliminar el gasto', error.response.data.msg, 'error');
+        }
 
-        listarGastos(gastos);
+        
     };
 };
 
@@ -231,8 +240,14 @@ const cargarPagina = async () => {
     hasta.value = `${y.padStart(4, '0')}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
 
     buscarPorFechaGastos()
-    categoriaGastos = JSON.parse(await ipcRenderer.invoke('get-categoriaGasto'));
-
+    try {
+        const { data } = await axios.get(`${URL}categoriaGasto`);
+        if(!data.ok) return await Swal.fire('Error al cargar las categorias de gastos', data.msg, 'error');
+        categoriaGastos = data.categorias;
+    } catch (error) {
+        console.log(error.response.data.msg);
+        return await Swal.fire('Error al cargar las categorias de gastos', error.response.data.msg, 'error');
+    };
 
     listarCategoria(categoriaGastos)
     listarGastos(gastos)
@@ -240,6 +255,7 @@ const cargarPagina = async () => {
 
 const listarCategoria = async (lista) => {
     categoria.innerHTML = '<option value="">---Seleccionar Una Opcion---</option>';
+
     for (let elem of lista) {
         const option = document.createElement('option');
 
@@ -275,17 +291,15 @@ const guardarGasto = async () => {
     gasto.categoria = categoria.value;
     gasto.tipo = tipo.value;
 
-    console.log(gasto);
+    try {
+        const { data } = await axios.post(`${URL}gasto`, gasto);
+        if (!data.ok) return await Swal.fire('Error al cargar el gasto', data.msg, 'error');
 
-
-    const newGasto = JSON.parse(await ipcRenderer.invoke('post-gasto', gasto));
-    if (newGasto.errors) {
-        const error = newGasto.errors;
-        if (newGasto.errors.descripcion) return await Swal.fire('Error al cargar el gasto', `${error.descripcion.message}`, 'error');
-        if (newGasto.errors.importe) return await Swal.fire('Error al cargar el gasto', `${error.importe.message}`, 'error');
-        if (newGasto.errors.cantidad) return await Swal.fire('Error al cargar el gasto', `${error.cantidad.message}`, 'error');
+        gastos.push(data.gasto);
+    } catch (error) {
+        console.log(error.response.data.msg);
+        return await Swal.fire('Error al cargar el gasto', error.response.data.msg, 'error');
     };
-
     buscarPorFechaGastos();
 
     document.getElementById('modal').classList.add('none');
@@ -323,25 +337,32 @@ const agregarCateogoria = async () => {
     });
 
     if (isConfirmed) {
-        const categoriaGasto = JSON.parse(await ipcRenderer.invoke('post-categoriaGasto', { nombre: value }));
+        try {
+            const { data } = await axios.get(`${URL}categoriaGasto`, { nombre: value});
+            if(!data.ok) return await Swal.fire('Error al cargar las categorias de gastos', data.msg, 'error');
 
-        categoriaGastos.push(categoriaGasto);
-
-
-        listarCategoria(categoriaGastos)
+            categoriaGastos.push(categoriaGasto);
+            listarCategoria(categoriaGastos)
+        } catch (error) {
+            console.log(error.response.data.msg);
+            return await Swal.fire('Error al cargar las categorias de gastos', error.response.data.msg, 'error');
+        };
 
     }
 };
 
 const buscarPorFechaGastos = async () => {
-    const data = JSON.parse(await ipcRenderer.invoke('get-gastos-for-date', {
-        desde: desde.value,
-        hasta: hasta.value
-    }));
+    try {
+        const { data } = await axios.get(`${URL}gasto/forDate/${desde.value}/${hasta.value}`);
+        if (!data.ok) return await Swal.fire('Error al cargar los gastos', data.msg, 'error');
+        gastos = data.gastos;
+    } catch (error) {
+        console.log(error.response.data.msg);
+        return await Swal.fire('Error al cargar los gastos', error.response.data.msg, 'error');
+    }
+    
 
-    gastos = data;
-
-    listarGastos(gastos)
+    listarGastos(gastos);
 };
 
 const modificarGasto = async (e) => {
@@ -359,8 +380,15 @@ const modificarGasto = async (e) => {
     gasto.importe = importe.value;
     gasto.total = totalInput.value;
     gasto.categoria = categoria.value;
-
-    const gastoUpdate = JSON.parse(await ipcRenderer.invoke('put-gasto', gasto));
+    
+    try {
+        const { data } = await axios.patch(`${URL}gasto/${gasto._id}`, gasto);
+        if (!data.ok) return await Swal.fire('Error al modificar el gasto', data.msg, 'error');
+        const gastoUpdate = data.gastoModificado;
+    } catch (error) {
+        console.log(error.response.data.msg);
+        return await Swal.fire('Error al modificar el gasto', error.response.data.msg, 'error');
+    }
 
 
     gastos = gastos.map(elem => {

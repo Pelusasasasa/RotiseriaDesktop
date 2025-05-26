@@ -79,6 +79,29 @@ seccionCTRL.getSeccion = async (req, res) => {
     }
 };
 
+seccionCTRL.getForCodigo = async (req, res) => {
+    const { codigo } = req.params;
+    try {
+        const seccion = await Seccion.findOne({ codigo });
+
+        if(!seccion) return await res.status(404).json({
+            ok: false,
+            msg: 'No existe la sección con ese código'
+        });
+
+        res.status(200).json({
+            ok: true,
+            seccion
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error al obtener la sección por código, hable con el administrador',
+        })
+    }
+}
+
 seccionCTRL.postOne = async (req, res) => {
     try {
         const seccion = new Seccion(req.body);

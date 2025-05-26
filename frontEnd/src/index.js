@@ -1,22 +1,10 @@
 const { dialog, app, BrowserWindow, Menu, ipcRenderer, autoUpdater } = require('electron');
 const { ipcMain } = require('electron/main');
 const path = require('path');
-const { condIva } = require('./configuracion.json')
-
-
 
 //base de datos
 require('./database');
 require('dotenv').config()
-const Cliente = require('./models/Cliente');
-const Producto = require('./models/Producto');
-const Numero = require('./models/Numero');
-const Venta = require('./models/Venta');
-const Gasto = require('./models/Gasto');
-const Pedido = require('./models/Pedido');
-const Seccion = require('./models/Seccion');
-const CartaEmpanada = require('./models/CartaEmpanada');
-const CategoriaGasto = require('./models/CategoriaGasto');
 const Variables = require('./models/Variables');
 
 //Fin Base de Datos
@@ -50,7 +38,6 @@ const createWindow = () => {
 };
 
 app.on('ready', createWindow);
-
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -238,184 +225,7 @@ const hacerMenu = () => {
 
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
-}
-
-
-//Base de datos
-
-//Inicio Pedido
-ipcMain.on('cargar-numero-pedido', async (e, args) => {
-  const pedido = await Pedido.findOne();
-  if (!pedido) {
-    const now = new Date();
-    const nuevoPedido = new Pedido({ numero: 0 });
-    nuevoPedido.fecha = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString();
-
-    await nuevoPedido.save();
-  }
-});
-
-ipcMain.handle('get-numero-pedido', async e => {
-  const pedido = await Pedido.findOne();
-  return JSON.stringify(pedido);
-});
-
-ipcMain.on('put-pedido', async (e, args) => {
-  await Pedido.findOneAndUpdate({ _id: args._id }, args);
-});
-//Fin Pedido
-
-
-//Inicio Seccion
-
-ipcMain.on('post-seccion', async (e, args) => {
-  const seccion = new Seccion(args);
-  await seccion.save();
-  // res.send(`Seccion ${args.body.nombre} cargado`);
-});
-
-ipcMain.handle('get-secciones', async e => {
-  const secciones = await Seccion.find();
-  return JSON.stringify(secciones);
-});
-
-//Revisar
-ipcMain.handle('get-forCodigo-seccion', async (e, codigo) => {
-  const seccion = await Seccion.findOne({ codigo: codigo });
-  return (JSON.stringify(seccion));
-});
-
-ipcMain.handle('delete-seccion', async (e, args) => {
-  try {
-    await Seccion.findOneAndDelete({ codigo: args });
-    return (true);
-  } catch (error) {
-    return (false)
-  }
-});
-//Fin Seccion
-
-//Inicio CartaEmpanada
-
-ipcMain.on('post-CartaEmpanada', async (e, args) => {
-  const carta = new CartaEmpanada(args);
-  await carta.save();
-});
-
-ipcMain.on('put-CartaEmpanada', async (e, args) => {
-  await CartaEmpanada.findOneAndUpdate({ _id: args._id }, args);
-});
-
-
-ipcMain.handle('get-cartaEmpanada', async () => {
-  const precios = await CartaEmpanada.findOne();
-  return JSON.stringify(precios)
-});
-
-//Fin CartaEmpanada
-
-
-
-//Inicio Gastos
-ipcMain.handle('get-gastos', async (e, args) => {
-  const gastos = await Gasto.find().populate('categoria', ['nombre']);
-
-  return JSON.stringify(gastos)
-});
-
-ipcMain.handle('get-gastos-for-date', async (e, args) => {
-  const { desde, hasta } = args;
-  const gastos = await Gasto.find({
-    $and: [
-      {
-        fecha: {
-          $gte: new Date(desde + "T00:00:00.000Z")
-        }
-      },
-      { fecha: { $lte: new Date(hasta + "T23:59:59.000Z") } }
-    ]
-  }).populate('categoria', ['nombre']);
-
-  return JSON.stringify(gastos)
-})
-
-ipcMain.handle('post-gasto', async (e, args) => {
-  try {
-    const gasto = new Gasto(args);
-
-    await gasto.save();
-
-    const gastoConCategoria = await Gasto.findOne({ _id: gasto._id }).populate('categoria', ['nombre']);
-    return JSON.stringify(gastoConCategoria)
-  } catch (error) {
-    return JSON.stringify(error);
-  }
-});
-
-ipcMain.handle('delete-gasto', async (e, args) => {
-  const id = args;
-  try {
-    const deleteGasto = await Gasto.findByIdAndDelete(id);
-
-    return JSON.stringify(deleteGasto);
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-});
-
-ipcMain.handle('put-gasto', async (e, gasto) => {
-  try {
-    const gastoUpdate = await Gasto.findOneAndUpdate({ _id: gasto._id }, gasto, { new: true }).populate('categoria', ['nombre']);
-
-    return JSON.stringify(gastoUpdate);
-  } catch (error) {
-    return JSON.stringify(error)
-  };
-});
-
-//Inicio Categoria Gasto
-
-ipcMain.handle('get-categoriaGasto', async (e) => {
-
-  const categorias = await CategoriaGasto.find();
-
-  return JSON.stringify(categorias);
-
-});
-
-ipcMain.handle('post-categoriaGasto', async (e, args) => {
-  try {
-    const categoriaGasto = new CategoriaGasto(args);
-
-    await categoriaGasto.save();
-
-    return JSON.stringify(categoriaGasto)
-  } catch (error) {
-    return error
-  }
-});
-
-//Inicion Variables
-
-ipcMain.handle('get-contrasenaGasto', async (e, args) => {
-  const contrasena = await Variables.findOne().sort({ _id: 1 });
-
-  return JSON.stringify(contrasena)
-})
-
-ipcMain.handle('post-variables', async () => {
-  const variable = new Variables();
-  await variable.save();
-  return JSON.stringify(variable);
-});
-
-ipcMain.handle('post-variables-and-contrasenaGasto', async (e, args) => {
-  const variable = new Variables(args);
-  await variable.save();
-  return JSON.stringify(variable);
-});
-
+};
 
 autoUpdater.on('update-available', () => {
   console.log("a");
