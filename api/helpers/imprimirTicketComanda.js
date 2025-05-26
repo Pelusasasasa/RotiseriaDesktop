@@ -7,7 +7,7 @@ const PrinterTypes = require("node-thermal-printer").types;
 const imprimirTicketComanda = async(venta) => {
     let printer = new ThermalPrinter({
         type: PrinterTypes.EPSON,
-        interface: 'tcp://192.168.0.15:9100'
+        interface: 'tcp://192.168.0.15:6001'
     });
 
     //Redimensionar imagen
@@ -58,9 +58,9 @@ const imprimirTicketComanda = async(venta) => {
     printer.bold(true);
     printer.setTextDoubleHeight(),
     printer.setTextDoubleWidth(),
-    console.log(venta);
-    venta.listaProductos.forEach(producto => {
-        printer.println(`${producto.cantidad.toFixed(2)} - ${producto.descripcion}`);
+    
+    venta.listaProductos.forEach(({producto, cantidad}) => {
+        printer.println(`${cantidad.toFixed(2)} - ${producto.descripcion}`);
         printer.alignRight();
         printer.println(`${producto.precio.toFixed(2)}`);
         printer.alignLeft();

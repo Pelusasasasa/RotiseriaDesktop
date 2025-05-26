@@ -1,21 +1,16 @@
 require('dotenv').config();
-const URL = process.env.ROTISERIA_URL;
-
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-    results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-};
-
-let vendedor = getParameterByName("vendedor")
-let permiso = getParameterByName("permiso");
-permiso = permiso === "" ? 0 : parseInt(permiso);
 
 const { ipcRenderer } = require("electron");
 const sweet = require('sweetalert2');
 const path = require('path');
-const { recorrerFlechas,copiar, redondear, agregarMovimientoVendedores } = require("../helpers");
+const { recorrerFlechas,copiar, redondear, agregarMovimientoVendedores, getParameterByName } = require("../helpers");
+const axios = require('axios');
+
+const URL = process.env.ROTISERIA_URL;
+
+let vendedor = getParameterByName("vendedor")
+let permiso = getParameterByName("permiso");
+permiso = permiso === "" ? 0 : parseInt(permiso);
 
 let seleccionado;
 let subSeleccionado;
@@ -56,8 +51,16 @@ const clickEnTarjetas = (e) => {
             "confirmButtonText":"Aceptar"
         }).then(async (result)=>{
             if (result.isConfirmed) {
-                ipcRenderer.send('delete-producto',seleccionado.id);
-                seccionTarjetas.removeChild(seleccionado);
+                try {
+                    const { data } = await axios.delete(`${URL}producto/${seleccion.id}`);
+                    if (!data.ok) return await sweet.fire('Error al modificar el producto', data.msg, 'error')
+
+                    seccionTarjetas.removeChild(seleccionado);
+                } catch (error) {
+                    console.log(error);
+                    await sweet.fire('Error al modificar el producto', `${data.response.data.msg}`, 'error');
+                }
+                
             }
         })
     }else if(e.target.innerHTML === "edit"){
@@ -161,8 +164,9 @@ const listarTarjetas = async (productos)=>{
         divBotones.appendChild(modificar);
         divBotones.appendChild(eliminar);
         divBotones.appendChild(agregar);
-        producto.seccion.nombre === "EMPANADAS" && divBotones.appendChild(x6);
-        producto.seccion.nombre === "EMPANADAS" && divBotones.appendChild(x12);
+        
+        producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x6);
+        producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x12);
 
         div.appendChild(img)
         div.appendChild(titulo);
@@ -180,25 +184,41 @@ const filtrar = async()=>{
         condicion="_id";
     };
     const descripcion = buscador.value !== "" ? buscador.value : "textoVacio";
-    let producto;
-    await ipcRenderer.invoke('gets-productos-for-descripcion-and-seleccion',[descripcion,condicion]).then((result)=>{
-        producto = JSON.parse(result);
-    });
-    producto.length !== 0 && listarTarjetas(producto);
+    try {
+        const { data } = await axios.get(`${URL}producto/forSeccionAndDescription/${descripcion}/${condicion}`)
+        if(!data.ok) return await sweet.fire('No se pudo obtener los productos', data.msg ,'error');
+
+        listarTarjetas(data.productos);
+    } catch (error) {
+        console.log(error.response.data.msg);
+        await sweet.fire('No se pudiero obtener los productos', error.response.data.msg, 'error')
+    };
 };
 
 const categorias = async() => {
     const divCategorias = document.querySelector('.categorias');
-    const secciones = JSON.parse(await ipcRenderer.invoke('get-secciones'));
-    for await(let seccion of secciones){
-        const button = document.createElement('button');
-        button.innerText = seccion.nombre;
-        button.id = seccion._id;
-        divCategorias.appendChild(button);
 
+    try {
+        const { data } = await axios.get(`${URL}seccion`);
 
-        button.addEventListener('click',mostrarProductosPorCategoria);
+        if(!data.ok) return await sweet.fire('No se pudo obtener las secciones', data.msg, 'error');
+
+        for await(let seccion of data.secciones){
+            const button = document.createElement('button');
+            button.innerText = seccion.nombre;
+            button.id = seccion._id;
+            divCategorias.appendChild(button);
+    
+    
+            button.addEventListener('click',mostrarProductosPorCategoria);
+        }
+    } catch (error) {
+        console.log(error.response.data.msg);
+        await sweet.fire('No se pudo obtener las secciones', error.response.data.msg, 'error')
     }
+    
+
+
 };
 
 //funcion para enviar docena de empanadas de un sabor
@@ -267,8 +287,15 @@ const mostrarProductosPorCategoria = async(e) => {
     if(e.target.innerText === 'TODOS'){
         filtrar();
     }else{
-        const productos = JSON.parse(await ipcRenderer.invoke('gets-productos-for-seccion',id));
-        listarTarjetas(productos);
+        try {
+            const { data } = await axios.get(`${URL}producto/forSeccion/${id}`);
+            if(!data.ok) return await sweet.fire('No se pudo obtener los productos', data.msg, 'error');
+
+            listarTarjetas(data.productos);
+        } catch (error) {
+            await sweet.fire('No se pudo obtener los productos', error.response.data.msg, 'error');
+            console.log(error.response.data.msg);
+        };
     };
     
 
@@ -277,23 +304,12 @@ const mostrarProductosPorCategoria = async(e) => {
 
 ipcRenderer.on('informacion-a-ventana',(e,args)=>{
     const producto = JSON.parse(args);
-    if (mostrarLista) {
-        const trModificado = document.getElementById(producto._id);
-        trModificado.children[1].innerHTML = producto.descripcion;
-        trModificado.children[2].innerHTML = producto.precio.toFixed(2);
-        trModificado.children[3].innerHTML = producto.stock.toFixed(2);
-        if(producto.textBold){
-            trModificado.classList.add('text-bold');
-        }else{
-            trModificado.classList.remove('text-bold');
-        }
-    }else{
-        const divModificado = seccionTarjetas.querySelector(`.tarjetas #${CSS.escape(producto._id)}`);
-        divModificado.children[1].innerText = producto.descripcion;
-        divModificado.children[0].setAttribute('src',producto.img + "?timestamp=" + new Date().getTime())
-        document.querySelector(`.tarjetas #${CSS.escape(producto._id)} #precio`).innerText = producto.precio.toFixed(2);
-        document.querySelector(`.tarjetas #${CSS.escape(producto._id)} #stock`).innerText = producto.stock.toFixed(2);
-    }
+    
+    const divModificado = seccionTarjetas.querySelector(`.tarjetas #${CSS.escape(producto._id)}`);
+    divModificado.children[1].innerText = producto.descripcion;
+    
+    document.querySelector(`.tarjetas #${CSS.escape(producto._id)} #precio`).innerText = producto.precio.toFixed(2);
+    document.querySelector(`.tarjetas #${CSS.escape(producto._id)} #stock`).innerText = producto.stock.toFixed(2);
 });
 
 buscador.addEventListener('keyup',e=>{

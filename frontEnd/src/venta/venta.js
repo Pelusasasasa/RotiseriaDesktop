@@ -1,22 +1,17 @@
 require('dotenv').config();
-const URL = process.env.ROTISERIA_URL;
-
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
-let tarjetaSeleccionada;
+const { ipcRenderer } = require('electron');
+const { apretarEnter, redondear, cargarFactura, ponerNumero, verCodigoComprobante, verTipoComprobante, verSiHayInternet, getParameterByName } = require('../helpers');
 
 const sweet = require('sweetalert2');
+const axios = require('axios');
 const path = require('path');
-const { ipcRenderer } = require('electron');
-
-let vendedor = getParameterByName('vendedor');
-const { apretarEnter, redondear, cargarFactura, ponerNumero, verCodigoComprobante, verTipoComprobante, verSiHayInternet } = require('../helpers');
 const archivo = require('../configuracion.json');
+
+const URL = process.env.ROTISERIA_URL;
+
+let tarjetaSeleccionada;
+let vendedor = getParameterByName('vendedor');
+
 
 //Parte Cliente
 const codigo = document.querySelector('#codigo');
@@ -79,9 +74,18 @@ let descuentoPorDocena = false; //Se usa para que en el ticket si esto es true s
 
 //Por defecto ponemos el A Consumidor Final y tambien el select
 window.addEventListener('load', async e => {
-    precioEmpanadas = JSON.parse(await ipcRenderer.invoke('get-cartaEmpanada'));
-    listarCliente(1);//listanos los clientes
-    filtrar();
+    try {
+        const { data } = await axios.get(`${URL}carta`);
+        
+        if(!data.ok) return await sweet.fire('No se pudo obtener la carta empanada', data.msg, 'error');
+
+        precioEmpanadas = data.carta;
+        listarCliente(1);//listanos los clientes
+        filtrar();
+    } catch (error) {
+        console.log(error.response.data.msg);
+        await sweet.fire('No se pudo obtener la carta de empanada', error.response.data.msg, 'error');
+    };
 });
 
 document.addEventListener('keydown', e => {
@@ -106,13 +110,6 @@ document.addEventListener('keydown', e => {
             ancho: 900,
             altura: 650
         };
-        ipcRenderer.send('abrir-ventana', opciones);
-    } else if (e.keyCode === 115) {
-        const opciones = {
-            path: "productos/cambio.html",
-            ancho: 1000,
-            altura: 550,
-        }
         ipcRenderer.send('abrir-ventana', opciones);
     } else if (e.keyCode === 116) {
         const opciones = {
@@ -240,161 +237,92 @@ const verTipoVenta = () => {
 };
 
 facturar.addEventListener('click', async e => {
-    if (codigo.value === "") {
-        sweet.fire({
-            title: "Poner un codigo de cliente"
-        });
-    } else if (!verSiHayInternet() && situacion === "blanco") {
-        await sweet.fire({
-            title: "No se puede hacer la factura porque no hay internet"
-        })
-    } else if (cuit.value.length === 8 && condicionIva.value === "Responsable Inscripto" && archivo.condIva === "Inscripto") {
-        if (tipoFactura) {
-            await sweet.fire({
-                title: "No se puede hacer Nota Credito B a un Inscripto"
-            });
-        } else {
-            await sweet.fire({
-                title: "No se puede hacer Factura B a un Inscripto"
-            });
-        }
-    } else {
+    //Verificamos los datos para la venta si estan correctos
+    if(!verificarDatosParaventa()) return;
+    
+    alerta.classList.remove('none');
+    
+    const venta = {};
+
+    venta.cliente = nombre.value;
+    venta.fecha = new Date();
+    venta.idCliente = codigo.value;
+    venta.precio = parseFloat(total.value);
+    venta.descuento = descuento;
+    venta.tipo_venta = await verTipoVenta();
+    venta.listaProductos = listaProductos;
+
+    //Ponemos propiedades para la factura electronica
+    venta.cod_comp = situacion === "blanco" ? await verCodigoComprobante(tipoFactura, cuit.value, condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value) : 0;
+    venta.tipo_comp = situacion === "blanco" ? await verTipoComprobante(venta.cod_comp) : "Comprobante";
+    venta.num_doc = cuit.value !== "" ? cuit.value : "00000000";
+    venta.cod_doc = await verCodigoDocumento(cuit.value);
+    venta.condicionIva = condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value
+    const [iva21, iva0, gravado21, gravado0, iva105, gravado105, cantIva] = await sacarIva(listaProductos); //sacamos el iva de los productos
+    venta.iva21 = iva21;
+    venta.iva0 = iva0;
+    venta.gravado0 = gravado0;
+    venta.gravado21 = gravado21;
+    venta.iva105 = iva105;
+    venta.gravado105 = gravado105;
+    venta.cantIva = cantIva;
+    venta.direccion = direccion.value;
+    venta.telefono = telefono.value;
+    venta.descuentoPorDocena = descuentoPorDocena;
+    venta.caja = require('../configuracion.json').caja; //vemos en que caja se hizo la venta
+    
+    venta.facturaAnterior = facturaAnterior ? facturaAnterior : "";
+    
+    if (situacion === "blanco") {
         alerta.classList.remove('none');
-        let numeros;
-        await ipcRenderer.invoke('gets-numeros').then((result) => {
-            numeros = JSON.parse(result);
+        venta.afip = await cargarFactura(venta, facturaAnterior ? true : false);
+        venta.F = true;
+    } else {
+        venta.F = false;
+        alerta.children[1].innerHTML = "Generando Venta";
+    };
+        
+    let cliente = {};
+    cliente.nombre = nombre.value.toUpperCase();
+    cliente.cuit = cuit.value;
+    cliente.direccion = direccion.value.toUpperCase();
+    cliente.telefono = telefono.value;
+        
+    try {
+        const { data } = await axios.post(`${URL}venta`, venta);
+        if(!data.ok) return await sweet.fire('Error al hacer la venta', error.response.data.msg, 'error');
+
+        const {isConfirmed} = await sweet.fire({
+            title: "Imprimir Ticket Cliente",
+            confirmButtonText: "Aceptar",
+            showCancelButton: true
         });
-        const venta = {};
-
-        venta.cliente = nombre.value;
-        venta.fecha = new Date();
-        venta.idCliente = codigo.value;
-        venta.precio = parseFloat(total.value);
-        venta.descuento = descuento;
-        venta.tipo_venta = await verTipoVenta();
-        venta.listaProductos = listaProductos;
-
-        //Ponemos propiedades para la factura electronica
-        venta.cod_comp = situacion === "blanco" ? await verCodigoComprobante(tipoFactura, cuit.value, condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value) : 0;
-        venta.tipo_comp = situacion === "blanco" ? await verTipoComprobante(venta.cod_comp) : "Comprobante";
-        venta.num_doc = cuit.value !== "" ? cuit.value : "00000000";
-        venta.cod_doc = await verCodigoDocumento(cuit.value);
-        venta.condicionIva = condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value
-        const [iva21, iva0, gravado21, gravado0, iva105, gravado105, cantIva] = await sacarIva(listaProductos); //sacamos el iva de los productos
-        venta.iva21 = iva21;
-        venta.iva0 = iva0;
-        venta.gravado0 = gravado0;
-        venta.gravado21 = gravado21;
-        venta.iva105 = iva105;
-        venta.gravado105 = gravado105;
-        venta.cantIva = cantIva;
-        venta.direccion = direccion.value;
-        venta.telefono = telefono.value;
-        venta.descuentoPorDocena = descuentoPorDocena;
-
-        await ipcRenderer.invoke('get-numero-pedido').then((result) => {
-            pedido = JSON.parse(result)
-            venta.nPedido = JSON.parse(result).numero + 1;
-            pedido.numero = venta.nPedido;
-        });
-
-        await ipcRenderer.send('put-pedido', pedido);
-        venta.caja = require('../configuracion.json').caja; //vemos en que caja se hizo la venta
-        // venta.vendedor = vendedor ? vendedor : "";
-
-        venta.facturaAnterior = facturaAnterior ? facturaAnterior : "";
-        if (venta.tipo_venta === "CC") {
-            venta.numero = numeros["Cuenta Corriente"] + 1;
-        } else if (venta.tipo_venta === "PP") {
-            venta.numero = numeros["Presupuesto"] + 1;
-        } else if (venta.tipo_venta === "CD" || venta.tipo_venta === "T") {
-            venta.numero = numeros["Contado"] + 1;
+            
+        if(isConfirmed){
+            ipcRenderer.send('imprimir', [venta, cliente, movimientos]);
         };
 
-        if (venta.tipo_venta === "CC") {
-            await ipcRenderer.send('put-numeros', ["Cuenta Corriente", venta.numero]);
-            // await axios.put(`${URL}numero/Cuenta Corriente`,{"Cuenta Corriente":venta.numero});
-        } else if (venta.tipo_venta === "PP") {
-            await ipcRenderer.send('put-numeros', ["Presupuesto", venta.numero]);
-            // await axios.put(`${URL}numero/Presupuesto`,{"Presupuesto":venta.numero});
-        } else {
-            await ipcRenderer.send('put-numeros', ["Contado", venta.numero]);
-            // await axios.put(`${URL}numero/Contado`,{Contado:venta.numero});
-        }
-        try {
-            if (situacion === "blanco") {
-                alerta.classList.remove('none');
-                venta.afip = await cargarFactura(venta, facturaAnterior ? true : false);
-                venta.F = true;
-            } else {
-                venta.F = false;
-                alerta.children[1].innerHTML = "Generando Venta";
-            }
-
-            for (let producto of listaProductos) {
-                await cargarMovimiento(producto, venta.numero, venta.cliente, venta.tipo_venta, venta.tipo_comp, venta.caja, venta.vendedor);
-                if (!(producto.producto.productoCreado)) {
-                    await descontarStock(producto);
-                }
-                //producto.producto.precio = producto.producto.precio - redondear((parseFloat(descuentoPor.value) * producto.producto.precio / 100,2));
-            }
-            venta.tipo_venta !== "PP" && await ipcRenderer.send('descontar-stock', descuentoStock);
-
-            // venta.tipo_venta !== "PP" && await axios.put(`${URL}productos/descontarStock`,descuentoStock)
-            // venta.tipo_venta !== "PP" && await axios.post(`${URL}movimiento`,movimientos);
-            //sumamos al cliente el saldo y agregamos la venta a la lista de venta
-            venta.tipo_venta === "CC" && await sumarSaldo(venta.idCliente, venta.precio, venta.numero);
-
-
-            //Ponemos en la cuenta conpensada si es CC
-            venta.tipo_venta === "CC" && await ponerEnCuentaCompensada(venta);
-            venta.tipo_venta === "CC" && await ponerEnCuentaHistorica(venta, parseFloat(saldo.value));
-
-            let cliente = {};
-            cliente.nombre = nombre.value.toUpperCase();
-            cliente.cuit = cuit.value;
-            cliente.direccion = direccion.value.toUpperCase();
-            cliente.telefono = telefono.value;
-
-            if (venta.tipo_venta === "PP") {
-                // await axios.post(`${URL}Presupuesto`,venta);
-            } else {
-                ipcRenderer.invoke('post-venta', JSON.stringify(venta));
-            }
-
-            if (impresion.checked) {
-                ipcRenderer.send('imprimir-comanda', [venta, cliente, movimientos]);
-
-                await sweet.fire({
-                    title: "Imprimir Ticket Cliente",
-                    confirmButtonText: "Aceptar",
-                    showCancelButton: true
-                }).then(({ isConfirmed }) => {
-                    if (isConfirmed) {
-                        ipcRenderer.send('imprimir', [venta, cliente, movimientos]);
-                    }
-                });
-            }
-
-            location.reload();
-        } catch (error) {
-            await sweet.fire({
-                title: "No se pudo generar la venta"
-            });
-            console.log(error)
-        } finally {
-            alerta.classList.add('none');
-        }
-    }
+        location.reload();
+    } catch (error) {
+        console.log(error.response.data.msg);
+        sweet.fire('Error al hacer la venta', error.reponse.data.msg, 'error');
+    };
+    alerta.classList.add('none')
 });
+
 
 //Lo que hacemos es listar el cliente traido
 const listarCliente = async (id) => {
     codigo.value = id;
     let cliente;
-    await ipcRenderer.invoke('get-cliente', id).then((result) => {
-        cliente = JSON.parse(result);
-    });
+    try {
+        const { data } = await axios.get(`${URL}cliente/${id}`);
+        cliente = data.cliente;
+        if(!data.ok) return await sweet.fire('No se pudo obtener el cliente', data.msg, 'error');
+    } catch (error) {
+        console.log(error.response.data.msg);
+        await sweet.fire('No se pudo obtener el cliente', error.reponse.data.msg, 'error')
+    };
 
     if (cliente !== "") {
         nombre.value = cliente.nombre;
@@ -404,8 +332,8 @@ const listarCliente = async (id) => {
         direccion.value = cliente.direccion;
         cuit.value = cliente.cuit === "" ? "00000000" : cliente.cuit;
         condicionIva.value = cliente.condicionIva ? cliente.condicionIva : "Consumidor Final";
+
         codBarra.focus();
-        // cliente.condicionFacturacion === 1 ? cuentaCorrientediv.classList.remove('none') : cuentaCorrientediv.classList.add('none')
     } else {
         codigo.value = "";
         codigo.focus();
@@ -415,7 +343,13 @@ const listarCliente = async (id) => {
 //Lo que hacemos es listar el producto traido
 const listarProducto = async (id) => {
     let producto;
-
+    try {
+        
+    } catch (error) {
+        console.log(error.response.data.msg);
+        //TODO
+        await sweet.fire('Error al obtener el producto', error.response.data.msg)
+    }
     await ipcRenderer.invoke('get-producto', id).then((result) => {
         producto = JSON.parse(result);
     });
@@ -504,30 +438,6 @@ const listarProducto = async (id) => {
 
 };
 
-//creamos la cuenta compensada cuedo la venta se hace en cuenta corriente
-const ponerEnCuentaCompensada = async (venta) => {
-    const cuenta = {};
-    cuenta.cliente = venta.cliente;
-    cuenta.idCliente = venta.idCliente;
-    cuenta.nro_venta = venta.numero;
-    cuenta.importe = venta.precio;
-    cuenta.pagado = inputRecibo.value;
-    cuenta.tipo_comp = venta.tipo_comp;
-    cuenta.saldo = venta.precio - parseFloat(inputRecibo.value);
-    await axios.post(`${URL}compensada`, cuenta);
-};
-
-const ponerEnCuentaHistorica = async (venta, saldo) => {
-    const cuenta = {};
-    cuenta.cliente = venta.cliente;
-    cuenta.idCliente = venta.idCliente;
-    cuenta.nro_venta = venta.numero;
-    cuenta.tipo_comp = venta.tipo_comp;
-    cuenta.debe = venta.precio;
-    cuenta.saldo = facturaAnterior ? saldo - venta.precio : venta.precio + saldo;
-    (await axios.post(`${URL}historica`, cuenta)).data;
-};
-
 //Cargamos el movimiento de producto a la BD
 const cargarMovimiento = async ({ cantidad, producto, observaciones }, numero, cliente, tipo_venta, tipo_comp, caja, vendedor = "") => {
     const movimiento = {};
@@ -547,15 +457,38 @@ const cargarMovimiento = async ({ cantidad, producto, observaciones }, numero, c
     movimientos.push(movimiento);
 };
 
-//Descontamos el stock
-const descontarStock = async ({ cantidad, producto }) => {
-    delete producto.idTabla;
-    if (facturaAnterior) {
-        producto.stock += cantidad;
-    } else {
-        producto.stock -= cantidad;
-    }
-    descuentoStock.push(producto)
+const verificarDatosParaventa = async() => {
+
+    if (codigo.value === "") {
+        await sweet.fire({
+            title: "Poner un codigo de cliente"
+        });
+        return false;
+    };
+
+    if (!verSiHayInternet() && situacion === "blanco") {
+        await sweet.fire({
+            title: "No se puede hacer la factura porque no hay internet"
+        });
+
+        return false;
+    };
+
+    if (cuit.value.length === 8 && condicionIva.value === "Responsable Inscripto" && archivo.condIva === "Inscripto") {
+        if (tipoFactura) {
+            await sweet.fire({
+                title: "No se puede hacer Nota Credito B a un Inscripto"
+            });
+            return false;
+        } else {
+            await sweet.fire({
+                title: "No se puede hacer Factura B a un Inscripto"
+            });
+            return false;
+        }
+    };
+
+    return true;
 };
 
 let seleccionado;

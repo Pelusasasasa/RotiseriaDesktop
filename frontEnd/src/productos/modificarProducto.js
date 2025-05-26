@@ -1,11 +1,15 @@
+require('dotenv').config();
+const axios = require('axios');
 const { ipcRenderer } = require('electron');
-const {cerrarVentana,apretarEnter, redondear, agregarMovimientoVendedores} = require('../helpers');
 const sweet = require('sweetalert2');
-
 const archivo = require('../configuracion.json');
 const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
+
+const {cerrarVentana,apretarEnter, redondear, agregarMovimientoVendedores} = require('../helpers');
+
+const URL = process.env.ROTISERIA_URL;
 
 const codigo = document.querySelector('#codigo');
 const descripcion = document.querySelector('#descripcion');
@@ -27,21 +31,26 @@ ipcRenderer.on('informacion',async (e,args)=>{
     const {informacion}= args;
     let producto;
     listarSecciones();
-    await ipcRenderer.invoke('get-producto',informacion).then((result)=>{
-        producto = JSON.parse(result);
-    });
+    try {
+        const { data } = await axios.get(`${URL}producto/${informacion}`);
+        if (!data.ok) return await sweet.fire('Error al obtener el producto', data.msg, 'error');
+        producto = data.producto;
+    } catch (error) {
+        console.log(error);
+    };
+
     llenarInputs(informacion,producto);
 });
 
 //llenamos los inputs con la informacion que tenemos
-const llenarInputs = async(codigoProducto,producto)=>{
+const llenarInputs = async(codigoProducto, producto)=>{
     codigo.value = codigoProducto;
     descripcion.value = producto.descripcion;
     provedor.value = producto.provedor;
     stock.value = producto.stock;
     costo.value = producto.costo.toFixed(2);
     ganancia.value = producto.ganancia.toFixed(2);
-    secciones.value = producto.seccion;
+    secciones.value = producto.seccion._id;
     total.value = producto.precio.toFixed(2);   
     textBold.checked = producto.textBold ? true : false;
 }
@@ -74,9 +83,16 @@ modificar.addEventListener('click',async e=>{
         producto.textBold = textBold.checked ? true : false;
         producto.img = path.join(__dirname,'..',`imgProductos/${codigo.value}.png`);
 
-        await ipcRenderer.send('put-producto',producto);    
-        await ipcRenderer.send('informacion-a-ventana',producto);
-        window.close();
+        try {
+            const { data } = await axios.patch(`${URL}producto/${codigo.value}`, producto);
+            if( !data.ok) return await sweet.fire('Error al modificar el producto', data.msg, 'error');
+
+            await ipcRenderer.send('informacion-a-ventana',producto);
+            window.close();
+        } catch (error) {
+            console.log(error.response.data.msg);
+            return await sweet.fire('Error al modificar el producto', error.response.data.msg, 'error');
+        };   
     }
 });
 
@@ -145,11 +161,20 @@ document.addEventListener('keydown',e=>{
 });
 
 async function listarSecciones() {
-    const lista = JSON.parse(await ipcRenderer.invoke('get-secciones'));
-    for await(let seccion of lista){
-        const option = document.createElement('option');
-        option.value = seccion._id;
-        option.text = seccion.nombre;
-        secciones.appendChild(option)
+    try {
+        const { data } = await axios.get(`${URL}seccion`);
+        if (!data.ok) return await sweet.fire('Error al obtener las secciones', data.msg, 'error');
+
+        for await(let seccion of data.secciones){
+            const option = document.createElement('option');
+            option.value = seccion._id;
+            option.text = seccion.nombre;
+            secciones.appendChild(option)
+        }
+    } catch (error) {
+        console.log(error.response.data.msg);
+        return await sweet.fire('Error al obtener las secciones', error.response.data.msg, 'error');
     }
-}
+    
+    
+};

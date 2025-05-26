@@ -1,6 +1,6 @@
 const axios = require("axios");
 require('dotenv').config();
-const URL = process.env.GESTIONURL;
+const URL = process.env.ROTISERIA_URL;
 
 const sweet = require('sweetalert2');
 
@@ -15,37 +15,35 @@ const salir = document.getElementById('salir');
 let producto;
 
 codigo.addEventListener('change',async e=>{
-    producto = (await axios.get(`${URL}productos/${codigo.value}`)).data;
-    if (producto) {
-        descripcion.value = producto.descripcion;
-        nuevoCodigo.focus();
-    }else{
-        await sweet.fire({
-            title:"Producto no encontrado"
-        });
-        codigo.value = "";
-    };
+    const { data } = (await axios.get(`${URL}producto/${codigo.value}`));
+    if(!data.ok) return await sweet.fire('Error al obtener al producto', data.msg, 'error');
     
+    if (data.producto) {
+        producto = data.producto;
+        descripcion.value = data.producto.descripcion;
+        nuevoCodigo.focus();
+    }
 });
 
 nuevoCodigo.addEventListener('change',async e=>{
-    const producto = (await axios.get(`${URL}productos/${nuevoCodigo.value}`)).data;
-    console.log(producto)
-    if (producto) {
+    try {
+        const { data } = (await axios.get(`${URL}producto/${nuevoCodigo.value}`));
+        if(!data.ok) return await sweet.fire('Error al obtener al producto', data.msg, 'error');
         await sweet.fire({
             title:"Codigo Ya utilizado"
         });
         nuevoCodigo.value = "";
-    }else{
+    } catch (error) {
+        console.log(error.response.data);
         modificar.focus();
     };
 });
 
 modificar.addEventListener('click',async e=>{
     try {
-        await axios.delete(`${URL}productos/${producto._id}`);
+        await axios.delete(`${URL}producto/${producto._id}`);
         producto._id = nuevoCodigo.value;
-        await axios.post(`${URL}productos`,producto);
+        await axios.post(`${URL}producto`,producto);
         location.reload();
     } catch (error) {
         console.log(error)

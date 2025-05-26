@@ -100,6 +100,44 @@ productoCTRL.getForSeccion = async(req, res) => {
     }
 };
 
+productoCTRL.getForSeccionAndDescription = async(req, res) => {
+    const {description, seccion} = req.params;
+
+    try {
+        let productos = [];
+
+        if(description === 'textoVacio'){
+            productos = await Producto.find().populate('seccion', ['codigo', 'nombre']);
+        }else{
+            let re;
+            if (description[0] === '*'){
+                re = new RegExp(`${description.substr(1)}`);
+            }else{
+                re = new RegExp(`${description}`);
+            };
+
+            productos = await Producto.find({ [seccion]: {$regex: re, $options: 'i' }}).populate('seccion', ['codigo', 'nombre']);
+        };
+
+        if(!productos.length === 0) return res.status(404).json({
+            ok: false,
+            msg: 'No se obtuvieron productos'
+        });
+
+        res.status(200).json({
+            ok: true,
+            productos
+        });
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'No se pudo obtener los productos, hable con el administrador'
+        })
+    }
+};  
+
 productoCTRL.getOne = async(req, res) => {
     const { id } = req.params;
 

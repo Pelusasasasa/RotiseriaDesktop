@@ -238,10 +238,10 @@ ventaCTRL.postOne = async(req, res) => {
         const numero = await getNextNumberContado();
         const nPedido = await getNextNumberPedido();
 
-        listaProductos.forEach(async(producto) => {
+        listaProductos.forEach(async({producto, cantidad}) => {
             const productoActualizado = await Producto.findOneAndUpdate(
                 { _id: producto._id },
-                { $inc: { stock: -producto.cantidad } },
+                { $inc: { stock: -cantidad } },
                 { new: true }
             );
 

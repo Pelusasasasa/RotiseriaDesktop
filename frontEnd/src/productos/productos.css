@@ -55,6 +55,7 @@
 
 .categorias button{
     margin-bottom: 2rem;
+    white-space: nowrap;
 }
 
 #switch:checked + .lbl{
