@@ -97,6 +97,7 @@ window.addEventListener('load', async e => {
 
     const  { data } = await axios.get(`${URL}venta/day/${fecha.value}`);
     if(data.ok){
+        ventas = data.ventas;
         listarVentas(data.ventas);
     }else{
         await sweet.fire('Error al traer las ventas', 'No se pudieron obtener las ventas', 'error');
@@ -115,24 +116,30 @@ const eliminarVenta = async (e) => {
     });
 
     if (isConfirmed) {
-
-        const { data } = await axios.get(`${URL}venta/${id}`);
-        const { cod_doc, tipo_venta, tipo_comp, num_doc, precio, gravado21, gravado0, gravado105, iva21, iva0, iva105, afip } = data.venta;
+        let venta = {}
+        try {
+            const { data } = await axios.get(`${URL}venta/${id}`);
+            if(!data.ok) return await sweet.fire('Error al obtener la venta', data.msg, 'error');
+            venta = data.venta;
+        } catch (error) {
+            console.log(error.response.data.msg);
+            await sweet.fire('Error al obtener la venta', error.response.data.msg, 'error');
+        }
+        const { cod_doc, tipo_venta, tipo_comp, num_doc, precio, gravado21, gravado0, gravado105, iva21, iva0, iva105, afip } = venta;
 
         if (tipo_comp === 'Factura C') {
-
             const numero = afip.numero.toString().padStart(8, '0');
 
             const infoParaNotaCredito = { cod_doc, num_doc, precio, gravado21, gravado0, gravado105, iva21, iva0, iva105, numero };
 
             let res;
-
             try {
                 res = await cargarNotaCredito(infoParaNotaCredito, numero);
             } catch (error) {
                 await sweet.fire('Error al cargar la nota de credito', 'No se pudo cargar la nota de credito', 'error');
             }
 
+            venta._id = venta._id
             venta.cod_comp = 13;
             venta.tipo_comp = 'Nota Credito C';
             venta.afip.numero = res.numero;
@@ -141,14 +148,18 @@ const eliminarVenta = async (e) => {
             venta.afip.cae = res.cae;
             venta.afip.vencimiento = res.vencimiento;
             venta.notaCredito = true;
-
-            const { data } = await axios.patch(`${URL}venta/notaCredito/${venta._id}`);
-            console.log(data);
-
-            ventaAux = ventas.find(elem => (elem._id === aux._id));
-
-            ventaAux.notaCredito = true;
-
+            
+            let aux;
+            try {
+                const { data } = await axios.patch(`${URL}venta/notaCredito/${venta._id}`);
+                if(!data.ok) return await sweet.fire('Error al cargar la nota de credito', data.msg, 'error');
+                aux = data.venta;
+            } catch (error) {
+                console.log(error.reponse.data.msg);
+                await sweet.fire('Error al cargar la nota de credito', error.response.data.msg, 'error');
+            };
+            
+            
             delete venta._id;
 
             //Modificamos la lista de prodcutos para hacer que el movimiento se ponga en negativo
@@ -158,7 +169,7 @@ const eliminarVenta = async (e) => {
 
             try {
                 const { data } = await axios.post(`${URL}venta`, venta);
-                ventas.push(data.newVenta);
+                ventas.push(data.venta);
                 //Cargamos la venta y luego la listams, que ya seria la nota de credito
                 listarVentas(ventas)
             } catch (error) {
@@ -381,7 +392,6 @@ const listarVentas = async (ventas) => {
         }
         return 0;
     });
-
 
     //filtramos las ventas si son contadas o tarjeta
     if (tipoVenta === "CD") {

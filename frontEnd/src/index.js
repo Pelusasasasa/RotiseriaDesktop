@@ -5,7 +5,6 @@ const path = require('path');
 //base de datos
 require('./database');
 require('dotenv').config()
-const Variables = require('./models/Variables');
 
 //Fin Base de Datos
 

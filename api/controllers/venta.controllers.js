@@ -232,11 +232,13 @@ ventaCTRL.notaCreditoTrue = async(req, res) => {
 
 ventaCTRL.postOne = async(req, res) => {
 
-    const { listaProductos } = req.body;
+    const { listaProductos, tipo_comp } = req.body;
+    
 
     try {
+
         const numero = await getNextNumberContado();
-        const nPedido = await getNextNumberPedido();
+        const nPedido = await getNextNumberPedido(tipo_comp);
 
         listaProductos.forEach(async({producto, cantidad}) => {
             const productoActualizado = await Producto.findOneAndUpdate(
