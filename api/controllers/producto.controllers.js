@@ -1,11 +1,11 @@
 const productoCTRL = {};
 
-const { validarId } = require('../helpers/validarId');
+const validarId = require('../helpers/validarId');
 const Producto = require('../models/Producto');
 
 productoCTRL.deleteOne = async(req, res) => {
     const { id } = req.params;
-    
+    console.log(id);
     try {
 
         if(await validarId(id)) return res.status(400).json({
@@ -14,6 +14,7 @@ productoCTRL.deleteOne = async(req, res) => {
         });
 
         const productoEliminado = await Producto.findByIdAndDelete(id);
+        
         if(!productoEliminado) return res.status(404).json({
             ok: false,
             msg: 'No se encontró el producto'

@@ -1,9 +1,12 @@
-import { Types } from "mongoose"
+const { Types } = require('mongoose');
 
-export const validarId = (id) => {
+const validarId = (id) => {
     if(!Types.ObjectId.isValid(id)){
        return false;
     };
 
     return true;
-}
+};
+
+
+module.exports = validarId;

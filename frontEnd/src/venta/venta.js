@@ -89,6 +89,7 @@ window.addEventListener('load', async e => {
 });
 
 document.addEventListener('keydown', e => {
+    console.log(e.keyCode);
     if (e.keyCode === 18) {
         document.addEventListener('keydown', event => {
             if (event.keyCode === 120) {
@@ -321,7 +322,7 @@ const listarCliente = async (id) => {
         if(!data.ok) return await sweet.fire('No se pudo obtener el cliente', data.msg, 'error');
     } catch (error) {
         console.log(error.response.data.msg);
-        await sweet.fire('No se pudo obtener el cliente', error.reponse.data.msg, 'error')
+        return await sweet.fire('No se pudo obtener el cliente', error.response.data.msg, 'error')
     };
 
     if (cliente !== "") {
@@ -344,15 +345,15 @@ const listarCliente = async (id) => {
 const listarProducto = async (id) => {
     let producto;
     try {
-        
+        const { data } = await axios.get(`${URL}producto/${id}`);
+        if(!data.ok) return await sweet.fire('Error al obtener el producto', data.msg, 'error');    
+        producto = data.producto;
     } catch (error) {
         console.log(error.response.data.msg);
-        //TODO
         await sweet.fire('Error al obtener el producto', error.response.data.msg)
     }
-    const { data } = await axios.get(`${URL}producto/${id}`);
-    if(!data.ok) return await sweet.fire('Error al obtener el producto', data.msg, 'error');
-    producto = data.producto;
+    
+    
 
     if (producto) {
         //Vemos si el producto ya fue usado

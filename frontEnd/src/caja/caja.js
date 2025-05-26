@@ -371,8 +371,7 @@ tbodyGastos.addEventListener('click', e => {
 
 const listarVentas = async (ventas) => {
     tbody.innerHTML = ``;
-    let lista = [];
-    console.log(ventas);
+    let lista = []; 
     //organizamos las ventas por fecha
     ventas.sort((a, b) => {
         if (a.fecha > b.fecha) {

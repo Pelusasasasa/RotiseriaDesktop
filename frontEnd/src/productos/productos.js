@@ -52,13 +52,13 @@ const clickEnTarjetas = (e) => {
         }).then(async (result)=>{
             if (result.isConfirmed) {
                 try {
-                    const { data } = await axios.delete(`${URL}producto/${seleccion.id}`);
+                    console.log(seleccionado);
+                    const { data } = await axios.delete(`${URL}producto/${seleccionado.id}`);
                     if (!data.ok) return await sweet.fire('Error al modificar el producto', data.msg, 'error')
-
                     seccionTarjetas.removeChild(seleccionado);
                 } catch (error) {
                     console.log(error);
-                    await sweet.fire('Error al modificar el producto', `${data.response.data.msg}`, 'error');
+                    await sweet.fire('Error al modificar el producto', `${error.response.data.msg}`, 'error');
                 }
                 
             }

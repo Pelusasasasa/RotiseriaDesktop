@@ -74,20 +74,17 @@ guardar.addEventListener('click',async ()=>{
 codigo.addEventListener('keypress',async e=>{
     if (e.keyCode === 13) {
         let productoYaCreado;
-        const {data} = await axios.get(`${URL}producto/${codigo.value}`);
-        if (data.ok) {
-            productoYaCreado = data.producto;
-        };
-
-        if (productoYaCreado) {
+        try {
+            const {data} = await axios.get(`${URL}producto/${codigo.value}`);
+            if(!data.ok) return sweet.fire('Error al buscar producto', `${data.msg}`, 'error');
             await sweet.fire({
-                title:`Codigo ya utilizado en ${productoYaCreado.descripcion}` 
+                title:`Codigo ya utilizado en ${data.producto.descripcion}` 
             });
             codigo.value = "";
-        }else{
+        } catch (error) {
             descripcion.focus();
         }
-    }
+    };
 });
 
 descripcion.addEventListener('keypress',e=>{

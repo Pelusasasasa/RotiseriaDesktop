@@ -38,7 +38,6 @@ ipcRenderer.on('informacion',async (e,args)=>{
     } catch (error) {
         console.log(error);
     };
-
     llenarInputs(informacion,producto);
 });
 
@@ -50,7 +49,7 @@ const llenarInputs = async(codigoProducto, producto)=>{
     stock.value = producto.stock;
     costo.value = producto.costo.toFixed(2);
     ganancia.value = producto.ganancia.toFixed(2);
-    secciones.value = producto.seccion._id;
+    secciones.value = producto.seccion?._id;
     total.value = producto.precio.toFixed(2);   
     textBold.checked = producto.textBold ? true : false;
 }
