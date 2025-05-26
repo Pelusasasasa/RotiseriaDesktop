@@ -1,12 +1,13 @@
 const { Types } = require("mongoose");
 const Gasto = require("../models/Gasto");
+const validarId = require("../helpers/validarId");
 
 const gastoCTRL = {};
 
 gastoCTRL.deleteOne = async(req, res) => {
     const { id } = req.params;
     
-    if(Types.ObjectId.isValid(id) === false) {
+    if(!validarId(id)) {
         return res.status(400).json({
             ok: false,
             message: 'El ID del gasto no es valido'
@@ -92,7 +93,7 @@ gastoCTRL.patchOne = async(req, res) => {
     const { id } = req.params;
 
 
-    if(Types.ObjectId.isValid(id) === false) {
+    if(!validarId(id)) {
         return res.status(400).json({
             ok: false,
             message: 'El ID del gasto no es valido'

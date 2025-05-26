@@ -267,6 +267,7 @@ footer main,footer button{
   flex-direction: column;
   align-items: center;
   width: 25rem;
+  color: black !important;
 }
 
 .tarjetas .tarjeta img{

@@ -580,7 +580,7 @@ const sacarIva = (lista) => {
 
 //Lo usamos para mostrar o ocultar cuestiones que tiene que ver con las ventas
 const cambiarSituacion = (situacion) => {
-    situacion === "negro" ? document.querySelector('#tarjeta').parentNode.classList.add('none') : document.querySelector('#tarjeta').parentNode.classList.remove('none');
+    situacion === "negro" ? document.querySelector('#tarjetPago').parentNode.classList.add('none') : document.querySelector('#tarjetPago').parentNode.classList.remove('none');
 };
 
 //Ver Codigo Documento
