@@ -2,7 +2,7 @@ const CartaEmpanada = require('../models/CartaEmpanada');
 
 const initCartaEmpanada = async() => {
     try {
-        const existe = await CartaEmpanada.findOne();
+        const existe = await CartaEmpanada.exists({});
 
         if(!existe){
             await CartaEmpanada.create({

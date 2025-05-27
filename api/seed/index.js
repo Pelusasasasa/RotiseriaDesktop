@@ -5,10 +5,33 @@ const initSecciones = require('./initSecciones');
 
 
 const runSeeders = async() => {
-    await initSecciones();
-    await initNumeros();
-    await initPedido();
-    await initCartaEmpanada();
+    try {
+        await initSecciones();
+    } catch (error) {
+        console.log(error);
+        console.log('❌ Error al inicializar las secciones');
+    };
+
+    try {
+        await initNumeros();
+    } catch (error) {
+        console.log(error);
+        console.log('❌ Error al inicializar los numeros');
+    };
+
+    try {
+        await initPedido();
+    } catch (error) {
+        console.log(error);
+        console.log('❌ Error al inicializar los pedidos');
+    }
+    
+    try {
+        await initCartaEmpanada();
+    } catch (error) {
+        console.log(error);
+        console.log('❌ Error al inicializar la carta de empanadas');
+    }
 };
 
 

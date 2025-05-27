@@ -3,7 +3,7 @@ const Numero = require('../models/Numero');
 const initNumeros = async () => {
     
     try {
-        const existe = await Numero.findOne({});
+        const existe = await Numero.exists({});
 
         if(!existe){
 

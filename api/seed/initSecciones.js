@@ -3,7 +3,7 @@ const Seccion = require('../models/Seccion');
 const initSecciones = async () => {
 
     try {
-        const existe = await Seccion.findOne({codigo: 1});
+        const existe = await Seccion.exists({codigo: 1});
 
         if(!existe){
             await Seccion.create({

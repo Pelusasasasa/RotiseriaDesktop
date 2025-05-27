@@ -2,7 +2,7 @@ const Pedido = require('../models/Pedido');
 
 const initPedido = async() => {
     try {
-        const existe = await Pedido.findOne();
+        const existe = await Pedido.exists({});
         if(!existe){
             await Pedido.create({
                 numero: 0

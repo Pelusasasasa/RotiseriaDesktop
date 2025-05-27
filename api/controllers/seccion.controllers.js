@@ -30,7 +30,7 @@ seccionCTRL.deleteSeccion = async (req, res) => {
 seccionCTRL.getSecciones = async (req, res) => {
 
     try {
-        const secciones = await Seccion.find();
+        const secciones = await Seccion.find().sort({ codigo: 1 });
 
         if(secciones.length === 0) {
             return res.status(404).json({ 
