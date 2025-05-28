@@ -338,12 +338,13 @@ const agregarCateogoria = async () => {
 
     if (isConfirmed) {
         try {
-            const { data } = await axios.get(`${URL}categoriaGasto`, { nombre: value});
+            const { data } = await axios.post(`${URL}categoriaGasto`, { nombre: value});
             if(!data.ok) return await Swal.fire('Error al cargar las categorias de gastos', data.msg, 'error');
-
-            categoriaGastos.push(categoriaGasto);
+            console.log(data);
+            categoriaGastos.push(data.categoria);
             listarCategoria(categoriaGastos)
         } catch (error) {
+            console.log(error);
             console.log(error.response.data.msg);
             return await Swal.fire('Error al cargar las categorias de gastos', error.response.data.msg, 'error');
         };
@@ -385,31 +386,33 @@ const modificarGasto = async (e) => {
         const { data } = await axios.patch(`${URL}gasto/${gasto._id}`, gasto);
         if (!data.ok) return await Swal.fire('Error al modificar el gasto', data.msg, 'error');
         const gastoUpdate = data.gastoModificado;
+
+        gastos = gastos.map(elem => {
+            if (elem._id === gastoUpdate._id) {
+                return gastoUpdate
+            };
+    
+            return elem;
+        })
+    
+        modificar.id = '';
+        fechaInput.value = '';
+        descripcion.value = '';
+        cantidad.value = '';
+        importe.value = '';
+        totalInput.value = '';
+        categoria.value = '';
+    
+        listarGastos(gastos);
+    
+        modal.classList.add('none');
     } catch (error) {
         console.log(error.response.data.msg);
         return await Swal.fire('Error al modificar el gasto', error.response.data.msg, 'error');
     }
 
 
-    gastos = gastos.map(elem => {
-        if (elem._id === gastoUpdate._id) {
-            return gastoUpdate
-        };
 
-        return elem;
-    })
-
-    modificar.id = '';
-    fechaInput.value = '';
-    descripcion.value = '';
-    cantidad.value = '';
-    importe.value = '';
-    totalInput.value = '';
-    categoria.value = '';
-
-    listarGastos(gastos);
-
-    modal.classList.add('none');
 };
 
 agregar.addEventListener('click', abrirModal);

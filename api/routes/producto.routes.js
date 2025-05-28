@@ -1,11 +1,23 @@
 const { Router } = require('express');
+const multer = require('multer');
 const { getAll, patchPrecio, getOne, postOne, deleteOne, getForSeccion, descontarStock, patchOne, getForSeccionAndDescription } = require('../controllers/producto.controllers');
 
+const storage = multer.diskStorage({
+    destination:(req, file, cb) => {
+        cb(null, 'imgProductos');
+        },
+        filename:(req, file, cb) => {
+            const id = req.body._id || 'default'
+            cb(null, `${id}.png`)
+        }
+    });
+
+const upload = multer({storage});
 const router = Router();
 
 router.route('/')
     .get(getAll)
-    .post(postOne)
+    .post(upload.single('imagen'), postOne)
 router.route('/forSeccionAndDescription/:description/:seccion')
     .get(getForSeccionAndDescription)
 router.route('/precio/:id')
@@ -17,7 +29,7 @@ router.route('/forStock')
 router.route('/:id')
     .get(getOne)
     .delete(deleteOne)
-    .patch(patchOne)
+    .patch(upload.single('imagen'), patchOne)
 
 
 

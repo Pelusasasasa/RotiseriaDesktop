@@ -190,8 +190,10 @@ productoCTRL.patchPrecio = async(req, res) => {
 };
 
 productoCTRL.postOne = async(req, res) => {
+    console.log(req.body);
+    console.log(req.file);
     try {
-
+        
         const producto = new Producto(req.body);
         await producto.save();
 

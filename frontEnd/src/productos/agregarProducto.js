@@ -30,45 +30,35 @@ window.addEventListener('load',e=>{
 })
 
 guardar.addEventListener('click',async ()=>{
-    const producto = {}
-    let banderaImg = {
-        isConfirmed:true
+    const formData = new FormData();
+
+    formData.append('_id', codigo.value);
+    formData.append('descripcion', descripcion.value.trim().toUpperCase());
+    formData.append('provedor', provedor.value.toUpperCase().trim());
+    formData.append('stock', parseFloat(stock.value));
+    formData.append('textBold', textBold.checked === true ? true : false);
+    formData.append('costo', parseFloat(costo.value));
+    formData.append('ganancia', parseFloat(ganancia.value));
+    formData.append('precio', parseFloat(total.value));
+    formData.append('seccion', secciones.value);
+
+    const archivoImagen = img?.files?.[0];
+    if(archivoImagen){
+        formData.append('imagen', archivoImagen);
     };
 
-    if (img.files[0]) {
-        const imgBuffer = await sharp(img.files[0].path)
-        .resize(400)
-        .jpeg({ mozjpeg: true })
-        .toBuffer();
+    try {
+        const { data } = await axios.post(`${URL}producto`, formData);
+        if(!data.ok) return await sweet.fire('Error al cargar prodcucto', `${data.msg}`, 'error')
 
-        fs.writeFileSync(path.join(__dirname,'..',`imgProductos/${codigo.value}.png`),imgBuffer);
-    }else{
-        banderaImg = await sweet.fire({
-            title:"No puso una imagen, Desea Guardar sin Imagen?",
-            showCancelButton:true,
-            confirmButtonText:"Aceptar"
-        });
-    }
-    if (banderaImg.isConfirmed) {
-        producto._id = codigo.value;
-        producto.descripcion = descripcion.value.trim().toUpperCase();
-        producto.provedor = provedor.value.toUpperCase().trim();
-        producto.stock = parseFloat(stock.value);
-        producto.textBold = textBold.checked === true ? true : false;
-        producto.costo = parseFloat(costo.value);
-        producto.ganancia = parseFloat(ganancia.value);
-        producto.precio = parseFloat(total.value);
-        producto.seccion = secciones.value;
-        const { data } = await axios.post(`${URL}producto`, producto);
-        console.log(data);
-        if(data.ok){
-            await sweet.fire('Producto Creado', 'El producto fue creado correctamente', 'success');
-            window.close();
-        }else{
-            await sweet.fire('Error al cargar prodcucto', `${data.msg}`, 'error');
-        };
+        await sweet.fire('Producto Creado', 'El producto fue creado correctamente', 'success');
+        window.close();
+    } catch (error) {
+        console.log(error);
+        console.log(error.response.data.msg);
+        await sweet.fire('Error al cargar el producto', error.response.data.msg, 'error');
+    };
         
-    }
 });
 
 codigo.addEventListener('keypress',async e=>{

@@ -67,7 +67,6 @@ gastoCTRL.getGastosForDate = async(req, res) => {
                 {fecha: { $lte: new Date(`${hasta}T23:59:59.999Z`) }}
             ]
         }).populate('categoria', 'nombre');
-        console.log(gastos.length);
 
         if(!gastos) return res.status(404).json({
             ok: false,
@@ -101,7 +100,7 @@ gastoCTRL.patchOne = async(req, res) => {
     }
 
     try {
-        const gastoModificado = await Gasto.findByIdAndUpdate(id, req.body, {new: true});
+        const gastoModificado = await Gasto.findByIdAndUpdate(id, req.body, {new: true}).populate('categoria', 'nombre');;
 
         if(!gastoModificado) return res.status(404).json({
             ok: false,

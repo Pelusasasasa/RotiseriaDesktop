@@ -5,7 +5,7 @@ const Pedido = require('../models/Pedido');
 pedidoCTRL.getOne = async(req, res) => {
 
     try {
-        const pedido = await Pedido.findOne();
+        const pedido = await Pedido.findOne({});
 
         if(!pedido) return res.status(404).json({
             ok: false,

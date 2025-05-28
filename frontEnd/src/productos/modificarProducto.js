@@ -56,43 +56,33 @@ const llenarInputs = async(codigoProducto, producto)=>{
 
 //al hacer click modificamos los productos con el valor de los inputs
 modificar.addEventListener('click',async e=>{
-    let banderaImg = {
-        isConfirmed:true
+    const formData = new FormData();
+
+
+    formData.append('_id', codigo.value) ;
+    formData.append('descripcion', descripcion.value.trim().toUpperCase());
+    formData.append('provedor', provedor.value.trim().toUpperCase());
+    formData.append('stock', parseFloat(stock.value));
+    formData.append('costo', parseFloat(costo.value));
+    formData.append('ganancia', parseFloat(ganancia.value));
+    formData.append('seccion', secciones.value);
+    formData.append('precio', parseFloat(total.value));
+    formData.append('textoBold', textBold.checked ? true : false);
+    
+    const archivoImagen = img?.files?.[0];
+    if(archivoImagen){
+        formData.append('imagen', archivoImagen);
     };
 
-    if (img.files[0]) {
-        const imgBuffer = await sharp(img.files[0].path)
-        .resize(400)
-        .jpeg({ mozjpeg: true })
-        .toBuffer();
-
-        fs.writeFileSync(path.join(__dirname,'..',`imgProductos/${codigo.value}.png`),imgBuffer);
+    try {
+        const { data } = await axios.patch(`${URL}producto/${codigo.value}`, formData);
+        if( !data.ok) return await sweet.fire('Error al modificar el producto', data.msg, 'error');
+        await ipcRenderer.send('informacion-a-ventana',data.productoModificado);
+        window.close();
+    } catch (error) {
+        console.log(error.response.data.msg);
+        return await sweet.fire('Error al modificar el producto', error.response.data.msg, 'error');
     };
-
-    if (banderaImg) {
-        const producto = {};
-        producto._id = codigo.value;
-        producto.descripcion = descripcion.value.trim().toUpperCase();
-        producto.provedor = provedor.value.trim().toUpperCase();
-        producto.stock = parseFloat(stock.value);
-        producto.costo = parseFloat(costo.value);
-        producto.ganancia = parseFloat(ganancia.value);
-        producto.seccion = secciones.value;
-        producto.precio = parseFloat(total.value);
-        producto.textBold = textBold.checked ? true : false;
-        producto.img = path.join(__dirname,'..',`imgProductos/${codigo.value}.png`);
-
-        try {
-            const { data } = await axios.patch(`${URL}producto/${codigo.value}`, producto);
-            if( !data.ok) return await sweet.fire('Error al modificar el producto', data.msg, 'error');
-
-            await ipcRenderer.send('informacion-a-ventana',producto);
-            window.close();
-        } catch (error) {
-            console.log(error.response.data.msg);
-            return await sweet.fire('Error al modificar el producto', error.response.data.msg, 'error');
-        };   
-    }
 });
 
 codigo.addEventListener('keypress',e=>{
