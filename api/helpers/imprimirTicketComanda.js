@@ -75,6 +75,19 @@ const imprimirTicketComanda = async(venta) => {
     printer.setTextDoubleHeight(),
     printer.setTextDoubleWidth(),
     printer.println(`Total: $${venta.precio.toFixed(2)}`);
+    printer.alignCenter();
+    printer.newLine();
+    printer.println('*MUCHAS GRACIAS*');
+    printer.newLine();
+    printer.setTextNormal();
+    if(venta.F){
+        printer.printQR(venta.afip.QR, {
+            cellSize: 3,
+            correction: 'M'
+        })
+        printer.println(`CAE: ${venta.afip.cae}`);
+        printer.println(`VTO CAE: ${venta.afip.vencimiento}`);
+    }
 
 
     printer.cut();

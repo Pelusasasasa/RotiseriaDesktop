@@ -283,31 +283,33 @@ facturar.addEventListener('click', async e => {
         alerta.children[1].innerHTML = "Generando Venta";
     };
         
-    let cliente = {};
-    cliente.nombre = nombre.value.toUpperCase();
-    cliente.cuit = cuit.value;
-    cliente.direccion = direccion.value.toUpperCase();
-    cliente.telefono = telefono.value;
-        
-    try {
-        const { data } = await axios.post(`${URL}venta`, venta);
-        if(!data.ok) return await sweet.fire('Error al hacer la venta', error.response.data.msg, 'error');
 
-        const {isConfirmed} = await sweet.fire({
+    const {isConfirmed} = await sweet.fire({
             title: "Imprimir Ticket Cliente",
             confirmButtonText: "Aceptar",
             showCancelButton: true
-        });
-            
-        if(isConfirmed){
-            ipcRenderer.send('imprimir', [venta, cliente, movimientos]);
-        };
+    });
+
+    if(isConfirmed){
+        venta.imprimirCliente = true
+    }else{
+        venta.imprimirCliente = false
+    };
+        
+    try {
+
+        const { data } = await axios.post(`${URL}venta`, venta);
+        if(!data.ok) return await sweet.fire('Error al hacer la venta', error.response.data.msg, 'error');
 
         location.reload();
+
     } catch (error) {
+
         console.log(error.response.data.msg);
         sweet.fire('Error al hacer la venta', error.reponse.data.msg, 'error');
+
     };
+
     alerta.classList.add('none')
 });
 

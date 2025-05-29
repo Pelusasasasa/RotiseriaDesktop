@@ -232,7 +232,7 @@ ventaCTRL.notaCreditoTrue = async(req, res) => {
 
 ventaCTRL.postOne = async(req, res) => {
 
-    const { listaProductos, tipo_comp } = req.body;
+    const { listaProductos, tipo_comp, imprimirCliente } = req.body;
     
 
     try {
@@ -264,6 +264,9 @@ ventaCTRL.postOne = async(req, res) => {
         await newVenta.save();
         await imprimirTicketComanda(newVenta);
 
+        if(imprimirCliente){
+            await imprimirTicketComanda(newVenta);
+        }
 
         res.status(201).json({
             ok: true,

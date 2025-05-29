@@ -272,8 +272,7 @@ funciones.cargarNotaCredito = async (notaCredito, numero) => {
 //Generamos el qr
 async function generarQR(texto) {
     const qrCode = require('qrcode');
-    const url = `https://www.afip.gob.ar/fe/qr/?p=${texto}`;
-    const QR = await qrCode.toDataURL(url);
+    const QR = `https://www.afip.gob.ar/fe/qr/?p=${texto}`;
     return QR;
 };
 
