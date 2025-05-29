@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { calcularPrecioEmpanadas } from '../../helpers/calcularPrecioEmpanadas';
 
 
 export const cartSlice = createSlice({
@@ -17,21 +18,37 @@ export const cartSlice = createSlice({
             state.total = 0;
         },
         agregarItem: (state, {payload}) => {
-            const {_id, descripcion, precio, seccion} = payload;
+            const {_id, descripcion, precio, seccion, cantidad = 1, docena, mediaDocena} = payload;
             const itemExistente = state.items.find(elem => elem._id === _id);
 
             if(itemExistente){
-                itemExistente.cantidad += 1;
+                itemExistente.cantidad += cantidad;
             }else{
-                state.items.push({_id, descripcion, precio, cantidad: 1, seccion});
+                state.items.push({_id, descripcion, precio, cantidad, seccion});
             };
 
+            let total = 0;
+            let empanadaCantidad = 0;
+
+            for(const item of state.items){
+                if(item.seccion.nombre === 'EMPANADAS'){
+                    empanadaCantidad += item.cantidad;
+                }else{
+                    total += item.precio * item.cantidad
+                }
+            };
+            
+            if (empanadaCantidad > 0) {
+                const precioU = state.items.find(elem => elem.seccion.nombre === 'EMPANADAS').precio
+                total += calcularPrecioEmpanadas(empanadaCantidad, docena, mediaDocena, precioU);
+            }
+
             //calcular el total
-            state.total = state.items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            state.total = total;
         },
         restarCantItem: (state, {payload}) => {
 
-            const indice = state.items.findIndex(elem => elem._id === payload);
+            const indice = state.items.findIndex(elem => elem._id === payload._id);
 
             if(indice === -1 ) return state.items;
 
@@ -41,17 +58,52 @@ export const cartSlice = createSlice({
                 state.items[indice].cantidad -= 1;
             };
 
-            state.total = state.items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            let total = 0;
+            let empanadaCantidad = 0;
+
+            for(const item of state.items){
+                if(item.seccion.nombre === 'EMPANADAS'){
+                    empanadaCantidad += item.cantidad;
+                }else{
+                    total += item.precio * item.cantidad
+                }
+            };
+
+            if (empanadaCantidad > 0) {
+                const precioU = state.items.find(elem => elem.seccion.nombre === 'EMPANADAS').precio
+                total += calcularPrecioEmpanadas(empanadaCantidad, payload.docena, payload.mediaDocena, precioU);
+            };
+
+            state.total = total;
+
         },
         sumarCantItem: (state, {payload}) => {
             state.items = state.items.map(elem => {
-                if(elem._id === payload){
+                if(elem._id === payload._id){
                     elem.cantidad += 1;
                 };
                 return elem;
             });
 
-            state.total = state.items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            let total = 0;
+            let empanadaCantidad = 0;
+
+            for(const item of state.items){
+                if(item.seccion.nombre === 'EMPANADAS'){
+                    empanadaCantidad += item.cantidad;
+                }else{
+                    total += item.precio * item.cantidad
+                }
+            };
+
+            if (empanadaCantidad > 0) {
+                const precioU = state.items.find(elem => elem.seccion.nombre === 'EMPANADAS').precio
+                total += calcularPrecioEmpanadas(empanadaCantidad, payload.docena, payload.mediaDocena, precioU);
+            };
+
+            state.total = total;
+
+            // state.total = state.items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
         },
         quitarItem: (state, {payload}) => {
             const itemExistente = state.items.find(elem => elem._id === payload);

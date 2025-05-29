@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { useProductStore } from "../../hooks";
 import { useSeccionStore } from "../../hooks/useSeccionStore";
 import CargandoPantalla from "../../components/CargandoPantalla";
+import { useCartaEmpanadaStore } from "../../hooks/useCartaEmpanadaStore";
 
 
 
@@ -15,6 +16,7 @@ export default function Home(){
     const {activeSeccion } = useSelector(state => state.section);
     const {productos, startGetProductos} = useProductStore();
     const {secciones, startGetSecciones} = useSeccionStore();
+    const { startGetPreciosCarta } = useCartaEmpanadaStore();
 
     const [text, setText] = useState('');
     const [filterProducts, setFilterProducts] = useState(productos);
@@ -22,6 +24,7 @@ export default function Home(){
     useEffect(() => {
         startGetProductos();
         startGetSecciones();
+        startGetPreciosCarta();
     }, []);
 
     useEffect(() => {

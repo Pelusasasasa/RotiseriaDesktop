@@ -1,16 +1,18 @@
+import { useEffect, useState } from "react";
 import {  StyleSheet, Pressable, Text, View } from "react-native";
-import { Image } from 'expo-image';
-import Button from "./Button";
+import { Image } from 'expo-image'
 import { useDispatch } from "react-redux";
 import { agregarItem } from "../store/cart/cartSlice";
-import { useEffect, useState } from "react";
+import Button from "./Button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import seccionApiFunction from "../api/rotiseriaApi";
+import ModalEmpanadas from "./ModalEmpanada";
+import { useCartaEmpanadaStore } from "../hooks/useCartaEmpanadaStore";
 
 
-export default function ProductoCard({_id, descripcion, image, precio, seccion='Empanadas'}){
+export default function ProductoCard({_id, descripcion, image, precio, seccion={}}){
     const dispatch = useDispatch();
     const [urlImg, setUrlImg] = useState('');
+    const [modal, setModal] = useState(false);
 
     useEffect(() => {
         const cargar = async() => {
@@ -22,25 +24,33 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion='
     }, []);
 
     const press = () => {
-        dispatch(agregarItem({_id, descripcion, precio, seccion}));    
+        if(seccion.nombre === "EMPANADAS") {
+            setModal(true)
+        }else{
+            dispatch(agregarItem({_id, descripcion, precio, seccion}));    
+        }
+        // 
     };
 
     return(
-        <Pressable style={
-            ({pressed}) => [
-                styles.container,
-                {opacity: pressed ? 0.3 : 1}
-            ]
-        } onPress={press}>
-            <Image source={`${urlImg}/rotiseria/img/${_id}.png`} style={styles.image}/>
-            {/* <Image source={`${urlImg}${_id}.webp`} style={styles.image}/> */}
-            <View style={styles.info}>
-                <Text style={styles.info_title}>{descripcion}</Text>
-                <Text style={styles.info_seccion}>{seccion?.nombre}</Text>
-                <Text style={styles.info_precio}>${precio.toFixed(2)}</Text>
-            </View>
-            <Button label={"+"} press={press}  estilos={styles}/>
-        </Pressable>
+        <>
+            <Pressable style={
+                ({pressed}) => [
+                    styles.container,
+                    {opacity: pressed ? 0.3 : 1}
+                ]
+            } onPress={press}>
+                <Image source={`${urlImg}/rotiseria/img/${_id}.png`} style={styles.image}/>
+                {/* <Image source={`${urlImg}${_id}.webp`} style={styles.image}/> */}
+                <View style={styles.info}>
+                    <Text style={styles.info_title}>{descripcion}</Text>
+                    <Text style={styles.info_seccion}>{seccion?.nombre}</Text>
+                    <Text style={styles.info_precio}>${precio.toFixed(2)}</Text>
+                </View>
+                <Button label={"+"} press={press}  estilos={styles}/>
+            </Pressable>
+            {modal && <ModalEmpanadas setModal={setModal} _id={_id} descripcion={descripcion} precio={precio} seccion={seccion}/>}
+        </>
     )
 };
 

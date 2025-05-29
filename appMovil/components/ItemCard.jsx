@@ -9,12 +9,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { quitarItem, restarCantItem, sumarCantItem } from "../store/cart/cartSlice";
 import Button from "./Button";
 import ModalPrecio from "./ModalPrecio";
+import { useCartaEmpanadaStore } from "../hooks/useCartaEmpanadaStore";
 
 export default function ItemCard({_id, image, descripcion, precio, cantidad}){
     const dispatch = useDispatch();
     const [urlImg, setUrlImg] = useState('');
     const [modal, setModal] = useState(false);
     const timeOutRef = useRef(null);
+
+    const {docena, mediaDocena} = useCartaEmpanadaStore();
 
     //Cargamos la ip inicial
     useEffect(() => {
@@ -60,9 +63,9 @@ export default function ItemCard({_id, image, descripcion, precio, cantidad}){
                     <Text style={styles.precio}>${precio.toFixed(2)}</Text>
                 </View>
                 <View style={styles.acciones}>
-                    <Button label={"-"} estilos={styles} press={() => dispatch(restarCantItem(_id))}/>
+                    <Button label={"-"} estilos={styles} press={() => dispatch(restarCantItem({_id, docena, mediaDocena}))}/>
                     <Text style={styles.cant}>{cantidad}</Text>
-                    <Button press={() => dispatch(sumarCantItem(_id))} label={"+"} estilos={styles}/>
+                    <Button press={() => dispatch(sumarCantItem({_id, docena, mediaDocena}))} label={"+"} estilos={styles}/>
                 </View>
                 <Pressable style={styles.buttonDelete} onPress={handelDeleteItem}>
                     <Ionicons name="trash" size={25} color={'red'} style={styles.delete}/>
