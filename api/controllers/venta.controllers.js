@@ -241,17 +241,13 @@ ventaCTRL.postOne = async(req, res) => {
         const nPedido = await getNextNumberPedido(tipo_comp);
 
         listaProductos.forEach(async({producto, cantidad}) => {
+            if(producto._id){
+                
             const productoActualizado = await Producto.findOneAndUpdate(
                 { _id: producto._id },
                 { $inc: { stock: -cantidad } },
                 { new: true }
             );
-
-            if(!productoActualizado){
-                return res.status(404).json({
-                    ok: false,
-                    msg: 'No se encontró el producto',
-                });
             };
         })
 

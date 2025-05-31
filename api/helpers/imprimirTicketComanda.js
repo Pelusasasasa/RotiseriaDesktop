@@ -44,10 +44,10 @@ const imprimirTicketComanda = async(venta) => {
     printer.setTextDoubleHeight(),
     printer.setTextDoubleWidth(),
     printer.println(`${venta?.cliente}`);
-    printer.setTextNormal();
     printer.println(`DNI: ${venta.num_doc ? venta.num_doc : '00000000'}`);
-    venta.telefono && printer.println(`Telefono ${venta?.telefono}`);
     venta.direccion && printer.println(`Direccion ${venta.direccion}`);
+    printer.setTextNormal();
+    venta.telefono && printer.println(`Telefono ${venta?.telefono}`);
     printer.println('------------------------------------------');
 
     //Title producto
