@@ -7,7 +7,7 @@ const PrinterTypes = require("node-thermal-printer").types;
 const imprimirTicketComanda = async(venta) => {
     let printer = new ThermalPrinter({
         type: PrinterTypes.EPSON,
-        interface: 'tcp://192.168.0.15:6001'
+        interface: 'tcp://192.168.0.15:9100'
     });
 
     //Redimensionar imagen
@@ -82,8 +82,8 @@ const imprimirTicketComanda = async(venta) => {
     printer.setTextNormal();
     if(venta.F){
         printer.printQR(venta.afip.QR, {
-            cellSize: 3,
-            correction: 'M'
+            cellSize: 4,
+            correction: 'Q'
         })
         printer.println(`CAE: ${venta.afip.cae}`);
         printer.println(`VTO CAE: ${venta.afip.vencimiento}`);
