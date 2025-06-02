@@ -8,8 +8,19 @@ import { useProductStore } from "../../hooks";
 import { useSeccionStore } from "../../hooks/useSeccionStore";
 import CargandoPantalla from "../../components/CargandoPantalla";
 import { useCartaEmpanadaStore } from "../../hooks/useCartaEmpanadaStore";
+import { checkForUpdateAsync } from "expo-updates";
 
+const checkForUpdates = async () => {
+    try {
+        const update = await checkForUpdateAsync();
 
+        if(update.isAvailable){
+            console.log("a")
+        }
+    } catch (error) {
+        console.log(`Error buscando actualizacion, `, error);
+    }
+}
 
 export default function Home(){
 
@@ -22,15 +33,18 @@ export default function Home(){
     const [filterProducts, setFilterProducts] = useState(productos);
 
     useEffect(() => {
+        checkForUpdates()
         startGetProductos();
         startGetSecciones();
         startGetPreciosCarta();
     }, []);
 
+    //Cada vez que cambien los productos los agregamos deuvleta
     useEffect(() => {
         setFilterProducts(productos);
     }, [productos])
 
+    //Filtramos los productos cada vez que cambien el input 
     useEffect(() => {
         if(text.length > 0){
             setFilterProducts(productos.filter(elem => elem.descripcion.toLowerCase().includes(text.toLowerCase())));
@@ -39,16 +53,18 @@ export default function Home(){
         }
     }, [text])
 
+    //Si tocamos uno de los filtros modificamos los productos
     useEffect(() => {
-            if(activeSeccion?.nombre !== 'TODOS'){
-                setFilterProducts(productos.filter(elem => elem.seccion?.nombre === activeSeccion?.nombre));
-            }else{
-                setFilterProducts(productos);
-            };
+        if(activeSeccion?.nombre !== 'TODOS'){
+            setFilterProducts(productos.filter(elem => elem.seccion?.nombre === activeSeccion?.nombre));
+        }else{
+            setFilterProducts(productos);
+        };
 
             
     }, [activeSeccion]);
 
+    //Cada tanto traemos los productos devuelta por si cambiaron los precios
     useEffect(() => {
         const interval = setInterval(() => {
             startGetProductos()
