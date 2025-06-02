@@ -60,19 +60,8 @@ export default function Home(){
         }else{
             setFilterProducts(productos);
         };
-
-            
     }, [activeSeccion]);
 
-    //Cada tanto traemos los productos devuelta por si cambiaron los precios
-    useEffect(() => {
-        const interval = setInterval(() => {
-            startGetProductos()
-        }, 10000);
-
-        return () => clearInterval(interval);
-    }, [])
-    
 
     return(
         <View style={styles.container}>

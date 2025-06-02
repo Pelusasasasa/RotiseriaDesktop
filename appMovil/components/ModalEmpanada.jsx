@@ -29,8 +29,8 @@ export default function ModalEmpanadas({activado, setModal, _id, descripcion, pr
 
     return (
         <Modal  transparent={true} visible={activado}>
-            <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
+            <Pressable style={styles.modalContainer} onPress={() => setModal(false)}>
+                <Pressable style={styles.modalContent} onPress={() => {}}>
                     <Text style={styles.text}>Cantindad de {descripcion}</Text>
                     <Button label='X12' press={docenaPrecio} estilos={styles}/>
                     <Button label='X6' press={mediadocenaPrecio} estilos={styles}/>
@@ -44,8 +44,8 @@ export default function ModalEmpanadas({activado, setModal, _id, descripcion, pr
                         </View>
                         <Button label={"+"} estilos={styles} press={() => setCant(cant + 1)}/>
                     </View>
-                </View>
-            </View>
+            </Pressable>
+            </Pressable>
         </Modal>
     )
 };
