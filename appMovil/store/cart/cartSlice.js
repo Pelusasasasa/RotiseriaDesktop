@@ -19,28 +19,33 @@ export const cartSlice = createSlice({
         },
         agregarItem: (state, {payload}) => {
             const {_id, descripcion, precio, seccion, cantidad = 1, docena, mediaDocena} = payload;
-            const itemExistente = state.items.find(elem => elem._id === _id);
+            const itemExistente = state.items.find(elem => elem.producto._id === _id);
 
             if(itemExistente){
                 itemExistente.cantidad += cantidad;
             }else{
-                state.items.push({_id, descripcion, precio, cantidad, seccion});
+                state.items.push({
+                    producto: {_id, descripcion, precio, seccion},
+                    cantidad
+                    });
             };
 
             let total = 0;
             let empanadaCantidad = 0;
 
             for(const item of state.items){
-                if(item.seccion.nombre === 'EMPANADAS'){
+                if(item.producto.seccion.nombre === 'EMPANADAS'){
                     empanadaCantidad += item.cantidad;
                 }else{
-                    total += item.precio * item.cantidad
+                    total += item.producto.precio * item.cantidad
                 }
             };
             
             if (empanadaCantidad > 0) {
-                const precioU = state.items.find(elem => elem.seccion.nombre === 'EMPANADAS').precio
+                const precioU = state.items.find(elem => elem.producto.seccion.nombre === 'EMPANADAS').producto.precio
+                
                 total += calcularPrecioEmpanadas(empanadaCantidad, docena, mediaDocena, precioU);
+                
             }
 
             //calcular el total
@@ -48,7 +53,7 @@ export const cartSlice = createSlice({
         },
         restarCantItem: (state, {payload}) => {
 
-            const indice = state.items.findIndex(elem => elem._id === payload._id);
+            const indice = state.items.findIndex(elem => elem.producto._id === payload._id);
 
             if(indice === -1 ) return state.items;
 
@@ -62,15 +67,15 @@ export const cartSlice = createSlice({
             let empanadaCantidad = 0;
 
             for(const item of state.items){
-                if(item.seccion.nombre === 'EMPANADAS'){
+                if(item.producto.seccion.nombre === 'EMPANADAS'){
                     empanadaCantidad += item.cantidad;
                 }else{
-                    total += item.precio * item.cantidad
+                    total += item.producto.precio * item.cantidad
                 }
             };
 
             if (empanadaCantidad > 0) {
-                const precioU = state.items.find(elem => elem.seccion.nombre === 'EMPANADAS').precio
+                const precioU = state.items.find(elem => elem.producto.seccion.nombre === 'EMPANADAS').producto.precio
                 total += calcularPrecioEmpanadas(empanadaCantidad, payload.docena, payload.mediaDocena, precioU);
             };
 
@@ -79,7 +84,7 @@ export const cartSlice = createSlice({
         },
         sumarCantItem: (state, {payload}) => {
             state.items = state.items.map(elem => {
-                if(elem._id === payload._id){
+                if(elem.producto._id === payload._id){
                     elem.cantidad += 1;
                 };
                 return elem;
@@ -89,15 +94,15 @@ export const cartSlice = createSlice({
             let empanadaCantidad = 0;
 
             for(const item of state.items){
-                if(item.seccion.nombre === 'EMPANADAS'){
+                if(item.producto.seccion.nombre === 'EMPANADAS'){
                     empanadaCantidad += item.cantidad;
                 }else{
-                    total += item.precio * item.cantidad
+                    total += item.producto.precio * item.cantidad
                 }
             };
 
             if (empanadaCantidad > 0) {
-                const precioU = state.items.find(elem => elem.seccion.nombre === 'EMPANADAS').precio
+                const precioU = state.items.find(elem => elem.producto.seccion.nombre === 'EMPANADAS').producto.precio
                 total += calcularPrecioEmpanadas(empanadaCantidad, payload.docena, payload.mediaDocena, precioU);
             };
 
@@ -106,24 +111,24 @@ export const cartSlice = createSlice({
             // state.total = state.items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
         },
         quitarItem: (state, {payload}) => {
-            const itemExistente = state.items.find(elem => elem._id === payload);
+            const itemExistente = state.items.find(elem => elem.producto._id === payload);
 
             if(itemExistente){
-                state.items = state.items.filter(elem => elem._id !== payload);
+                state.items = state.items.filter(elem => elem.producto._id !== payload);
             };
 
-            state.total = state.items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            state.total = state.items.reduce((sum, item) => sum + (item.producto.precio * item.cantidad), 0);
         },
         updatePrecioItem:(state, {payload}) => {
             state.items = state.items.map(elem => {
-                if(elem._id === payload._id){
-                    elem.precio = payload.precio;
+                if(elem.producto._id === payload._id){
+                    elem.producto.precio = payload.precio;
                     return elem;
                 };
 
                 return elem
             });
-            state.total = state.items.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            state.total = state.items.reduce((sum, item) => sum + (item.producto.precio * item.cantidad), 0);
             state.isCartSaving = false
         }
     }

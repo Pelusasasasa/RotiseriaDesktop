@@ -27,7 +27,7 @@ export default function Carrito(){
                     <FlatList
                         style={{width: '100%'}}
                         data={items}
-                        keyExtractor={(item) => item._id}
+                        keyExtractor={(item) => item.producto._id}
                         renderItem= {({item}) => (
                             <View>
                                 <ItemCard {...item}/>

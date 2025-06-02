@@ -13,6 +13,7 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion={
     const dispatch = useDispatch();
     const [urlImg, setUrlImg] = useState('');
     const [modal, setModal] = useState(false);
+    const {docena, mediaDocena} = useCartaEmpanadaStore();
 
     useEffect(() => {
         const cargar = async() => {
@@ -27,7 +28,7 @@ export default function ProductoCard({_id, descripcion, image, precio, seccion={
         if(seccion.nombre === "EMPANADAS") {
             setModal(true)
         }else{
-            dispatch(agregarItem({_id, descripcion, precio, seccion}));    
+            dispatch(agregarItem({_id, descripcion, precio, seccion, docena, mediaDocena}));    
         }
         // 
     };

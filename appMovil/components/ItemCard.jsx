@@ -11,7 +11,8 @@ import Button from "./Button";
 import ModalPrecio from "./ModalPrecio";
 import { useCartaEmpanadaStore } from "../hooks/useCartaEmpanadaStore";
 
-export default function ItemCard({_id, image, descripcion, precio, cantidad}){
+export default function ItemCard({producto, cantidad}){
+    const {_id, descripcion, precio} = producto;
     const dispatch = useDispatch();
     const [urlImg, setUrlImg] = useState('');
     const [modal, setModal] = useState(false);

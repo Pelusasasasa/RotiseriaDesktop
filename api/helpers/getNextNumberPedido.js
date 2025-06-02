@@ -8,7 +8,6 @@ const getNextNumberPedido = async(tipo_comp)=> {
         {$inc: {numero: inc}},
         {new: true, upsert: true}
     );  
-    console.log(numeroActualizado);
 
     return numeroActualizado.numero;
 };
