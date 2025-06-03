@@ -6,6 +6,7 @@ import { useForm } from "../hooks/UseForm";
 import { useDispatch } from "react-redux";
 import { savingVenta } from "../store/venta/ventaSlice";
 import CargandoPantalla from "./CargandoPantalla";
+import { useState } from "react";
 
 const initialState = {
     nombre: '',
@@ -16,6 +17,7 @@ const initialState = {
 export default function ModalCarrito({activado, setModal}){
     const dispatch = useDispatch();
 
+    const [checked, setChecked] = useState(false);
     const { emptyCart, total, items } = useCartStore();
     const { isVentaSaving, startPostVenta} = useVentaStore()
     const {nombre, domicilio, telefono, onInputChange, formState, onResetForm} = useForm(initialState)
@@ -85,6 +87,19 @@ export default function ModalCarrito({activado, setModal}){
                     <View style={styles.totalContainer}>
                         <Text style={[styles.total, {color: '#ffff'}]}>Total: </Text>
                         <Text style={styles.total}>${total.toFixed(2)}</Text>
+                    </View>
+
+                    <View style={styles.checkboxContainer}>
+                        <Pressable onPress={() => setChecked(!checked)}>
+                            <View style={styles.checkbox}>
+                                
+                                {checked && <Text>
+                                        <Ionicons name="checkmark-outline" size={25}/>
+                                    </Text>}
+                            </View>
+                            
+                        </Pressable>
+                        <Text style={{ color: '#fff', fontSize: 30}}>Facturar</Text>
                     </View>
 
                     <Button label='Confirmar' disabled={isVentaSaving} estilos={styles} press={submitPedido} />
@@ -169,5 +184,21 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center'
 
+    },
+    checkboxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 20,
+        gap: 20,
+        justifyContent: 'center'
+    },  
+    checkbox: {
+        width: 30,
+        height: 30,
+        borderWidth: 2,
+        borderColor: '#000',
+        backgroundColor: '#fff',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
