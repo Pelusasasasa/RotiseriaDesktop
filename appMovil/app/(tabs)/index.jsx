@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, FlatList } from "react-native";
+import * as Updates from "expo-updates";
+
 import CategoriaCard from "../../components/CategoriaCard";
 import ProductoCard from "../../components/ProductCard";
 
@@ -8,19 +10,35 @@ import { useProductStore } from "../../hooks";
 import { useSeccionStore } from "../../hooks/useSeccionStore";
 import CargandoPantalla from "../../components/CargandoPantalla";
 import { useCartaEmpanadaStore } from "../../hooks/useCartaEmpanadaStore";
-import { checkForUpdateAsync } from "expo-updates";
 
 const checkForUpdates = async () => {
-    try {
-        const update = await checkForUpdateAsync();
+  try {
+    const update = await Updates.checkForUpdateAsync();
 
-        if(update.isAvailable){
-            console.log("a")
-        }
-    } catch (error) {
-        console.log(`Error buscando actualizacion, `, error);
+    if (update.isAvailable) {
+      Alert.alert(
+        "Actualización disponible",
+        "Hay una nueva versión, ¿querés actualizarla ahora?",
+        [
+          { text: "No", style: "cancel" },
+          {
+            text: "Sí",
+            onPress: async () => {
+              try {
+                await Updates.fetchUpdateAsync();
+                await Updates.reloadAsync();
+              } catch (err) {
+                Alert.alert("Error", "No se pudo actualizar");
+              }
+            },
+          },
+        ]
+      );
     }
-}
+  } catch (error) {
+    console.log("Error buscando actualización:", error);
+  }
+};
 
 export default function Home(){
 
