@@ -8,7 +8,7 @@ const imprimirTicketComanda = async(venta) => {
     try {
         let printer = new ThermalPrinter({
             type: PrinterTypes.EPSON,
-            interface: 'tcp://192.168.0.15:9100'
+            interface: 'tcp://192.168.0.15:6001'
         });
 
         //Redimensionar imagen
@@ -29,9 +29,22 @@ const imprimirTicketComanda = async(venta) => {
         printer.println('Sabor Urbano');
         printer.newLine();
 
+        if(venta.F){
+            printer.alignLeft(); 
+            printer.println('Razon Social: AYALA NORMA BEATRIZ');
+            printer.println('Domicilio Comercial: 9 de Julio 4080');
+            printer.println('CUIT: 27272214900');
+            printer.println('Ingreso Brutos: 27272214900');
+            printer.println('Inicio de actividades 01/01/2021');
+            printer.println('Condicion Frente Iva: Responsable Monotributo');
+
+
+        }
+
+
         printer.alignLeft();  
         printer.print(`${venta.tipo_comp ? venta.tipo_comp : 'Comprobante'}     `);
-        printer.println(`${venta.numero.toString().padStart(8, '0')}`)
+        printer.println(`${venta.F ? `${venta.afip.puntoVenta.padStart(4, '0')}-${venta.afip.numero.toString().padStart(8, '0')}` : venta.numero.toString().padStart(8, '0')}`)
 
         printer.print(`Fecha: ${fecha}     `);
         printer.println(`Hora: ${hora}`);
@@ -57,13 +70,11 @@ const imprimirTicketComanda = async(venta) => {
 
         //Productos
         printer.bold(true);
-        printer.setTextDoubleHeight(),
-        printer.setTextDoubleWidth(),
         
         venta.listaProductos.forEach(({producto, cantidad}) => {
             printer.println(`${cantidad.toFixed(2)} - ${producto.descripcion}`);
             printer.alignRight();
-            printer.println(`${producto.precio.toFixed(2)}`);
+            printer.println(`$ ${producto.precio.toFixed(2)}`);
             printer.alignLeft();
             printer.newLine();
         });
@@ -72,7 +83,7 @@ const imprimirTicketComanda = async(venta) => {
         printer.println('------------------------------------------');
 
         //Total
-        printer.alignRight();
+        printer.alignLeft();
         printer.setTextDoubleHeight(),
         printer.setTextDoubleWidth(),
         printer.println(`Total: $${venta.precio.toFixed(2)}`);
@@ -81,11 +92,13 @@ const imprimirTicketComanda = async(venta) => {
         printer.println('*MUCHAS GRACIAS*');
         printer.newLine();
         printer.setTextNormal();
+
         if(venta.F){
             printer.printQR(venta.afip.QR, {
                 cellSize: 4,
                 correction: 'Q'
             })
+            printer.newLine();
             printer.println(`CAE: ${venta.afip.cae}`);
             printer.println(`VTO CAE: ${venta.afip.vencimiento}`);
         }
