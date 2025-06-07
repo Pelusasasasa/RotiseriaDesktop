@@ -72,9 +72,21 @@ const imprimirTicketComanda = async(venta) => {
         printer.bold(true);
         
         venta.listaProductos.forEach(({producto, cantidad}) => {
-            printer.println(`${cantidad.toFixed(2)} - ${producto.descripcion}`);
-            printer.alignRight();
-            printer.println(`$ ${producto.precio.toFixed(2)}`);
+            const maxLineLength = 37;
+            const cantidadDesc = `${cantidad} - ${producto.descripcion}`;
+            const precioTexto = `$${producto.precio.toFixed(2)}`;
+            
+            const espacioDisponible = maxLineLength - precioTexto.length;
+            if (cantidadDesc.length <= espacioDisponible) {
+                // Todo entra en una sola línea
+                const linea = cantidadDesc + " ".repeat(espacioDisponible - cantidadDesc.length) + precioTexto;
+                printer.println(linea);
+            } else {
+                // Imprimir descripción dividida
+                printer.print(cantidadDesc); // línea con cantidad y descripción larga
+                printer.println(" ".repeat(maxLineLength - precioTexto.length) + precioTexto); // precio alineado a la derecha
+            }
+
             printer.alignLeft();
             printer.newLine();
         });
