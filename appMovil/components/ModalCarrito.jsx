@@ -1,17 +1,25 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { useCartStore, useVentaStore } from "../hooks";
-import Button from "./Button";
-import { useForm } from "../hooks/UseForm";
-import { useDispatch } from "react-redux";
-import { savingVenta } from "../store/venta/ventaSlice";
-import CargandoPantalla from "./CargandoPantalla";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Picker } from '@react-native-picker/picker';
+
+import { Ionicons } from "@expo/vector-icons";
+
+import { useCartStore, useVentaStore } from "../hooks";
+import { useForm } from "../hooks/UseForm";
+import { savingVenta } from "../store/venta/ventaSlice";
+
+import CargandoPantalla from "./CargandoPantalla";
+import Button from "./Button";
+
 
 const initialState = {
     nombre: '',
     domicilio: '',
-    telefono: ''
+    telefono: '',
+    num_doc: '',
+    condicionIva: 'Consumidor Final',
+    F: false
 };
 
 export default function ModalCarrito({activado, setModal}){
@@ -20,14 +28,13 @@ export default function ModalCarrito({activado, setModal}){
     const [checked, setChecked] = useState(false);
     const { emptyCart, total, items } = useCartStore();
     const { isVentaSaving, startPostVenta} = useVentaStore()
-    const {nombre, domicilio, telefono, onInputChange, formState, onResetForm} = useForm(initialState)
+    const {nombre, domicilio, telefono, num_doc, condicionIva, F, onInputChange, formState, onResetForm} = useForm(initialState)
 
     const submitPedido = async() => {
         if(!nombre) return alert('Falta el nombre del cliente');
 
         //Todo Cargar un Pedido
         dispatch(savingVenta());
-
         const ok = await startPostVenta(formState, total, items);
 
         if(ok){
@@ -90,7 +97,7 @@ export default function ModalCarrito({activado, setModal}){
                     </View>
 
                     <View style={styles.checkboxContainer}>
-                        <Pressable onPress={() => setChecked(!checked)}>
+                        <Pressable onPress={() => {setChecked(!checked), onInputChange('F', !F)}} >
                             <View style={styles.checkbox}>
                                 
                                 {checked && <Text>
@@ -101,6 +108,37 @@ export default function ModalCarrito({activado, setModal}){
                         </Pressable>
                         <Text style={{ color: '#fff', fontSize: 30}}>Facturar</Text>
                     </View>
+
+
+                    {
+                        checked && (
+                            <>
+                                <TextInput
+                                    keyboardType="numeric"
+                                    placeholderTextColor={'#e5e7eb'}
+                                    placeholder="Cuit o DNI"
+                                    style={[
+                                        styles.input,
+                                        { width: '100%', marginTop: 10 }
+                                    ]}
+                                    onChangeText={(text) => onInputChange('num_doc', text)}
+                                    value={num_doc}
+                                />
+
+                                <View style={styles.pickerContainer}>
+                                    <Picker
+                                     selectedValue={condicionIva}
+                                     style={styles.picker}
+                                     onValueChange={(itemValue => onInputChange('condicionIva', itemValue))}>
+                                        <Picker.Item value='Consumidor Final' label='Consumidor Final' />
+                                        <Picker.Item value='Monotributo' label='Monotributo' />
+                                        <Picker.Item value='Inscripto' label='Responsable Inscripto' />
+                                        <Picker.Item value='Exento' label='Exento' />
+                                    </Picker>
+                                </View>
+                            </>
+                        )
+                    }
 
                     <Button label='Confirmar' disabled={isVentaSaving} estilos={styles} press={submitPedido} />
                 </View>
@@ -200,5 +238,17 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    pickerContainer: {
+        marginTop: 10,
+        backgroundColor: '#25292e',
+        borderWidth: 1,
+        borderColor: '#fff',
+        borderRadius: 5
+    },
+    picker: {
+        height: 50,
+        width: '100%',
+        color: '#FFF',
     }
 });

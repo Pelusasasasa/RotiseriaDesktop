@@ -15,7 +15,11 @@ export const useVentaStore = () => {
             venta.telefono = formState.telefono;
             venta.precio = total;
             venta.listaProductos = items;
-            venta.tipoComp = 'Comprobante'
+            venta.tipoComp = 'Comprobante',
+            venta.num_doc = formState.num_doc;
+            venta.condicionIva = formState.condicionIva;
+            venta.dispositivo = 'MOVIL';
+            venta.F = formState.F;
             const seccionApi = await seccionApiFunction();
             const { data } = await seccionApi.post('/venta', venta);
 

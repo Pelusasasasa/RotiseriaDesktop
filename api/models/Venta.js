@@ -55,6 +55,13 @@ const Venta = new Schema({
         type:Object,
         default:{}
     },
+    dispositivo: {
+        type: String,
+        default: '',
+        enum: ['MOVIL', 'DESKTOP'],
+        set: value => value.toUpperCase().trim()
+    },
+
 
     //Persona
     direccion: {

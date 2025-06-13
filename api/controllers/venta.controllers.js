@@ -232,7 +232,7 @@ ventaCTRL.notaCreditoTrue = async(req, res) => {
 
 ventaCTRL.postOne = async(req, res) => {
 
-    const { listaProductos, tipo_comp, imprimirCliente } = req.body;
+    const { listaProductos, tipo_comp, imprimirCliente, F, dispositivo } = req.body;
     
     try {
 
@@ -255,12 +255,19 @@ ventaCTRL.postOne = async(req, res) => {
             nPedido
         });
 
+        // if(F  && dispositivo === 'MOVIL'){
+        //     subirFacturaAfip();
+        // }
+
         await newVenta.save();
         await imprimirTicketComanda(newVenta);
 
+        
+
         if(imprimirCliente){
             await imprimirTicketComanda(newVenta);
-        }
+        };
+
 
         res.status(201).json({
             ok: true,

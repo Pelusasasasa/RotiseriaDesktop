@@ -8,7 +8,7 @@ const imprimirTicketComanda = async(venta) => {
     try {
         let printer = new ThermalPrinter({
             type: PrinterTypes.EPSON,
-            interface: 'tcp://192.168.0.15:6001'
+            // interface: 'tcp://192.168.0.15:6001'
         });
 
         //Redimensionar imagen
@@ -58,9 +58,9 @@ const imprimirTicketComanda = async(venta) => {
         printer.setTextDoubleHeight(),
         printer.setTextDoubleWidth(),
         printer.println(`${venta?.cliente}`);
-        printer.println(`DNI: ${venta.num_doc ? venta.num_doc : '00000000'}`);
-        venta.direccion && printer.println(`Direccion ${venta.direccion}`);
         printer.setTextNormal();
+        printer.println(`${venta?.num_doc.length > 8 ? 'CUIT' : 'DNI'}: ${venta?.num_doc ? venta.num_doc : '00000000'}`);
+        venta.direccion && printer.println(`Direccion ${venta?.direccion}`);
         venta.telefono && printer.println(`Telefono ${venta?.telefono}`);
         printer.println('------------------------------------------');
 
