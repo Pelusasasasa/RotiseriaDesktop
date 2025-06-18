@@ -5,10 +5,11 @@ const ThermalPrinter = require("node-thermal-printer").printer;
 const PrinterTypes = require("node-thermal-printer").types;
 
 const imprimirTicketComanda = async(venta) => {
+    console.log(venta)
     try {
         let printer = new ThermalPrinter({
             type: PrinterTypes.EPSON,
-            // interface: 'tcp://192.168.0.15:6001'
+            interface: 'tcp://192.168.0.15:9100'
         });
 
         //Redimensionar imagen
@@ -37,8 +38,6 @@ const imprimirTicketComanda = async(venta) => {
             printer.println('Ingreso Brutos: 27272214900');
             printer.println('Inicio de actividades 01/01/2021');
             printer.println('Condicion Frente Iva: Responsable Monotributo');
-
-
         }
 
 
@@ -71,7 +70,7 @@ const imprimirTicketComanda = async(venta) => {
         //Productos
         printer.bold(true);
         
-        venta.listaProductos.forEach(({producto, cantidad}) => {
+        venta.listaProductos.forEach(({producto, cantidad, observaciones}) => {
             const maxLineLength = 37;
             const cantidadDesc = `${cantidad} - ${producto.descripcion}`;
             const precioTexto = `$${producto.precio.toFixed(2)}`;
@@ -81,10 +80,12 @@ const imprimirTicketComanda = async(venta) => {
                 // Todo entra en una sola línea
                 const linea = cantidadDesc + " ".repeat(espacioDisponible - cantidadDesc.length) + precioTexto;
                 printer.println(linea);
+                observaciones && printer.println(observaciones)
             } else {
                 // Imprimir descripción dividida
                 printer.print(cantidadDesc); // línea con cantidad y descripción larga
                 printer.println(" ".repeat(maxLineLength - precioTexto.length) + precioTexto); // precio alineado a la derecha
+                observaciones && printer.println(observaciones)
             }
 
             printer.alignLeft();
