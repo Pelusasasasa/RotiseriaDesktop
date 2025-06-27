@@ -9,7 +9,7 @@ const imprimirTicketComanda = async(venta) => {
     try {
         let printer = new ThermalPrinter({
             type: PrinterTypes.EPSON,
-            interface: 'tcp://192.168.0.15:9100'
+            interface: '//localhost/POS-80C'
         });
 
         //Redimensionar imagen

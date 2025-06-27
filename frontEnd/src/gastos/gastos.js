@@ -283,7 +283,7 @@ const guardarGasto = async () => {
 
     const gasto = {};
 
-    gasto.fecha = fechaUTC().toISOString();
+    gasto.fecha = new Date();
     gasto.descripcion = descripcion.value;
     gasto.cantidad = cantidad.value;
     gasto.importe = importe.value;

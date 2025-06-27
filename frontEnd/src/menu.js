@@ -32,8 +32,8 @@ window.addEventListener('load', async e => {
 
         pedido = data.pedido;
     } catch (error) {
-        console.log(error.response.data.msg);
-        return await sweet.fire('Error al traer pedido numeros', error.response.data.msg, 'error');
+        console.log(error);
+        await sweet.fire('Error al traer pedido numeros', error?.response?.data?.msg, 'error');
     };
 
     const diaPedido = pedido.fecha.slice(8, 10)

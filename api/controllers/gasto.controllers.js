@@ -123,7 +123,8 @@ gastoCTRL.patchOne = async(req, res) => {
 gastoCTRL.postOne = async(req, res) => {
 
     try {
-
+        const now = new Date();
+        req.body.fecha = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString();
         const gasto = new Gasto(req.body);
         await gasto.save();
 
