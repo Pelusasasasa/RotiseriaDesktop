@@ -3,11 +3,13 @@ const cors = require('cors');
 const path = require('node:path');
 
 const connectDB = require('./config/dataBase');
+const  connectAtlas  = require('./atlas/dbAtlas');
 require('dotenv').config();
 
 const app = express();
 
-connectDB()
+connectDB();
+// connectAtlas()
 
 app.use(cors());
 app.use(express.json());
@@ -25,10 +27,11 @@ app.use('/rotiseria/seccion', require('./routes/seccion.routes'));
 app.use('/rotiseria/variable', require('./routes/variable.routes'));
 app.use('/rotiseria/venta', require('./routes/venta.routes'));
 
+app.use('/rotiseriaWeb/venta', require('./routes/ventaAtlas.routes'));
+
 app.use((req, res, next) => {
     res.status(404).json({ ok: false, msg: 'Ruta no encontrada' });
-  });
-  
+});
 
 app.use((err, req, res, next) => {
     
@@ -36,10 +39,11 @@ app.use((err, req, res, next) => {
         ok: false,
         msg: 'Error interno del servidor'
     })
-})
+});
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
-})
+});
+
