@@ -5,7 +5,6 @@ const variableCTRL = {};
 variableCTRL.getAll = async(req, res) => {
     try {
         const variable = await Variable.findOne({}).sort({_id: 1});
-
         if (!variable) return res.status(404).json({
             ok: false,
             msg: 'No se encontró la contraseña de gasto'

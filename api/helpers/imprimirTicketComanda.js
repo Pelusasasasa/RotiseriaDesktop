@@ -57,7 +57,7 @@ const imprimirTicketComanda = async(venta) => {
         printer.setTextDoubleWidth(),
         printer.println(`${venta?.cliente}`);
         printer.setTextNormal();
-        printer.println(`${venta?.num_doc.length > 8 ? 'CUIT' : 'DNI'}: ${venta?.num_doc ? venta.num_doc : '00000000'}`);
+        printer.println(`${venta?.num_doc?.length > 8 ? 'CUIT' : 'DNI'}: ${venta?.num_doc ? venta.num_doc : '00000000'}`);
         venta.direccion && printer.println(`Direccion ${venta?.direccion}`);
         venta.telefono && printer.println(`Telefono ${venta?.telefono}`);
         printer.println('------------------------------------------');
@@ -101,8 +101,14 @@ const imprimirTicketComanda = async(venta) => {
         printer.println(`Total: $${venta.precio.toFixed(2)}`);
         printer.alignCenter();
         printer.newLine();
-        printer.println(venta?.tipo_pago === 'EFECTIVO' ? `Pago en Efectivo` : 'Pago Con Transferencia')
+
+        //Ponemos el texto entexto chico para el pago y la modalidad de envio
+        printer.setTextNormal();
+        printer.println(venta?.tipo_pago === 'TRANSFERENCIA' ? `Pago Con Transferencia` : 'Pago en Efectivo')
         printer.println(venta?.envio ? `Modalidad Envio a domiclio` : 'Modalidad Retiro en Local')
+
+        printer.setTextDoubleHeight(),
+        printer.setTextDoubleWidth(),
         printer.println('*MUCHAS GRACIAS*');
         printer.newLine();
         printer.setTextNormal();

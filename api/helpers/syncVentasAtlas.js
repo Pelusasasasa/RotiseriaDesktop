@@ -1,6 +1,7 @@
 const Venta = require("../models/Venta");
 const VentaAtlasModel = require("../models/VentaAtlas.model");
 const getNextNumberContado = require("./getNextNumberContado");
+const imprimirTicketComanda = require("./imprimirTicketComanda");
 
 const syncVentas = async() => {
     try {
@@ -15,6 +16,8 @@ const syncVentas = async() => {
                 const numero = await getNextNumberContado();
                 ventaData.numero = numero;
                 await Venta.create(ventaData);
+
+                imprimirTicketComanda(ventaData)
                 console.log(`Venta a ${venta.cliente} Cargada Correctamente`);
             };
 

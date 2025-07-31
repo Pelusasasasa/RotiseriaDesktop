@@ -115,6 +115,17 @@ const Venta = new Schema({
         type: Boolean,
         default: false
     },
+
+    envio: {
+        type: Boolean,
+        default: false
+    },
+
+    tipo_pago: {
+        type: String,
+        default: 'EFECTIVO',
+        set: value => value.toUpperCase().trim()
+    }
 });
 
 module.exports = model('Venta',Venta);
