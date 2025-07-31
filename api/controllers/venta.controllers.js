@@ -22,7 +22,7 @@ ventaCTRL.deleteVenta = async(req, res) => {
             ventaEliminada
         })
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo eliminar la venta, hable con el administrador',
@@ -39,7 +39,7 @@ ventaCTRL.getAll = async(req, res) => {
             ventas
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo obtener las ventas, hable con el administrador',
@@ -73,7 +73,7 @@ ventaCTRL.getFacturas = async(req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo obtener las facturas, hable con el administrador'
@@ -103,7 +103,7 @@ ventaCTRL.getForDia = async(req, res) => {
 
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo obtener las ventas del dia, hable con el administrador',  
@@ -141,7 +141,7 @@ ventaCTRL.getForMes = async(req, res) => {
             ventas
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo obtener las ventas del mes, hable con el administrador',  
@@ -174,7 +174,7 @@ ventaCTRL.getforAnio = async(req, res) => {
             ventas
         })
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo obtener las ventas del año, hable con el administrador',  
@@ -200,7 +200,7 @@ ventaCTRL.getOne = async(req, res) => {
             venta
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo obtener la venta, hable con el administrador',
@@ -226,7 +226,7 @@ ventaCTRL.notaCreditoTrue = async(req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo modificar nota credito a true, hable con el administrador',
@@ -279,7 +279,7 @@ ventaCTRL.postOne = async(req, res) => {
         });    
         
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo cargar la venta, hable con el administrador',

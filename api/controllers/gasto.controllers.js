@@ -26,7 +26,7 @@ gastoCTRL.deleteOne = async(req, res) => {
             gastoEliminado
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             message: 'Error al eliminar el gasto, hable con el administrador'
@@ -48,7 +48,7 @@ gastoCTRL.getGastos = async(req, res) => {
             gastos
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             message: 'Error al obtener los gastos, hable con el administrador'
@@ -78,7 +78,7 @@ gastoCTRL.getGastosForDate = async(req, res) => {
             gastos
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             message: 'Error al obtener los gastos por fecha, hable con el administrador'
@@ -112,7 +112,7 @@ gastoCTRL.patchOne = async(req, res) => {
             gastoModificado
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             message: 'Error al actualizar el gasto, hable con el administrador'
@@ -134,7 +134,7 @@ gastoCTRL.postOne = async(req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             message: 'Error al crear el gasto, hable con el administrador'

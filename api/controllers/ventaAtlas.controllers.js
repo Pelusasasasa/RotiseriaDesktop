@@ -27,7 +27,7 @@ const traerVentasAtlas = async(req, res) => {
             ventas
         })
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 };
 

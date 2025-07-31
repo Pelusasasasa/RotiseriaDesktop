@@ -19,7 +19,7 @@ seccionCTRL.deleteSeccion = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);        
+        console.error(error);        
         res.status(500).json({
             ok: false,
             msg: 'Error al eliminar la sección, hable con el administrador',
@@ -43,7 +43,7 @@ seccionCTRL.getSecciones = async (req, res) => {
             secciones
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'Error al obtener las secciones,  hable con el administrador',
@@ -70,7 +70,7 @@ seccionCTRL.getSeccion = async (req, res) => {
             seccion
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'Error al obtener la sección,  hable con el administrador',
@@ -94,7 +94,7 @@ seccionCTRL.getForCodigo = async (req, res) => {
             seccion
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'Error al obtener la sección por código, hable con el administrador',
@@ -113,7 +113,7 @@ seccionCTRL.postOne = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'Error al crear la sección, hable con el administrador',

@@ -8,28 +8,28 @@ const runSeeders = async() => {
     try {
         await initSecciones();
     } catch (error) {
-        console.log(error);
+        console.error(error);
         console.log('❌ Error al inicializar las secciones');
     };
 
     try {
         await initNumeros();
     } catch (error) {
-        console.log(error);
+        console.error(error);
         console.log('❌ Error al inicializar los numeros');
     };
 
     try {
         await initPedido();
     } catch (error) {
-        console.log(error);
+        console.error(error);
         console.log('❌ Error al inicializar los pedidos');
     }
     
     try {
         await initCartaEmpanada();
     } catch (error) {
-        console.log(error);
+        console.error(error);
         console.log('❌ Error al inicializar la carta de empanadas');
     }
 };

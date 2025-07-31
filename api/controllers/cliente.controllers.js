@@ -15,7 +15,7 @@ clienteCTRL.deleteOne = async(req, res) => {
             clienteEliminado
         })
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,
@@ -32,7 +32,7 @@ clienteCTRL.getClientes = async(req, res) => {
             clientes
         })
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,
@@ -56,7 +56,7 @@ clienteCTRL.getCliente = async(req, res) => {
             cliente
        });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,
@@ -82,7 +82,7 @@ clienteCTRL.getForFilter = async(req, res) => {
             clientes
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,
@@ -109,7 +109,7 @@ clienteCTRL.postOne = async(req, res) => {
             cliente
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,
@@ -132,7 +132,7 @@ clienteCTRL.updateCliente = async(req, res) => {
             clienteModificado
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,
@@ -157,7 +157,7 @@ clienteCTRL.getForTelefono = async(req, res) => {
             cliente
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,

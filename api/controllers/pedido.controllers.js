@@ -6,7 +6,6 @@ const getOne = async(req, res) => {
 
     try {
         const pedido = await Pedido.findOne({});
-        console.log(pedido);
         if(!pedido) return res.status(404).json({
             ok: false,
             msg: 'No se encontro el pedido'
@@ -18,7 +17,7 @@ const getOne = async(req, res) => {
         });
 
     } catch (error) {
-        console.log(error);   
+        console.error(error);   
         res.status(500).json({
             ok: false,
             msg: 'No se pudo obtener el pedido, hable con el administrador',
@@ -40,7 +39,7 @@ const patchPedido = async(req, res) => {
             pedidoActualizado
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo actualizar el pedido, hable con el administrador'
@@ -66,7 +65,7 @@ const postOne = async(req, res) => {
         })
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg:'No se pudo cargar el pedido'

@@ -18,7 +18,7 @@ numeroCTRL.getOne = async(req, res) => {
             numero
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'Error al obtener los numeros',
@@ -39,7 +39,7 @@ numeroCTRL.postOne = async(req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'Error al crear los numeros',
@@ -65,7 +65,7 @@ numeroCTRL.patchOne = async(req, res) => {
             numero: numeroActualizado
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'Error al actualizar los numeros'

@@ -5,7 +5,6 @@ const Producto = require('../models/Producto');
 
 productoCTRL.deleteOne = async(req, res) => {
     const { id } = req.params;
-    console.log(id);
     try {
 
         if(await validarId(id)) return res.status(400).json({
@@ -25,7 +24,7 @@ productoCTRL.deleteOne = async(req, res) => {
             productoEliminado
         })
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,
@@ -50,7 +49,7 @@ productoCTRL.descontarStock = async(req, res) => {
             productosModificados
         })
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo descontar el stock, hable con el administrador'
@@ -67,7 +66,7 @@ productoCTRL.getAll = async(req, res) => {
             productos
         })
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,
@@ -92,7 +91,7 @@ productoCTRL.getForSeccion = async(req, res) => {
             productos
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,
@@ -131,7 +130,7 @@ productoCTRL.getForSeccionAndDescription = async(req, res) => {
         });
         
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo obtener los productos, hable con el administrador'
@@ -155,7 +154,7 @@ productoCTRL.getOne = async(req, res) => {
             producto
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,
@@ -180,7 +179,7 @@ productoCTRL.patchPrecio = async(req, res) => {
             newProducto
         })
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,
@@ -190,8 +189,6 @@ productoCTRL.patchPrecio = async(req, res) => {
 };
 
 productoCTRL.postOne = async(req, res) => {
-    console.log(req.body);
-    console.log(req.file);
     try {
         
         const producto = new Producto(req.body);
@@ -204,7 +201,7 @@ productoCTRL.postOne = async(req, res) => {
 
         
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             error,
@@ -229,7 +226,7 @@ productoCTRL.patchOne = async(req, res) => {
             productoModificado
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo modificar el producto, hable con el administrador'

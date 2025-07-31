@@ -5,7 +5,6 @@ const ThermalPrinter = require("node-thermal-printer").printer;
 const PrinterTypes = require("node-thermal-printer").types;
 
 const imprimirTicketComanda = async(venta) => {
-    console.log(venta)
     try {
         let printer = new ThermalPrinter({
             type: PrinterTypes.EPSON,
@@ -102,6 +101,8 @@ const imprimirTicketComanda = async(venta) => {
         printer.println(`Total: $${venta.precio.toFixed(2)}`);
         printer.alignCenter();
         printer.newLine();
+        printer.println(venta?.tipo_pago === 'EFECTIVO' ? `Pago en Efectivo` : 'Pago Con Transferencia')
+        printer.println(venta?.envio ? `Modalidad Envio a domiclio` : 'Modalidad Retiro en Local')
         printer.println('*MUCHAS GRACIAS*');
         printer.newLine();
         printer.setTextNormal();

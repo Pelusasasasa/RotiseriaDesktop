@@ -3,7 +3,6 @@ const VentaAtlasModel = require("../models/VentaAtlas.model");
 const getNextNumberContado = require("./getNextNumberContado");
 
 const syncVentas = async() => {
-    console.log('Ejecutado');
     try {
         const ventasPendientes = await VentaAtlasModel.find({pasado: false});
 
@@ -24,11 +23,10 @@ const syncVentas = async() => {
             
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 };
 
-
 module.exports = {
     syncVentas
-}
+};

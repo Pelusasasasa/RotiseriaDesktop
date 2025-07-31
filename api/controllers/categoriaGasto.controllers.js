@@ -17,7 +17,7 @@ categoriaCTRL.getCategorias = async (req, res) => {
             categorias
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ 
             ok: false,
             msg: 'Error al obtener las categorías' 
@@ -35,7 +35,7 @@ categoriaCTRL.postCategoria = async (req, res) => {
             categoria
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ 
             ok: false,
             msg: 'Error al crear la categoría, hable con el administrador' 

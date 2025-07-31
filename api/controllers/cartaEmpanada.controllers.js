@@ -16,7 +16,7 @@ cartaCTRL.getOne = async(req, res) => {
             carta
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo obtener la carta, hable con el administrador',
@@ -40,7 +40,7 @@ cartaCTRL.patchOne = async(req, res) => {
             cartaActualizada
         });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo actualizar la carta, hable con el administrador',

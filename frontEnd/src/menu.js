@@ -4,6 +4,7 @@ const axios = require('axios');
 const sweet = require('sweetalert2');
 
 const URL = process.env.ROTISERIA_URL;
+console.log(URL)
 
 const archivo = require('./configuracion.json');
 

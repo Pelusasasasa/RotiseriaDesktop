@@ -7,7 +7,7 @@ const connectAtlas = () => {
         let conexion =  mongoose.createConnection(MONGO_URI_ATLAS);
         return conexion
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return error;
     }
 };
