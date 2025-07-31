@@ -94,7 +94,12 @@ clienteCTRL.getForFilter = async(req, res) => {
 clienteCTRL.postOne = async(req, res) => {
     try {
         const clienteId = await Cliente.findOne().sort({ _id: -1 }).limit(1);
-        req.body._id = clienteId.length === 0 ? 1 : clienteId._id + 1;
+        
+        if(!clienteId){
+            req.body._id = 1;
+        }else{
+            req.body._id = clienteId?.length === 0 ? 1 : clienteId._id + 1;
+        }
 
         const cliente = new Cliente(req.body);
         await cliente.save();

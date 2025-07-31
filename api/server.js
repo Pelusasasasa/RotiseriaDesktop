@@ -4,6 +4,7 @@ const path = require('node:path');
 
 const connectDB = require('./config/dataBase');
 const  connectAtlas  = require('./atlas/dbAtlas');
+const { syncVentas } = require('./helpers/syncVentasAtlas');
 require('dotenv').config();
 
 const app = express();
@@ -47,3 +48,4 @@ app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
+setInterval(syncVentas, 30 * 1000)

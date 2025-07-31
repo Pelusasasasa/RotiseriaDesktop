@@ -29,11 +29,11 @@ window.addEventListener('load', async e => {
     try {
         const { data } = await axios.get(`${URL}pedido`);
         if(!data.ok ) return await sweet.fire('Error al traer pedido numeros', data.msg, 'error');
-
         pedido = data.pedido;
     } catch (error) {
         console.log(error);
-        await sweet.fire('Error al traer pedido numeros', error?.response?.data?.msg, 'error');
+        const { data } = await axios.post(`${URL}pedido`, {numero: 0, fecha: new Date().toISOString()});
+        pedido = data.pedido;
     };
 
     const diaPedido = pedido.fecha.slice(8, 10)

@@ -258,12 +258,13 @@ botonDia.addEventListener('click', async e => {
     dia.classList.remove('none');
     mes.classList.add('none');
     anio.classList.add('none');
+
     botonSeleccionado.classList.add('seleccionado');
     if (filtro === "Ingresos" || filtro === "Cuenta Corriente") {
-        const { data } = await axios.get(`${URL}ventas/day/${fecha.value}`);
+        const { data } = await axios.get(`${URL}venta/day/${fecha.value}`);
 
         if (filtro === "Ingresos") {
-            listarVentas([...ventas, ...recibos]);
+            listarVentas(data.ventas);
         } else {
             listarVentas(cuentasCorrientes);
         }
@@ -442,9 +443,11 @@ const listarVentas = async (ventas) => {
 
         tdAccion.appendChild(buttonAccion);
 
+        const fechaLocal = new Date(venta.fecha).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' }).split(' ', 2);
+
         tdNumero.innerText = venta.numero;
-        tdFecha.innerText = venta.fecha.slice(0, 10).split('-', 3).reverse().join('/');
-        tdHora.innerText = venta.fecha.slice(11, 19).split(':', 3).join(':');
+        tdFecha.innerText = fechaLocal[0];
+        tdHora.innerText = fechaLocal[1];
         tdCliente.innerText = venta.cliente;
         tdCodProducto.innerText = venta.tipo_comp;
         tdProducto.innerText = venta.direccion;

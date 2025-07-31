@@ -84,8 +84,10 @@ ventaCTRL.getFacturas = async(req, res) => {
 ventaCTRL.getForDia = async(req, res) => {
     const {fecha} = req.params;
     try {
-        const inicioDia = new Date(`${fecha}T00:00:00`);
-        const finDia = new Date(`${fecha}T23:59:59`);
+        const fechaBase = new Date(`${fecha}T00:00:00-03:00`)
+        const inicioDia = new Date(fechaBase);
+        const finDia = new Date(fechaBase);
+        finDia.setHours(23, 59, 59, 999);
 
         const ventas = await Venta.find({
             $and: [
@@ -113,12 +115,14 @@ ventaCTRL.getForMes = async(req, res) => {
     const {fecha} = req.params;
 
     try {
+
         const anio = new Date().getFullYear();
         const mesActual = parseInt(fecha);
         const siguienteMes = mesActual + 1;
+        
 
-        const inicioMes = new Date(`${anio}-${mesActual.toString().padStart(2, '0')}-01T00:00:00.000Z`);
-        const finMes = new Date(`${siguienteMes > 12 ? anio + 1 : anio}-${(siguienteMes % 13 || 1).toString().padStart(2, '0')}-01T00:00:00.000Z`);
+        const inicioMes = new Date(`${anio}-${mesActual.toString().padStart(2, '0')}-01T00:00:00-03:00`);
+        const finMes = new Date(`${siguienteMes > 12 ? anio + 1 : anio}-${(siguienteMes % 13 || 1).toString().padStart(2, '0')}-01T00:00:00-03:00`);
 
         const ventas = await Venta.find({
             $and: [
@@ -150,8 +154,8 @@ ventaCTRL.getforAnio = async(req, res) => {
     const { fecha } = req.params;
 
     try {
-        const inicioYear = new Date(`${fecha}-01-01T00:00:00.000Z`);
-        const finYear = new Date(`${fecha}-12-31T23:59:59.000Z`);
+        const inicioYear = new Date(`${fecha}-01-01T00:00:00-03:00`);
+        const finYear = new Date(`${fecha}-12-31T23:59:59-03:00`);
 
         const ventas = await Venta.find({
             $and: [
