@@ -7,7 +7,9 @@ const Producto = new Schema({
     },
     descripcion:{
         type: String,
-        required:true
+        required:true,
+        trim: true,
+        set: value => value.toUpperCase()
     },
     provedor: {
         type: String,

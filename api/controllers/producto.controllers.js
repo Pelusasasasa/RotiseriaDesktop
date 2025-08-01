@@ -2,6 +2,8 @@ const productoCTRL = {};
 
 const validarId = require('../helpers/validarId');
 const Producto = require('../models/Producto');
+const ProductoAtlas = require('../models/ProductoAtlas');
+const SyncPendiente = require('../models/SyncPendiente');
 
 productoCTRL.deleteOne = async(req, res) => {
     const { id } = req.params;
@@ -19,6 +21,27 @@ productoCTRL.deleteOne = async(req, res) => {
             msg: 'No se encontró el producto'
         });
 
+        //Ejecutamos para eliminar de la base de datos de mongodb Atlas
+        try {
+            const productoAtlasEliminado = await ProductoAtlas.findByIdAndDelete(id);
+            if(!productoAtlasEliminado){
+                await new SyncPendiente({
+                    tipo: 'producto',
+                    data: id,
+                    peticion: 'DELETE'
+                }).save();
+            }else{
+                console.log(`Producto ${productoAtlasEliminado.descripcion} Eliminado de MongoDB atlas`);
+            } 
+        } catch (error) {
+            await new SyncPendiente({
+                tipo: 'producto',
+                data: id,
+                peticion: 'DELETE'
+            }).save();
+        };
+
+        console.log(`Producto ${productoEliminado.descripcion} Eliminado de MongoDB Local`);
         res.status(200).json({
             ok: true,
             productoEliminado
@@ -194,6 +217,21 @@ productoCTRL.postOne = async(req, res) => {
         const producto = new Producto(req.body);
         await producto.save();
 
+        //Ejecutamos para guardar el producto en MongoDB Atlas
+        try {
+            const nuevoProductoAtlas = new ProductoAtlas(req.body);
+            await nuevoProductoAtlas.save();
+            console.log(`Producto ${nuevoProductoAtlas.descripcion} Guardado en MongoDB Atlas`);
+        } catch (error) {
+            console.log(error);
+            await new SyncPendiente({
+                tipo: 'producto',
+                data: req.body,
+                peticion: 'POST'
+            }).save();
+        }
+
+        console.log(`Producto ${producto.descripcion} Guardado en MongoDB Local`);
         res.status(201).json({
             ok: true,
             producto
@@ -220,7 +258,27 @@ productoCTRL.patchOne = async(req, res) => {
             ok: false,
             msg: 'No se encontro el producto'
         });
+
+        try {
+            const productoModificadoAtlas = await ProductoAtlas.findOneAndUpdate({_id: id}, req.body, {new: true});
+            if(!productoModificadoAtlas){
+                await new SyncPendiente({
+                    tipo: 'producto',
+                    data: req.body,
+                    peticion: 'PATCH'
+                }).save();
+            }else{
+                console.log(`Producto ${productoModificadoAtlas.descripcion} Modificado en MongoDB Atlas`);
+            }
+        } catch (error) {
+            await new SyncPendiente({
+                tipo: 'producto',
+                data: req.body,
+                peticion: 'PATCH'
+            }).save();
+        };
         
+        console.log(`Producto ${productoModificado.descripcion} Modificado en MongoDB Local`);
         res.status(200).json({
             ok: true,
             productoModificado

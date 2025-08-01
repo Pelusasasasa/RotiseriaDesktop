@@ -30,6 +30,9 @@ window.addEventListener('load',e=>{
 })
 
 guardar.addEventListener('click',async ()=>{
+    console.log(secciones.value);
+    if(secciones.value === '') return await sweet.fire('Elegir una seccion', 'Debe elegir una seccion por defecto', 'error');
+
     const formData = new FormData();
 
     formData.append('_id', codigo.value);
