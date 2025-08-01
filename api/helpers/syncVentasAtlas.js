@@ -1,3 +1,4 @@
+const SyncPendiente = require("../models/SyncPendiente");
 const Venta = require("../models/Venta");
 const VentaAtlasModel = require("../models/VentaAtlas.model");
 const getNextNumberContado = require("./getNextNumberContado");
@@ -14,17 +15,28 @@ const syncVentas = async() => {
                 //Eliminar _id para que mongodb genere uno nuevo
                 delete venta._id;
                 const numero = await getNextNumberContado();
+                const nPedido = await getNextNumberPedido(ventaData.tipo_comp);
                 ventaData.numero = numero;
+                ventaData.nPedido = nPedido;
                 await Venta.create(ventaData);
 
                 imprimirTicketComanda(ventaData)
                 console.log(`Venta a ${venta.cliente} Cargada Correctamente`);
             };
 
-            await VentaAtlasModel.updateMany({pasado: false}, {pasado: true});
-
-            
-        }
+            try {
+                await VentaAtlasModel.updateMany({pasado: false}, {pasado: true});
+                console.log(`Ventas marcadas como pasadas`);
+            } catch (error) {
+                for(let venta of ventasPendientes){
+                    await new SyncPendiente({
+                        tipo: 'venta',
+                        data: venta,
+                        peticion: 'PATCH'
+                    });
+                };
+            };
+        };
     } catch (error) {
         console.error(error);
     }
