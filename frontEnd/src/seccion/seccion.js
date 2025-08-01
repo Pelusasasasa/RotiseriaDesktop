@@ -107,20 +107,45 @@ async function clickLista(e) {
         seleccionado = e.target.parentNode.parentNode.parentNode;
         
         seleccionado.classList.add('seleccionado');
+
+        const { isConfirmed, value } = await sweet.fire({
+            title: 'Modificar Seccion',
+            input: 'text',
+            confirmButtonText: 'Aceptar',
+            showCancelButton: true
+        });
+
+        if(isConfirmed && value !== ''){
+            //TODO MANDAR A MODIFICAR SECCION
+            try {
+                const {data} = await axios.patch(`${URL}seccion/forCodigo/${seleccionado.id}`, {nombre: value});
+                if(data.ok){
+                    seleccionado.children[1].innerText = data.seccion.nombre;
+                }else{
+                    await sweet.fire('No se pudo modificar la seccion', data.msg, 'error');
+                };
+            } catch (error) {
+                console.log(error);
+                await sweet.fire('No se pudo modificar la seccion', error.response?.data?.msg, 'error');
+            }
+        }
+
     }else if(e.target.nodeName === "TD"){
         seleccionado && seleccionado.classList.remove('seleccionado');
 
         seleccionado = e.target.parentNode;
         
         seleccionado.classList.add('seleccionado');
-    }
+    };
 };
 
 //En esta funcion se actia ccuando queremos eliminar una seccion
 async function eliminarSeccion(tr){
     try {
-        const { data } = await axios.delete(`${URL}seccion/${seleccionado.id}`);
+        const { data } = await axios.delete(`${URL}seccion/forCodigo/${seleccionado.id}`);
+
         if (!data.ok) return await sweet.fire('Error al eliminar seccion', data.msg, 'error');
+        console.log(data);
         if (data.seccionEliminado) {
             tbody.removeChild(seleccionado);
         }else{

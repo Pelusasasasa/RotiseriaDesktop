@@ -9,7 +9,9 @@ const Seccion = new mongoose.Schema({
     nombre:{
         type:String,
         required:true,
-        unique: true
+        unique: true,
+        trim: true,
+        set: value => value.toUpperCase()
     }
 });
 

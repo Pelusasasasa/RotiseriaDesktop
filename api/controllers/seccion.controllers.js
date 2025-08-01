@@ -5,10 +5,10 @@ const SyncPendiente = require('../models/SyncPendiente');
 const SeccionAtlas = require('../models/SeccionAtlas');
 
 seccionCTRL.deleteSeccion = async (req, res) => {
-    const { id } = req.params;
+    const { codigo } = req.params;
 
     try {
-        const seccionEliminado = await Seccion.findByIdAndDelete(id);
+        const seccionEliminado = await Seccion.findOneAndDelete({codigo: codigo});
 
         if(!seccionEliminado) return res.status(404).json({
             ok: false,
@@ -17,7 +17,7 @@ seccionCTRL.deleteSeccion = async (req, res) => {
         
         //Intentamos eliminar en mongo db atlas y sino lo guardamos localmente para un posterior uso
         try {
-            const seccionAtlasEliminada = await SeccionAtlas.findByIdAndDelete(id);
+            const seccionAtlasEliminada = await SeccionAtlas.findOneAndDelete({codigo: codigo});
 
             if(!seccionAtlasEliminada){
                 await new SyncPendiente({
@@ -25,6 +25,8 @@ seccionCTRL.deleteSeccion = async (req, res) => {
                     data: id,
                     peticion: 'DELETE'
                 }).save();
+            }else{
+                console.log(`Seleccion ${seccionEliminado.nombre} Borrado de mongodb Atlas`);
             }
         } catch (error) {
             await new SyncPendiente({
@@ -34,7 +36,7 @@ seccionCTRL.deleteSeccion = async (req, res) => {
             }).save();
         }
 
-
+        console.log(`Seleccion ${seccionEliminado.nombre} Borrado de mongodb Local`);
         res.status(200).json({
             ok: true,
             seccionEliminado
@@ -120,6 +122,47 @@ seccionCTRL.getForCodigo = async (req, res) => {
         res.status(500).json({
             ok: false,
             msg: 'Error al obtener la sección por código, hable con el administrador',
+        })
+    }
+};
+
+seccionCTRL.patchOneForCodigo = async(req, res) => {
+    const { codigo } = req.params;
+    try {
+        const seccion = await Seccion.findOneAndUpdate({codigo: codigo}, req.body, { new: true });
+
+        if(!seccion) return res.status(404).json({
+            ok: false,
+            msg: 'No existe la sección'
+        });
+
+        //Funcion mara modificar en la base de datos de mongodb atlas y si no puede lo pone en la syncPendiente
+        try {
+            const seccionAtlas = await SeccionAtlas.findOneAndUpdate({codigo: codigo}, req.body, { new: true });
+
+            if(!seccionAtlas) await new SyncPendiente({
+                tipo: 'seccion',
+                data: req.body,
+                peticion: 'PATCH'
+            }).save();
+        } catch (error) {
+            await new SyncPendiente({
+                tipo: 'seccion',
+                data: req.body,
+                peticion: 'PATCH'
+            }).save();
+        }
+
+
+        res.status(200).json({
+            ok: true,
+            seccion
+        })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error al actualizar la sección, hable con el administrador',
         })
     }
 };

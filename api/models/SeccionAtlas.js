@@ -6,6 +6,8 @@ const SeccionSchema = new Schema({
         type: String,
         required: true,
         unique: true,
+        trim: true,
+        set: value => value.toUpperCase()
     },
     codigo: {
         type: Number,

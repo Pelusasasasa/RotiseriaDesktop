@@ -156,7 +156,7 @@ const hacerMenu = () => {
         {
           label: "Seccion",
           click() {
-            abrirVentana("seccion/seccion.html", 500, 900)
+            abrirVentana("seccion/seccion.html", 600, 900)
           }
         },
         {
