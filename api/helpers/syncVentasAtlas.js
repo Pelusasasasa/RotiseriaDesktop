@@ -2,6 +2,7 @@ const SyncPendiente = require("../models/SyncPendiente");
 const Venta = require("../models/Venta");
 const VentaAtlasModel = require("../models/VentaAtlas.model");
 const getNextNumberContado = require("./getNextNumberContado");
+const getNextNumberPedido = require("./getNextNumberPedido");
 const imprimirTicketComanda = require("./imprimirTicketComanda");
 
 const syncVentas = async() => {
@@ -11,17 +12,25 @@ const syncVentas = async() => {
         if(ventasPendientes.length > 0){
             for(let venta of ventasPendientes){
                 const ventaData = venta.toObject();
-                
-                //Eliminar _id para que mongodb genere uno nuevo
-                delete venta._id;
-                const numero = await getNextNumberContado();
-                const nPedido = await getNextNumberPedido(ventaData.tipo_comp);
-                ventaData.numero = numero;
-                ventaData.nPedido = nPedido;
-                await Venta.create(ventaData);
 
-                imprimirTicketComanda(ventaData)
-                console.log(`Venta a ${venta.cliente} Cargada Correctamente`);
+                const tieneSyncPendiente = await SyncPendiente.findOne({
+                    peticion: 'PATCH',
+                    tipo: 'venta',
+                    data: ventaData._id
+                });
+
+                if(!tieneSyncPendiente){
+                    //Eliminar _id para que mongodb genere uno nuevo
+                    delete ventaData._id;
+                    const numero = await getNextNumberContado();
+                    const nPedido = await getNextNumberPedido(ventaData.tipo_comp);
+                    ventaData.numero = numero;
+                    ventaData.nPedido = nPedido;
+                    await Venta.create(ventaData);
+
+                    imprimirTicketComanda(ventaData)
+                    console.log(`Venta a ${venta.cliente} Cargada Correctamente`);
+                }
             };
 
             try {
@@ -31,7 +40,7 @@ const syncVentas = async() => {
                 for(let venta of ventasPendientes){
                     await new SyncPendiente({
                         tipo: 'venta',
-                        data: venta,
+                        data: venta._id,
                         peticion: 'PATCH'
                     });
                 };
