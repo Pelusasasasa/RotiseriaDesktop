@@ -5,6 +5,7 @@ const path = require('node:path');
 const connectDB = require('./config/dataBase');
 const  connectAtlas  = require('./atlas/dbAtlas');
 const { syncVentas } = require('./helpers/syncVentasAtlas');
+const { procesarPendientes } = require('./helpers/syncPendientes');
 require('dotenv').config();
 
 const app = express();
@@ -49,3 +50,4 @@ app.listen(PORT, () => {
 });
 
 setInterval(syncVentas, 30 * 1000)
+setInterval(procesarPendientes, 60 * 1000);

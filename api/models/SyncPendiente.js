@@ -1,8 +1,17 @@
 const { Schema, model } = require("mongoose");
 
 const SyncPendienteSchema = new Schema({
-    tipo: String,
-    peticion: String,
+    tipo: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    peticion: {
+        type: String,
+        required: true,
+        trim: true,
+        set: value => value.toUpperCase()
+    },
     data: Schema.Types.Mixed,
     creado: {
         type: Date,

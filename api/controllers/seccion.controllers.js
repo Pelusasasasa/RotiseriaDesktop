@@ -22,7 +22,7 @@ seccionCTRL.deleteSeccion = async (req, res) => {
             if(!seccionAtlasEliminada){
                 await new SyncPendiente({
                     tipo: 'seccion',
-                    data: id,
+                    data: codigo,
                     peticion: 'DELETE'
                 }).save();
             }else{
@@ -31,7 +31,7 @@ seccionCTRL.deleteSeccion = async (req, res) => {
         } catch (error) {
             await new SyncPendiente({
                     tipo: 'seccion',
-                    data: id,
+                    data: codigo,
                     peticion: 'DELETE'
             }).save();
         }
