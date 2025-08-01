@@ -42,10 +42,20 @@ async function agregarSeccion() {
     seccion.nombre = nombre.value.toUpperCase();
     seccion.codigo = codigo.value;
     
-    listarSeccion(seccion);
 
-    const { data } = await axios.post(`${URL}seccion`, seccion);
-    if (!data.ok) return await sweet.fire('Error al agregar seccion', data.msg, 'error');
+    try {        
+        const { data } = await axios.post(`${URL}seccion`, seccion);
+        
+        if (!data.ok) return await sweet.fire('Error al agregar seccion', data.msg, 'error');
+
+        if(data.ok) {
+            listarSeccion(seccion);
+        };
+        
+    } catch (error) {
+        console.log(error.response.data.msg);
+        await sweet.fire('Error al agregar seccion', error.response.data.msg, 'error');
+    }
 
     codigo.value = "";
     nombre.value = "";

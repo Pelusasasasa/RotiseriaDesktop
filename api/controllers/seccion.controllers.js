@@ -126,11 +126,16 @@ seccionCTRL.getForCodigo = async (req, res) => {
 
 seccionCTRL.postOne = async (req, res) => {
     try {
-        const seccionUsado = await Seccion.findOne({codigo: req.body.codigo});
+        const seccionUsado = await Seccion.findOne({
+            $or: [
+                {codigo: req.body.codigo},
+                {nombre: req.body.nombre}
+            ]
+        });
 
         if(seccionUsado) return res.status(500).json({
             ok: false,
-            msg: 'seccion ya utilizado'
+            msg: 'Seccion ya utilizado'
         })
 
         const seccion = new Seccion(req.body);
