@@ -1,6 +1,8 @@
 const seccionCTRL = {};
 
 const Seccion = require('../models/Seccion');
+const SyncPendiente = require('../models/SyncPendiente');
+const SeccionAtlas = require('../models/SeccionAtlas');
 
 seccionCTRL.deleteSeccion = async (req, res) => {
     const { id } = req.params;
@@ -12,6 +14,26 @@ seccionCTRL.deleteSeccion = async (req, res) => {
             ok: false,
             msg: 'No existe la sección'
         });
+        
+        //Intentamos eliminar en mongo db atlas y sino lo guardamos localmente para un posterior uso
+        try {
+            const seccionAtlasEliminada = await SeccionAtlas.findByIdAndDelete(id);
+
+            if(!seccionAtlasEliminada){
+                await new SyncPendiente({
+                    tipo: 'seccion',
+                    data: id,
+                    peticion: 'DELETE'
+                }).save();
+            }
+        } catch (error) {
+            await new SyncPendiente({
+                    tipo: 'seccion',
+                    data: id,
+                    peticion: 'DELETE'
+            }).save();
+        }
+
 
         res.status(200).json({
             ok: true,
@@ -100,12 +122,32 @@ seccionCTRL.getForCodigo = async (req, res) => {
             msg: 'Error al obtener la sección por código, hable con el administrador',
         })
     }
-}
+};
 
 seccionCTRL.postOne = async (req, res) => {
     try {
+        const seccionUsado = await Seccion.findOne({codigo: req.body.codigo});
+
+        if(seccionUsado) return res.status(500).json({
+            ok: false,
+            msg: 'seccion ya utilizado'
+        })
+
         const seccion = new Seccion(req.body);
         await seccion.save();
+        
+        //Ejecutamos para guardar una seccion en mongodb Atlas
+        try {
+            const nuevaAtlas = new SeccionAtlas(req.body);
+            await nuevaAtlas.save();
+        } catch (error) {
+            await new SyncPendiente({
+                tipo: 'seccion',
+                data: req.body,
+                peticion: 'POST'
+            }).save();
+            console.log("Guardado Localmente");
+        }
 
         res.status(201).json({
             ok: true,

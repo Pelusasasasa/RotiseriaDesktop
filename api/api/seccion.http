@@ -1,2 +1,12 @@
 ###GET
-GET http://localhost:3000/rotiseria/seccion
+GET http://localhost:4000/rotiseria/seccion
+
+
+###POST ONE
+POST http://localhost:4000/rotiseria/seccion
+Content-Type: application/json
+
+{
+    "codigo": 4,
+    "nombre": "GASEOSAS"
+}
