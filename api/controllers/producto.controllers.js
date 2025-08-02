@@ -235,13 +235,15 @@ productoCTRL.patchPrecio = async(req, res) => {
 
 productoCTRL.postOne = async(req, res) => {
     try {
-
-        //Ejecutamos para guardar el producto en Cloudinary la imagen
-        const result = await cloudinary.uploader.upload(req.file.path, {
-            folder: 'Sabor-Urbano'
-        });
-        req.body.imgCloudinaryPath = result.url;
-
+        try {
+            //Ejecutamos para guardar el producto en Cloudinary la imagen
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: 'Sabor-Urbano'
+            });
+            req.body.imgCloudinaryPath = result.url;
+        } catch (error) {
+            console.log(error);
+        };
         const producto = new Producto(req.body);
         await producto.save();
 
@@ -258,8 +260,6 @@ productoCTRL.postOne = async(req, res) => {
                 peticion: 'POST'
             }).save();
         }
-
-        
 
         console.log(`Producto ${producto.descripcion} Guardado en MongoDB Local`);
         res.status(201).json({
@@ -282,11 +282,15 @@ productoCTRL.patchOne = async(req, res) => {
     const { id } = req.params;
 
     try {
-        //Ejecutamos para guardar el producto en Cloudinary la imagen
-        const result = await cloudinary.uploader.upload(req.file.path, {
-            folder: 'Sabor-Urbano'
-        });
-        req.body.imgCloudinaryPath = result.url;
+        try {
+            //Ejecutamos para guardar el producto en Cloudinary la imagen
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: 'Sabor-Urbano'
+            });
+            req.body.imgCloudinaryPath = result.url;
+        } catch (error) {
+            console.log(error);
+        };
         
         const productoModificado = await Producto.findOneAndUpdate({_id: id}, req.body, {new: true});
 
