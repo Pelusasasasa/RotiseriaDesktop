@@ -2,6 +2,7 @@ const initCartaEmpanada = require('./initCartaEmpanada');
 const initNumeros = require('./initNumero');
 const initPedido = require('./initPedido');
 const initSecciones = require('./initSecciones');
+const initVariable = require('./initVariable');
 
 
 const runSeeders = async() => {
@@ -31,6 +32,13 @@ const runSeeders = async() => {
     } catch (error) {
         console.error(error);
         console.log('❌ Error al inicializar la carta de empanadas');
+    }
+
+    try {
+        await initVariable();
+    } catch (error) {
+        console.log(error);
+        console.log('❌ Error al inicializar la Varaible para la web');
     }
 };
 

@@ -6,6 +6,10 @@ const Variables = new Schema({
         type: String,
         default: '',
         trim: true
+    },
+    paginaWebAbierto: {
+        type: Boolean,
+        default: true,
     }
 });
 

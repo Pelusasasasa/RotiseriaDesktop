@@ -105,8 +105,9 @@ const imprimirTicketComanda = async(venta) => {
 
         //Ponemos el texto entexto chico para el pago y la modalidad de envio
         printer.setTextNormal();
-        printer.println(venta?.tipo_pago === 'TRANSFERENCIA' ? `Pago Con Transferencia` : 'Pago en Efectivo')
-        printer.println(venta?.envio ? `Modalidad Envio a domiclio` : 'Modalidad Retiro en Local')
+        printer.println(venta?.tipo_pago === 'TRANSFERENCIA' ? `Pago Con Transferencia` : 'Pago en Efectivo');
+        printer.println(venta?.envio ? `Modalidad Envio a domiclio` : 'Modalidad Retiro en Local');
+        printer.println(venta?.vuelto ? `El cliente paga con: $${venta?.vuelto}` : '');
 
         printer.setTextDoubleHeight(),
         printer.setTextDoubleWidth(),

@@ -4,13 +4,10 @@ const axios = require('axios');
 const sweet = require('sweetalert2');
 
 const URL = process.env.ROTISERIA_URL;
-console.log(URL)
-
-const archivo = require('./configuracion.json');
 
 ipcRenderer.send('poner-cierre');
 
-const { abrirVentana, ponerNumero, cargarVendedor, verificarUsuarios } = require('./helpers');
+const { ponerNumero, verificarUsuarios } = require('./helpers');
 const { default: Swal } = require("sweetalert2");
 
 const ventas = document.querySelector('.ventas');
@@ -18,12 +15,16 @@ const clientes = document.querySelector('.clientes');
 const caja = document.querySelector('.caja');
 const productos = document.querySelector('.productos');
 const gastos = document.querySelector('.gastos');
-const consulta = document.querySelector('.consulta');
-const recibo = document.querySelector('.recibo');
-const notaCredito = document.querySelector('.notaCredito');
+const btnPaginaWeb = document.getElementById('btn-switch');
 
 let verVendedores;
 let contrasenaGasto;
+let paginaWebAbierta;
+
+const modificarVariablePaginaWeb = async(e) => {
+    const {data} = await axios.patch(`${URL}variable/tooglePaginaWeb`, {paginaWebAbierto: e.target.checked});
+    console.log(data)
+}
 
 window.addEventListener('load', async e => {
     let pedido;
@@ -58,6 +59,7 @@ window.addEventListener('load', async e => {
         const { data } = await axios.get(`${URL}variable`);
         if(!data.ok) return await sweet.fire('Error al traer variables', data.msg, 'error');
         contrasenaGasto = data.variable.contrasenaGasto;
+        paginaWebAbierta = data.variable.paginaWebAbierto;
     } catch (error) {
         console.log(error.response.data.msg);
         return await sweet.fire('Error al traer variables', error.response.data.msg, 'error');
@@ -82,6 +84,9 @@ window.addEventListener('load', async e => {
             }
         };
     };
+
+    btnPaginaWeb.checked = paginaWebAbierta;
+    
 });
 
 //Al tocar el atajo de teclado, abrimos ventanas
@@ -205,6 +210,8 @@ gastos.addEventListener('click', async e => {
     }
 
 });
+
+btnPaginaWeb.addEventListener('change', modificarVariablePaginaWeb);
 
 //ponemos un numero para la venta y luego mandamos a imprimirla
 ipcRenderer.on('poner-numero', async (e, args) => {

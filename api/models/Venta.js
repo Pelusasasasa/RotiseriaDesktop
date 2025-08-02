@@ -125,6 +125,10 @@ const Venta = new Schema({
         type: String,
         default: 'EFECTIVO',
         set: value => value.toUpperCase().trim()
+    },
+    vuelto: {
+        type: Number,
+        default: 0
     }
 });
 
