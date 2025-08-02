@@ -1,4 +1,6 @@
 const CartaEmpanada = require("../models/CartaEmpanada");
+const CartaEmpanadaAtlasModel = require("../models/CartaEmpanadaAtlas.model");
+const SyncPendiente = require("../models/SyncPendiente");
 
 const cartaCTRL = {};
 
@@ -34,6 +36,30 @@ cartaCTRL.patchOne = async(req, res) => {
             ok: false,
             msg: 'No se encontró la carta',
         });
+
+        try {
+            const cartaAtlas = await CartaEmpanadaAtlasModel.findOne();
+            delete req.body._id;
+
+            const cartaActualizadaAtlas = await CartaEmpanadaAtlasModel.findByIdAndUpdate(cartaAtlas._id, req.body, { new: true});
+
+            if(!cartaActualizadaAtlas){
+                await new SyncPendiente({
+                    tipo: 'carta',
+                    data: req.body,
+                    peticion: 'PATCH'
+                }).save();
+            }else{
+                console.log(`Carta Empanada Actualizada en MongoDb Atlas`);
+            };
+        } catch (error) {
+            console.log(error);
+            await new SyncPendiente({
+                tipo: 'carta',
+                data: req.body,
+                peticion: 'PATCH'
+            }).save();
+        }
 
         res.status(200).json({
             ok: true,
