@@ -16,6 +16,10 @@ const ProductoAtlasSchema = new Schema({
         type: Number,
         required: true
     },
+    imgCloudinaryPath: {
+        type: String,
+        default: ''
+    },
     seccion: {
         type: Schema.Types.ObjectId,
         ref: 'Seccion',

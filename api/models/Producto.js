@@ -35,7 +35,10 @@ const Producto = new Schema({
         type:Boolean,
         default: false
     },
-    
+    imgCloudinaryPath: {
+        type: String,
+        default: ''
+    },
     seccion:{
         type: Schema.Types.ObjectId,
         ref: 'Seccion',

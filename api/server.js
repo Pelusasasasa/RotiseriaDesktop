@@ -3,7 +3,6 @@ const cors = require('cors');
 const path = require('node:path');
 
 const connectDB = require('./config/dataBase');
-const  connectAtlas  = require('./atlas/dbAtlas');
 const { syncVentas } = require('./helpers/syncVentasAtlas');
 const { procesarPendientes } = require('./helpers/syncPendientes');
 require('dotenv').config();
@@ -11,7 +10,6 @@ require('dotenv').config();
 const app = express();
 
 connectDB();
-// connectAtlas()
 
 app.use(cors());
 app.use(express.json());

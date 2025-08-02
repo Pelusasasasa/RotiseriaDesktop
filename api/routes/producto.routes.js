@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const multer = require('multer');
 const { getAll, patchPrecio, getOne, postOne, deleteOne, getForSeccion, descontarStock, patchOne, getForSeccionAndDescription } = require('../controllers/producto.controllers');
+const { cloudinary } = require('../helpers/cargarImagenCloudinary');
 
 const storage = multer.diskStorage({
     destination:(req, file, cb) => {
