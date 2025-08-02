@@ -194,8 +194,29 @@ productoCTRL.patchPrecio = async(req, res) => {
             ok: false,
             msg: 'El id no es valido'
         });
-
         const newProducto = await Producto.findOneAndUpdate({_id: id}, datos, {new: true});
+
+        //Ejecutamos para modificar los productos que estan en Mongo DB Atlas
+        try {
+            const newPrecioAtlas = await ProductoAtlas.findOneAndUpdate({_id: id}, datos, {new: true});
+            if(!newPrecioAtlas){
+                await new SyncPendiente({
+                    tipo: 'producto',
+                    data: datos,
+                    peticion: 'PATCH'
+                }).save();
+            }else{
+                console.log(`Producto ${newPrecioAtlas.descripcion} Modificado en MongoDB Atlas`);
+            }
+        } catch (error) {
+            console.log(error)
+            await new SyncPendiente({
+                tipo: 'producto',
+                data: datos,
+                peticion: 'PATCH'
+            }).save();
+        }
+
 
         res.status(200).json({
             ok: true,
