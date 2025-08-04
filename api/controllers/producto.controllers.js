@@ -4,6 +4,7 @@ const { cloudinary } = require('../helpers/cargarImagenCloudinary');
 const validarId = require('../helpers/validarId');
 const Producto = require('../models/Producto');
 const ProductoAtlas = require('../models/ProductoAtlas');
+const SeccionAtlas = require('../models/SeccionAtlas');
 const SyncPendiente = require('../models/SyncPendiente');
 
 productoCTRL.deleteOne = async(req, res) => {
@@ -300,6 +301,10 @@ productoCTRL.patchOne = async(req, res) => {
         });
 
         try {
+            const producto = await Producto.findOne({_id: id}).populate('seccion');
+            const secionAtlas = await SeccionAtlas.findOne({codigo: producto.seccion.codigo});
+            req.body.seccion = secionAtlas._id;
+
             const productoModificadoAtlas = await ProductoAtlas.findOneAndUpdate({_id: id}, req.body, {new: true});
             if(!productoModificadoAtlas){
                 await new SyncPendiente({

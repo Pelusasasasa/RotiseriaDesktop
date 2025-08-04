@@ -18,6 +18,7 @@ export const cartSlice = createSlice({
             state.total = 0;
         },
         agregarItem: (state, {payload}) => {
+            //Docena y Media docena son los precios
             const {_id, descripcion, precio, seccion, cantidad = 1, docena, mediaDocena} = payload;
             const itemExistente = state.items.find(elem => elem.producto._id === _id);
 
