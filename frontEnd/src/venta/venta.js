@@ -270,6 +270,7 @@ facturar.addEventListener('click', async e => {
     venta.direccion = direccion.value;
     venta.telefono = telefono.value;
     venta.descuentoPorDocena = descuentoPorDocena;
+    venta.dispositivo = 'DESKTOP';
     venta.caja = require('../configuracion.json').caja; //vemos en que caja se hizo la venta
     
     venta.facturaAnterior = facturaAnterior ? facturaAnterior : "";

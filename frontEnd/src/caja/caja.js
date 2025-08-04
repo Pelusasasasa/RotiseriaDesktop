@@ -415,7 +415,19 @@ const listarVentas = async (ventas) => {
     for await (let venta of lista) {
         const tr = document.createElement('tr');
         tr.id = venta._id;
-        tr.classList.add('bold')
+        tr.classList.add('bold');
+
+        let textoDispositivo = '';
+
+        if(venta.dispositivo === 'DESKTOP'){
+            textoDispositivo = 'PC';
+        }else if(venta.dispositivo === 'MOBILE'){
+            textoDispositivo = 'CELULAR';
+        }else if(venta.dispositivo === 'WEB'){
+            textoDispositivo = 'WEB';
+        }else{
+            textoDispositivo = 'PC';
+        }
 
         const tdNumero = document.createElement('td');
         const tdFecha = document.createElement('td');
@@ -425,8 +437,7 @@ const listarVentas = async (ventas) => {
         const tdCantidad = document.createElement('td');
         const tdPrecioTotal = document.createElement('td');
         const tdHora = document.createElement('td');
-        const tdVendedor = document.createElement('td');
-        const tdCaja = document.createElement('td');
+        const tdDispositivo = document.createElement('td');
         const tdAccion = document.createElement('td');
 
         const buttonAccion = document.createElement('button');
@@ -453,8 +464,7 @@ const listarVentas = async (ventas) => {
         tdProducto.innerText = venta.direccion;
         tdCantidad.innerText = venta.telefono;
         tdPrecioTotal.innerText = venta.tipo_comp === "Nota Credito C" ? redondear(venta.precio * -1, 2) : venta.precio.toFixed(2);
-        // tdVendedor.innerText = venta.vendedor ? venta.vendedor : "";
-        // tdCaja.innerText = venta.caja;
+        tdDispositivo.innerText = textoDispositivo;
 
         tr.appendChild(tdNumero);
         tr.appendChild(tdFecha);
@@ -463,9 +473,8 @@ const listarVentas = async (ventas) => {
         tr.appendChild(tdProducto);
         tr.appendChild(tdCantidad);
         tr.appendChild(tdPrecioTotal);
-        // tr.appendChild(tdVendedor);
-        // tr.appendChild(tdCaja);
         tr.appendChild(tdHora);
+        tr.appendChild(tdDispositivo);
         (venta.tipo_comp !== 'Nota Credito C' && !venta.notaCredito) && tr.appendChild(tdAccion);
 
         fragment.appendChild(tr);

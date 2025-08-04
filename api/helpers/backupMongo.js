@@ -25,7 +25,7 @@ exec(comando, (error, stdout, stderr) => {
         return ;
     }
     if (stderr) {
-       console.error(`[STDERR] ${stderr}`);
+    console.error(`[STDERR] ${stderr}`);
     }
     
     console.log(`[OK] Backup guardado en: ${backupPath}`);

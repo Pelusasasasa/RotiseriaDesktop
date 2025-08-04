@@ -13,6 +13,8 @@ const modificar = document.getElementById('modificar');
 const guardar = document.getElementById('guardar');
 const salir = document.getElementById('salir');
 
+const modal = document.getElementById('modal');
+
 let creado = true;
 let cartaEmpanada = {};
 
@@ -77,11 +79,18 @@ async function modificarCarta() {
     cartaEmpanada.docena = docena.value;
     cartaEmpanada.mediaDocena = mediaDocena.value;
     
-    const {data} = await axios.patch(`${URL}carta/${cartaEmpanada._id}`, cartaEmpanada);
-    if(data.ok){
-        await sweet.fire('Modificado', 'Se modificó la carta de empanadas','success');
-        window.close();
-    }else{
-        await sweet.fire('Error Modificado', 'No se pudo modificar la carta de empanadas','error');
+    try {
+        modal.classList.remove('none');
+        const {data} = await axios.patch(`${URL}carta/${cartaEmpanada._id}`, cartaEmpanada);
+        if(data.ok){
+            await sweet.fire('Modificado', 'Se modificó la carta de empanadas','success');
+            window.close();
+        }else{
+            await sweet.fire('Error Modificado', 'No se pudo modificar la carta de empanadas','error');
+        }
+    } catch (error) {
+        console.log(error)
+    }finally{
+        modal.classList.add('none');
     }
 };
