@@ -15,6 +15,8 @@ const ganancia = document.querySelector('#ganancia');
 const total = document.querySelector('#total');
 const guardar = document.querySelector('.guardar');
 
+const modal = document.getElementById('modal');
+
 const sweet  = require('sweetalert2');
 const {cerrarVentana,apretarEnter, redondear, agregarMovimientoVendedores} = require('../helpers');
 
@@ -30,7 +32,6 @@ window.addEventListener('load',e=>{
 })
 
 guardar.addEventListener('click',async ()=>{
-    console.log(secciones.value);
     if(secciones.value === '') return await sweet.fire('Elegir una seccion', 'Debe elegir una seccion por defecto', 'error');
 
     const formData = new FormData();
@@ -51,6 +52,7 @@ guardar.addEventListener('click',async ()=>{
     };
 
     try {
+        modal.classList.remove('none');
         const { data } = await axios.post(`${URL}producto`, formData);
         if(!data.ok) return await sweet.fire('Error al cargar prodcucto', `${data.msg}`, 'error')
 
@@ -60,6 +62,8 @@ guardar.addEventListener('click',async ()=>{
         console.log(error);
         console.log(error.response.data.msg);
         await sweet.fire('Error al cargar el producto', error.response.data.msg, 'error');
+    }finally{
+        modal.classList.add('none');
     };
         
 });

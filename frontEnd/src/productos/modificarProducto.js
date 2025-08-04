@@ -24,6 +24,8 @@ const total = document.querySelector('#total');
 const modificar = document.querySelector('.modificar');
 const salir = document.querySelector('.salir');
 
+const modal = document.getElementById('modal');
+
 let vendedor;
 
 //Recibimos la informacion del producto para luego llenar los inputs
@@ -75,6 +77,7 @@ modificar.addEventListener('click',async e=>{
     };
 
     try {
+        modal.classList.remove('none')
         const { data } = await axios.patch(`${URL}producto/${codigo.value}`, formData);
         if( !data.ok) return await sweet.fire('Error al modificar el producto', data.msg, 'error');
         await ipcRenderer.send('informacion-a-ventana',data.productoModificado);
@@ -82,6 +85,8 @@ modificar.addEventListener('click',async e=>{
     } catch (error) {
         console.log(error.response.data.msg);
         return await sweet.fire('Error al modificar el producto', error.response.data.msg, 'error');
+    }finally{
+        modal.classList.add('none');
     };
 });
 

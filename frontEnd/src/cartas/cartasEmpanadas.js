@@ -78,7 +78,6 @@ async function modificarCarta() {
     cartaEmpanada.mediaDocena = mediaDocena.value;
     
     const {data} = await axios.patch(`${URL}carta/${cartaEmpanada._id}`, cartaEmpanada);
-
     if(data.ok){
         await sweet.fire('Modificado', 'Se modificó la carta de empanadas','success');
         window.close();

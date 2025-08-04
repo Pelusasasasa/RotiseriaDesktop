@@ -323,3 +323,48 @@ h1{
 .tarjetas .tarjeta .divBotones .botonRestar{
     background-color: yellowgreen
 }
+
+
+
+#modal{
+  position: absolute;
+  height: calc(100% - 0px);
+  width: calc(100% - 0px);;
+  background-color: rgba(0,0,0,0.7);
+  top: 0;
+  left: 0;
+}
+
+#divSpinner{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: calc(100% - 0px);
+    width: calc(100% - 0px);;
+    align-items: center;
+}
+
+#textSpinner{
+    color: white;
+    font-size: 2rem;
+}
+
+.spinner{
+    border: .4rem solid rgba(0,0,0,1);
+    width: 3.6rem;
+    height: 3.6rem;
+    border-radius: 50%;
+    border-left-color: transparent;
+
+    animation: spin 1s linear infinite
+}
+
+@keyframes spin{
+    0%{
+        transform: rotate(0deg);
+    }
+
+    100%{
+    transform: rotate(360deg);
+    }
+}

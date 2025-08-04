@@ -1,3 +1,5 @@
+const CartaEmpanada = require('../models/CartaEmpanada');
+const ProductoAtlas = require('../models/ProductoAtlas');
 const SeccionAtlas = require('../models/SeccionAtlas');
 const SyncPendiente = require('../models/SyncPendiente');
 
@@ -92,7 +94,22 @@ const ejecturaVenta = async(item) => {
             console.log(error);
         }
     }
-}
+};
+
+const ejecutarCartaEmpanada = async(item) => {
+    
+    if(item.peticion === 'PATCH'){
+        try {
+            delete item.data._id;
+            await CartaEmpanada.findOneAndUpdate({}, item.data, {new: true});
+
+            console.log(`Carta Empanada Pendiente Actualizada`);
+            await SyncPendiente.findByIdAndDelete(item._id);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+};
 
 //Los pendientes son documentos que no se hicireorn por algun error en la conexion a la base de datos atlas
 const procesarPendientes = async() => {
@@ -109,6 +126,8 @@ const procesarPendientes = async() => {
                 ejecutarProducto(item);
             }else if(item.tipo === 'venta'){
                 ejecturaVenta(item);
+            }else if(item.tipo === 'carta'){
+                ejecutarCartaEmpanada(item);    
             }
         }
 

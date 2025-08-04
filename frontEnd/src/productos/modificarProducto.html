@@ -11,11 +11,8 @@
 <body class="modificarProducto">
         <section id="titulo">
             <h1>Modificar Producto</h1>
-        <!-- <main>
-            <label for="dolar">Dolar</label>
-            <input type="text" disabled class="text-rigth" name="dolar" id="dolar">
-        </main> -->
         </section>
+
         <fieldset>
             <legend>Identificador</legend>
             <section class="identificador">
@@ -37,7 +34,6 @@
                 </div>
             </section>
         </fieldset>
-
 
         <fieldset>
             <legend>Informacion</legend>
@@ -83,6 +79,13 @@
             <button class="modificar">Modificar Producto</button>
             <button class="salir">Salir</button>
         </main>
+
+        <div id="modal" class="none">
+            <div id="divSpinner">
+                <div class="spinner"></div>
+                <p id="textSpinner">Guardando...</p>
+            </div>
+        </div>
 </body>
 <script src="./modificarProducto.js"></script>
 </html>

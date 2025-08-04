@@ -36,7 +36,8 @@ cartaCTRL.patchOne = async(req, res) => {
             ok: false,
             msg: 'No se encontró la carta',
         });
-
+        
+        //Ejecutamos scuando queremos modificar carta empanada en la base datos mongobd atlas
         try {
             const cartaAtlas = await CartaEmpanadaAtlasModel.findOne();
             delete req.body._id;
