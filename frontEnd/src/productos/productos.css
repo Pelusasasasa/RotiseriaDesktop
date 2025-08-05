@@ -115,7 +115,6 @@ table tbody tr td{
     border: .1rem solid black;
 }
 .botones{
-    margin-top: 1rem;
     display: flex;
     gap: 2rem;
     justify-content: space-around;

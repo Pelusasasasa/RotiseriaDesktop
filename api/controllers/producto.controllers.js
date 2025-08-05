@@ -285,10 +285,12 @@ productoCTRL.patchOne = async(req, res) => {
     try {
         try {
             //Ejecutamos para guardar el producto en Cloudinary la imagen
-            const result = await cloudinary.uploader.upload(req.file.path, {
-                folder: 'Sabor-Urbano'
-            });
-            req.body.imgCloudinaryPath = result.url;
+            if(req.file){
+                const result = await cloudinary.uploader.upload(req.file.path, {
+                    folder: 'Sabor-Urbano'
+                });
+                req.body.imgCloudinaryPath = result.url;
+            }
         } catch (error) {
             console.log(error);
         };

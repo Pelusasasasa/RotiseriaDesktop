@@ -135,6 +135,10 @@ select {
 }
 
 /* heght */
+.h-screen {
+  height: 100vh;
+}
+
 .h-50 {
   height: 50rem;
 }
@@ -198,6 +202,10 @@ select {
 
 .m-2 {
   margin: 2rem;
+}
+
+.mt-auto {
+  margin-top: auto;
 }
 
 .mt-1 {

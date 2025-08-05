@@ -31,7 +31,7 @@ const Producto = new Schema({
         type:Number,
         required:true
     },
-    textBold:{
+    sinStock:{
         type:Boolean,
         default: false
     },

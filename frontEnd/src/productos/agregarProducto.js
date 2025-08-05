@@ -9,7 +9,7 @@ const secciones = document.querySelector('#secciones');
 const provedor = document.querySelector('#provedor');
 const stock = document.querySelector('#stock');
 const img = document.querySelector('#img');
-const textBold = document.querySelector('#textBold');
+const sinStock = document.querySelector('#sinStock');
 const costo = document.querySelector('#costo');
 const ganancia = document.querySelector('#ganancia');
 const total = document.querySelector('#total');
@@ -40,7 +40,7 @@ guardar.addEventListener('click',async ()=>{
     formData.append('descripcion', descripcion.value.trim().toUpperCase());
     formData.append('provedor', provedor.value.toUpperCase().trim());
     formData.append('stock', parseFloat(stock.value));
-    formData.append('textBold', textBold.checked === true ? true : false);
+    formData.append('sinStock', sinStock.checked === true ? true : false);
     formData.append('costo', parseFloat(costo.value));
     formData.append('ganancia', parseFloat(ganancia.value));
     formData.append('precio', parseFloat(total.value));
@@ -97,7 +97,7 @@ provedor.addEventListener('keypress',e=>{
     apretarEnter(e,img);
 });
 
-textBold.addEventListener('keypress',e=>{
+sinStock.addEventListener('keypress',e=>{
     apretarEnter(e,stock);
 });
 

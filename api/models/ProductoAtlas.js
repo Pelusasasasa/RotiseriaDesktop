@@ -16,6 +16,10 @@ const ProductoAtlasSchema = new Schema({
         type: Number,
         required: true
     },
+    sinStock:{
+        type:Boolean,
+        default: false
+    },
     imgCloudinaryPath: {
         type: String,
         default: ''

@@ -17,7 +17,7 @@ const secciones = document.querySelector('#secciones');
 const provedor = document.querySelector('#provedor');
 const stock = document.querySelector('#stock');
 const img = document.querySelector('#img');
-const textBold = document.querySelector('#textBold');
+const sinStock = document.querySelector('#sinStock');
 const costo = document.querySelector('#costo');
 const ganancia = document.querySelector('#ganancia');
 const total = document.querySelector('#total');
@@ -53,7 +53,7 @@ const llenarInputs = async(codigoProducto, producto)=>{
     ganancia.value = producto.ganancia.toFixed(2);
     secciones.value = producto.seccion?._id;
     total.value = producto.precio.toFixed(2);   
-    textBold.checked = producto.textBold ? true : false;
+    sinStock.checked = producto.sinStock ? true : false;
 }
 
 //al hacer click modificamos los productos con el valor de los inputs
@@ -69,7 +69,7 @@ modificar.addEventListener('click',async e=>{
     formData.append('ganancia', parseFloat(ganancia.value));
     formData.append('seccion', secciones.value);
     formData.append('precio', parseFloat(total.value));
-    formData.append('textoBold', textBold.checked ? true : false);
+    formData.append('sinStock', sinStock.checked ? true : false);
     
     const archivoImagen = img?.files?.[0];
     if(archivoImagen){
