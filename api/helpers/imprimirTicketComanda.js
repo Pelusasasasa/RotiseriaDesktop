@@ -63,13 +63,13 @@ const imprimirTicketComanda = async(venta) => {
         venta.telefono && printer.println(`Telefono ${venta?.telefono}`);
         printer.println('------------------------------------------');
 
+        printer.setTextDoubleHeight(),
         //Title producto
         printer.println('Cantidad - Descripcion - Precio');
         printer.println('------------------------------------------');
 
         //Productos
         printer.bold(true);
-        
         venta.listaProductos.forEach(({producto, cantidad, observaciones}) => {
             const maxLineLength = 37;
             const cantidadDesc = `${cantidad} - ${producto.descripcion}`;
@@ -92,6 +92,7 @@ const imprimirTicketComanda = async(venta) => {
             printer.newLine();
         });
 
+
         printer.setTextNormal();
         printer.println('------------------------------------------');
 
@@ -103,29 +104,27 @@ const imprimirTicketComanda = async(venta) => {
         printer.alignCenter();
         printer.newLine();
         
-
-
         //Ponemos el texto entexto chico para el pago y la modalidad de envio
         printer.setTextNormal();
-        printer.println(venta?.observaciones);
-        printer.newLine();
-        printer.println('------------------------------------------');
-        printer.newLine();
+        if(venta?.observaciones){
+            printer.println(venta?.observaciones);
+            printer.println('------------------------------------------');
+            printer.newLine();
+        };
 
         printer.alignLeft();
+        printer.setTextDoubleHeight();
         printer.println(venta?.tipo_pago === 'TRANSFERENCIA' ? `Pago Con Transferencia` : 'Pago en Efectivo');
         printer.println(venta?.envio ? `Modalidad Envio a domiclio` : 'Modalidad Retiro en Local');
         printer.println(venta?.vuelto ? `El cliente paga con: $${venta?.vuelto}` : '');
 
         printer.alignCenter();
         printer.newLine();
-        printer.setTextDoubleHeight();
-        printer.setTextDoubleWidth();
-
-        printer.newLine();
         printer.println('------------------------------------------');
         printer.newLine();
 
+        printer.setTextDoubleHeight();
+        printer.setTextDoubleWidth();
         printer.println('*MUCHAS GRACIAS*');
         printer.newLine();
         printer.setTextNormal();
