@@ -1,4 +1,5 @@
 const initCartaEmpanada = require('./initCartaEmpanada');
+const initCliente = require('./initCliente');
 const initNumeros = require('./initNumero');
 const initPedido = require('./initPedido');
 const initSecciones = require('./initSecciones');
@@ -12,6 +13,13 @@ const runSeeders = async() => {
         console.error(error);
         console.log('❌ Error al inicializar las secciones');
     };
+
+    try {
+        await initCliente();
+    } catch (error) {
+        console.log(error);
+        console.log('object ❌ Error al inicializar el cliente por defecto');
+    }
 
     try {
         await initNumeros();
