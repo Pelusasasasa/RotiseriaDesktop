@@ -5,6 +5,8 @@ const path = require('node:path');
 const connectDB = require('./config/dataBase');
 const { syncVentas } = require('./helpers/syncVentasAtlas');
 const { procesarPendientes } = require('./helpers/syncPendientes');
+const imprimirVenta = require('./helpers/generarImagenDesdeHTML');
+
 require('dotenv').config();
 
 const app = express();
@@ -46,5 +48,7 @@ app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
-setInterval(syncVentas, 30 * 1000)
-setInterval(procesarPendientes, 60 * 1000);
+// imprimirVenta();
+
+// setInterval(syncVentas, 30 * 1000)
+// setInterval(procesarPendientes, 60 * 1000);
