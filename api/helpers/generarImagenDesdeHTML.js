@@ -41,9 +41,9 @@ async function generarImagenDesdeHTML(venta) {
 
                 <div id='cliente' class='mt-4'>
                     <p class='font-bold'>Nombre: ${venta.cliente}</p>
-                    <p>DNI: ${venta.num_doc}</p>
-                    <p>Teléfono: ${venta.telefono}</p>
-                    <p>Direccion: ${venta.direccion}</p>
+                    <p>${venta.num_doc?.length > 8 ? 'CUIT' : 'DNI'}: ${venta?.num_doc ?? '00000000'}</p>
+                    <p>Teléfono: ${venta?.telefono}</p>
+                    <p>Direccion: ${venta?.direccion}</p>
                 </div>
 
                 <hr/>
@@ -93,6 +93,14 @@ async function generarImagenDesdeHTML(venta) {
                 <div class='text-center mt-4'>
                     <p>Gracias por su compra</p>
                 </div>
+
+                ${venta.F 
+                    ? ` <div class='text-center mt-4'>
+                        <p>CAE: ${venta.afip.cae}</p>
+                        <p>CAE: ${venta.afip.vencimiento}</p>
+                    </div>`
+                    : ''
+                }
             </body>
         </html>
     `;

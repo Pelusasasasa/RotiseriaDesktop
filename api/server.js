@@ -6,6 +6,7 @@ const connectDB = require('./config/dataBase');
 const { syncVentas } = require('./helpers/syncVentasAtlas');
 const { procesarPendientes } = require('./helpers/syncPendientes');
 const { generarImagenDesdeHTML } = require('./helpers/generarImagenDesdeHTML');
+const backUpMongoLocal = require('./backUpMongoLocal');
 
 require('dotenv').config();
 
@@ -114,3 +115,7 @@ generarImagenDesdeHTML(venta)
 
 // setInterval(syncVentas, 30 * 1000)
 // setInterval(procesarPendientes, 60 * 1000);
+setInterval(() => {
+    clg('Backup de la base de datos en proceso...');
+    backUpMongoLocal();
+}, 60 * 60 * 1000);
