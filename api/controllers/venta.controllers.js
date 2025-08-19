@@ -6,6 +6,7 @@ const imprimirTicketComanda = require('../helpers/imprimirTicketComanda');
 
 const Venta = require('../models/Venta');
 const Producto = require('../models/Producto');
+const { imprimirVenta } = require('../helpers/generarImagenDesdeHTML');
 
 ventaCTRL.deleteVenta = async(req, res) => {
     const { id } = req.params;
@@ -264,12 +265,12 @@ ventaCTRL.postOne = async(req, res) => {
         // }
 
         await newVenta.save();
-        await imprimirTicketComanda(newVenta);
+        await imprimirVenta(newVenta);
 
         
 
         if(imprimirCliente){
-            await imprimirTicketComanda(newVenta);
+            await imprimirVenta(newVenta);
         };
 
 

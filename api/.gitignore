@@ -3,3 +3,5 @@ backup
 imgProductos
 .env
 backups
+*.pdf
+*.html

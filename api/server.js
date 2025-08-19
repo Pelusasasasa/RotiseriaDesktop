@@ -4,8 +4,8 @@ const path = require('node:path');
 
 const connectDB = require('./config/dataBase');
 const { syncVentas } = require('./helpers/syncVentasAtlas');
-const { procesarPendientes } = require('./helpers/syncPendientes');
-const { generarImagenDesdeHTML } = require('./helpers/generarImagenDesdeHTML');
+// const { procesarPendientes } = require('./helpers/syncPendientes');
+const { generarImagenDesdeHTML, imprimirVenta } = require('./helpers/generarImagenDesdeHTML');
 const backUpMongoLocal = require('./backUpMongoLocal');
 
 require('dotenv').config();
@@ -102,20 +102,19 @@ const venta = {
         "notaCredito": false,
         "envio": false,
         "tipo_pago": "EFECTIVO",
-        "vuelto": 0,
+        "vuelto": 2500,
         "afip": {
             "puntoVenta": "2",
-            "numero": 56
-        },
-        "__v": 0
+            "numero": 56,
+            "cae": "73150279560026",
+            "vencimiento": "2023-04-24",
+            
+        }
 };
-
-generarImagenDesdeHTML(venta)
-// imprimirVenta();
 
 // setInterval(syncVentas, 30 * 1000)
 // setInterval(procesarPendientes, 60 * 1000);
 setInterval(() => {
-    clg('Backup de la base de datos en proceso...');
+    console.log('Backup de la base de datos en proceso...');
     backUpMongoLocal();
 }, 60 * 60 * 1000);

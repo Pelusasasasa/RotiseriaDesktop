@@ -2,11 +2,14 @@ const puppeteer = require('puppeteer');
 const ThermalPrinter = require("node-thermal-printer").printer;
 const PrinterTypes = require("node-thermal-printer").types;
 const path = require('node:path');
+const fs = require('node:fs');
+const sharp = require('sharp');
+
 
 async function generarImagenDesdeHTML(venta) {
     const browser = await puppeteer.launch();
     const page = await browser.newPage(); 
-    console.log(venta.precio);
+    console.log(venta);
     const html =
     `
         <html>
@@ -16,9 +19,12 @@ async function generarImagenDesdeHTML(venta) {
                 </style>
             </head>
 
-            <body class='w-full'>
+            <body class=''>
 
-                <div id='encabezado'>
+                <div class='flex justify-center mb-1'>
+                </div>
+
+                <div id='encabezado' class='border-b border-gray-800 pb-1'>
                     ${venta.F 
                         ? `
                             <p>Razon Social: AYALA NORMA BEATRIZ</p>
@@ -37,67 +43,51 @@ async function generarImagenDesdeHTML(venta) {
                     <p>Pedido N: ${venta.nPedido}</p>
                 </div>
 
-                <hr/>
-
-                <div id='cliente' class='mt-4'>
+                <div id='cliente' class='mt-4 border-b border-gray-800 pb-1'>
                     <p class='font-bold'>Nombre: ${venta.cliente}</p>
                     <p>${venta.num_doc?.length > 8 ? 'CUIT' : 'DNI'}: ${venta?.num_doc ?? '00000000'}</p>
                     <p>Teléfono: ${venta?.telefono}</p>
                     <p>Direccion: ${venta?.direccion}</p>
                 </div>
 
-                <hr/>
-
-                <div class='mt-4'>
-                    <table class='w-full'>
-                        <thead>
-                            <tr class='text-center'>
-                                <th>Producto</th>
-                                <th>Cantidad</th>
-                                <th>Precio</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${venta.listaProductos.map(({ cantidad, producto }) => `
-                                <tr class='text-center'>
-                                    <td class='font-bold'>${cantidad.toFixed(2)}</td>
-                                    <td class='font-bold'>${producto.descripcion}</td>
-                                    <td class='font-bold'>$${producto.precio.toFixed(2)}</td>
-                                </tr>
-                            `)}
-                        </tbody>
-                    </table>
+                <div class='mt-4 border-b border-gray-800 pb-1'>
+                        
+                ${venta.listaProductos.map(({ cantidad, producto }) => `
+                    <div class='grid grid-cols-3'>
+                            <p class='font-bold text-xl'>${cantidad.toFixed(2)}</p>
+                            <p class='font-bold text-xl'>${producto.descripcion}</p>
+                            <p class='font-bold text-xl'>$${producto.precio.toFixed(2)}</p>
+                    </div>
+                `)}
                 </div>
 
-                <hr/>
 
-                <div id='total'>
-                    <p class='font-bold'>Total: $${venta.precio.toFixed(2)}</p>
+                <div id='total' class='flex justify-end border-b border-gray-800 pb-1'>
+                    <p class='font-bold text-2xl'>Total: $${venta.precio.toFixed(2)}</p>
                 </div>
 
                     ${venta?.observaciones ? `
-                        <hr/>
-                        <div id='varios'>
-                            <p>Observaciones: ${venta.observaciones}</p>
+                        
+                        <div id='varios' class='border-b border-gray-800 pb-1'>
+                            <p class='text-2xl'>Observaciones: ${venta.observaciones}</p>
                         </div>
                         ` 
                         : ''}
 
-                <hr/>
-
                 <div id='forma'>
-                    <p>Forma de pago: ${venta.tipo_pago}</p>
-                    <p>Modalidad: ${venta.envio ? 'Envio a Domicilio' : 'Retiro en el local'}</p>
+                    <p class='mb-1 text-2xl'>Forma de pago: ${venta.tipo_pago}</p>
+                    <p class='mb-1 text-2xl'>Modalidad: ${venta.envio ? 'Envio a Domicilio' : 'Retiro en el local'}</p>
+                    <p class='text-2xl'>${venta?.vuelto ? `El cliente paga con: $${venta?.vuelto}` : ''}</p>
                 </div>
 
                 <div class='text-center mt-4'>
-                    <p>Gracias por su compra</p>
+                    <p class='font-bold text-xl'>*Gracias por su compra*</p>
                 </div>
 
                 ${venta.F 
-                    ? ` <div class='text-center mt-4'>
-                        <p>CAE: ${venta.afip.cae}</p>
-                        <p>CAE: ${venta.afip.vencimiento}</p>
+                    ? ` <div class='flex justify-center gap-4 mt-4'>
+                        <p class='text-xs'>CAE: ${venta.afip.cae}</p>
+                        <p class='text-xs'>CAE: ${venta.afip.vencimiento}</p>
                     </div>`
                     : ''
                 }
@@ -106,14 +96,19 @@ async function generarImagenDesdeHTML(venta) {
     `;
 
     await page.setContent(html, { waitUntil: 'networkidle0' });
-    // const buffer = await page.screenshot({ type:'png', fullPage: true});
-    const pdfPath = path.join(process.cwd(), `factura-${venta.id}.pdf`);
+    const buffer = await page.screenshot({ type:'png', fullPage: true});
+    const pdfPath = path.join(process.cwd(), `factura.pdf`);
     await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
     await browser.close();
 
 
-    // return buffer;
+    return buffer;
 };
+
+async function mostrarEnElNavegador(html){
+    const filePath = path.join(process.cwd(), 'ticket.html');
+    fs.writeFileSync(filePath, html, 'utf-8');
+}
 
 async function imprimirVenta(venta) {
     let printer = new ThermalPrinter({
@@ -122,10 +117,26 @@ async function imprimirVenta(venta) {
             interface: 'tcp://192.168.0.15:6001'
     });
 
+    //Redimensionar imagen
+    const resizedImagePath = 'img/reducida.png';
+    
+    await sharp('img/Logo.png')
+        .resize({width: 200})
+        .toFile(resizedImagePath)
+
     const imagenBuffer = await generarImagenDesdeHTML(venta);
     await printer.isPrinterConnected();
+    await printer.alignCenter();
+    await printer.printImage(resizedImagePath);
 
+    await printer.alignLeft();
     await printer.printImageBuffer(imagenBuffer);
+
+    // venta.F && await printer.printQR(venta.afip.QR, {
+    //     cellSize: 4,
+    //     correction: 'Q'
+    // })
+
     await printer.cut();
     await printer.execute();
     console.log("✅ Ticket impreso");
@@ -145,6 +156,21 @@ const parsearFecha = (date) => {
 }
 
 const css = `
+    @page{
+        margin: 0;
+        width: 80mm;
+    }
+    html, body{
+        font-family: Arial, sans-serif;
+        font-size: 24px;
+        margin: 0;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        padding: 0;
+    }
+    body{
+        width: 130mm
+    }
     p{
         margin: 0;
     }
@@ -155,13 +181,65 @@ const css = `
     .text-center{
         text-align: center;
     }
-
+    .text-end{
+        text-align: end;
+    }
     .mt-4{
         margin-top: 1rem;
+    }
+    .mb-1{
+        margin-bottom: 1rem
+    }
+
+    .pb-1{
+        margin-bottom: 1rem
+    }
+    .text-xl{
+        font-size: 26px;
+    }
+    .text-2xl{
+        font-size: 29px;
+    }
+    .text-xs{
+        font-size: 18px;
     }
 
     .w-full{
         width: 100%;
     }
-        
+    .w-7{
+        width: 7rem;
+    }
+    
+    .grid{
+        display: grid;
+    }
+
+    .flex{
+        display: flex
+    }
+
+    .justify-center{
+        justify-content: center;
+    }
+    .justify-end{
+        justify-content: flex-end;
+    }
+
+    .grid-cols-3{
+        grid-template-columns: 0.5fr 2fr 0.5fr;
+    }
+
+    .gap-4{
+        gap: 4rem;
+    }
+    
+    .border-b{
+        border-bottom: 3px solid;
+    }
+
+    .border-gray-800{
+        border-color: #4b4a4aff
+    }
+
     `
