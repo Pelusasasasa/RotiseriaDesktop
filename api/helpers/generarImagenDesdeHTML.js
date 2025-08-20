@@ -137,6 +137,7 @@ async function imprimirVenta(venta) {
     await printer.alignLeft();
     await printer.printImageBuffer(imagenBuffer);
 
+    await printer.alignCenter();
     venta.F && await printer.printQR(venta.afip.QR, {
         cellSize: 4,
         correction: 'Q'

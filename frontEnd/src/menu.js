@@ -15,14 +15,13 @@ const clientes = document.querySelector('.clientes');
 const caja = document.querySelector('.caja');
 const productos = document.querySelector('.productos');
 const gastos = document.querySelector('.gastos');
-const btnPaginaWeb = document.getElementById('btn-switch');
 
 let verVendedores;
 let contrasenaGasto;
 let paginaWebAbierta;
 
 const modificarVariablePaginaWeb = async(e) => {
-    const {data} = await axios.patch(`${URL}variable/tooglePaginaWeb`, {paginaWebAbierto: e.target.checked});
+    
     console.log(data)
 }
 
@@ -84,8 +83,6 @@ window.addEventListener('load', async e => {
             }
         };
     };
-
-    btnPaginaWeb.checked = paginaWebAbierta;
     
 });
 
@@ -211,8 +208,6 @@ gastos.addEventListener('click', async e => {
 
 });
 
-btnPaginaWeb.addEventListener('change', modificarVariablePaginaWeb);
-
 //ponemos un numero para la venta y luego mandamos a imprimirla
 ipcRenderer.on('poner-numero', async (e, args) => {
     ponerNumero();
@@ -237,6 +232,32 @@ ipcRenderer.on('actualizacion-descargada', () => {
     }
 });
 
-ipcRenderer.on('paginaWeb', (e, args) => {
-    console.log("a")
+ipcRenderer.on('paginaWeb', async(e, args) => {
+    const { isConfirmed } = await sweet.fire({
+        html: 
+        `
+            <select class='p-2 rounded-lg border mb-2' name=paginaWeb id='paginaWeb'}> 
+                <option ${paginaWebAbierta ? 'selected' : ''} value='true'>Reanudar Pagina</option>
+                <option ${!paginaWebAbierta ? 'selected' : ''} value='false'>Pausar Pagina</option>
+            </select>
+        `,
+        confirmButtonText: 'Aceptar',
+        showCancelButton: true
+    });
+
+    if(isConfirmed){
+        const valor = document.getElementById('paginaWeb');
+        const bandera = valor.value === 'false' ? false : true;
+        try {
+            const {data} = await axios.patch(`${URL}variable/tooglePaginaWeb`, {paginaWebAbierto: bandera});
+            if(data.ok){
+                paginaWebAbierta = bandera;
+            };
+        } catch (error) {
+            console.log(error);
+            return await sweet.fire('Error al cambiar la pagina web', error.response.data.msg, 'error');
+        }
+
+
+    }
 });
