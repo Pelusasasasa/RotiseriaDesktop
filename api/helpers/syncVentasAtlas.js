@@ -1,14 +1,13 @@
 const SyncPendiente = require("../models/SyncPendiente");
 const Venta = require("../models/Venta");
 const VentaAtlasModel = require("../models/VentaAtlas.model");
+const { imprimirVenta } = require("./generarImagenDesdeHTML");
 const getNextNumberContado = require("./getNextNumberContado");
 const getNextNumberPedido = require("./getNextNumberPedido");
-const imprimirTicketComanda = require("./imprimirTicketComanda");
 
 const syncVentas = async() => {
     try {
         const ventasPendientes = await VentaAtlasModel.find({pasado: false});
-
         if(ventasPendientes.length > 0){
             for(let venta of ventasPendientes){
                 const ventaData = venta.toObject();
@@ -27,8 +26,7 @@ const syncVentas = async() => {
                     ventaData.numero = numero;
                     ventaData.nPedido = nPedido;
                     await Venta.create(ventaData);
-
-                    imprimirTicketComanda(ventaData)
+                    imprimirVenta(ventaData)
                     console.log(`Venta a ${venta.cliente} Cargada Correctamente`);
                 }
             };

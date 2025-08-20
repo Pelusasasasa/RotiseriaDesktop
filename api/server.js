@@ -4,8 +4,7 @@ const path = require('node:path');
 
 const connectDB = require('./config/dataBase');
 const { syncVentas } = require('./helpers/syncVentasAtlas');
-// const { procesarPendientes } = require('./helpers/syncPendientes');
-const { generarImagenDesdeHTML, imprimirVenta } = require('./helpers/generarImagenDesdeHTML');
+const { procesarPendientes } = require('./helpers/syncPendientes');
 const backUpMongoLocal = require('./backUpMongoLocal');
 
 require('dotenv').config();
@@ -49,71 +48,8 @@ app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
-const venta = {
-        "_id": "689f8cdfec89c818fb8bdbf3",
-        "fecha": "2025-08-15T19:39:10.920Z",
-        "nPedido": 1,
-        "cliente": "CONSUMIDOR FINAL",
-        "idCliente": "1",
-        "numero": 1,
-        "listaProductos": [
-            {
-                "cantidad": 1,
-                "producto": {
-                    "_id": "1",
-                    "descripcion": "PRODUCTO NUMERO 1 LARGO",
-                    "provedor": "",
-                    "stock": 0,
-                    "costo": 520,
-                    "ganancia": 50,
-                    "precio": 780,
-                    "sinStock": false,
-                    "imgCloudinaryPath": "",
-                    "seccion": {
-                        "_id": "6891361bd9668decc0e25135",
-                        "codigo": 1,
-                        "nombre": "TODOS"
-                    },
-                    "createdAt": "2025-08-15T19:38:59.667Z",
-                    "updatedAt": "2025-08-15T19:38:59.667Z",
-                    "__v": 0,
-                    "idTabla": "1"
-                }
-            }
-        ],
-        "precio": 780,
-        "descuento": 0,
-        "tipo_venta": "CD",
-        "tipo_comp": "Comprobante",
-        "caja": "Caja 1",
-        "F": true,
-        "dispositivo": "DESKTOP",
-        "direccion": "CHAJARI",
-        "telefono": "0000000000",
-        "num_doc": "000000000",
-        "cod_comp": 0,
-        "cod_doc": 80,
-        "condicionIva": "Consumidor Final",
-        "iva21": 0,
-        "iva105": 0,
-        "gravado21": 0,
-        "gravado105": 0,
-        "cantIva": 1,
-        "notaCredito": false,
-        "envio": false,
-        "tipo_pago": "EFECTIVO",
-        "vuelto": 2500,
-        "afip": {
-            "puntoVenta": "2",
-            "numero": 56,
-            "cae": "73150279560026",
-            "vencimiento": "2023-04-24",
-            
-        }
-};
-
-// setInterval(syncVentas, 30 * 1000)
-// setInterval(procesarPendientes, 60 * 1000);
+setInterval(syncVentas, 30 * 1000)
+setInterval(procesarPendientes, 60 * 1000);
 setInterval(() => {
     console.log('Backup de la base de datos en proceso...');
     backUpMongoLocal();

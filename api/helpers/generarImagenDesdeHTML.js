@@ -44,10 +44,10 @@ async function generarImagenDesdeHTML(venta) {
                 </div>
 
                 <div id='cliente' class='mt-4 border-b border-gray-800 pb-1'>
-                    <p class='font-bold'>Nombre: ${venta.cliente}</p>
+                    <p class='font-bold text-xl'>Nombre: ${venta.cliente}</p>
                     <p>${venta.num_doc?.length > 8 ? 'CUIT' : 'DNI'}: ${venta?.num_doc ?? '00000000'}</p>
                     <p>Teléfono: ${venta?.telefono}</p>
-                    <p>Direccion: ${venta?.direccion}</p>
+                    <p class='text-xl font-bold'>Direccion: ${venta?.direccion}</p>
                 </div>
 
                 <div class='mt-4 border-b border-gray-800 pb-1'>
@@ -101,7 +101,6 @@ async function generarImagenDesdeHTML(venta) {
     await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
     await browser.close();
 
-
     return buffer;
 };
 
@@ -132,10 +131,10 @@ async function imprimirVenta(venta) {
     await printer.alignLeft();
     await printer.printImageBuffer(imagenBuffer);
 
-    // venta.F && await printer.printQR(venta.afip.QR, {
-    //     cellSize: 4,
-    //     correction: 'Q'
-    // })
+    venta.F && await printer.printQR(venta.afip.QR, {
+        cellSize: 4,
+        correction: 'Q'
+    });
 
     await printer.cut();
     await printer.execute();
@@ -193,6 +192,9 @@ const css = `
 
     .pb-1{
         margin-bottom: 1rem
+    }
+    .text-lg{
+        font-size:  23px;
     }
     .text-xl{
         font-size: 26px;
