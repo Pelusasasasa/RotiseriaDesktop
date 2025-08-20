@@ -162,7 +162,7 @@ const hacerMenu = () => {
         {
           label: 'Pagina Web',
           click() {
-            ipcMain.send('paginaWeb');
+            ventanaPrincipal.webContents.send('paginaWeb')
           }
         },
         {
