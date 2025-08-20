@@ -160,6 +160,12 @@ const hacerMenu = () => {
           }
         },
         {
+          label: 'Pagina Web',
+          click() {
+            ipcMain.send('paginaWeb');
+          }
+        },
+        {
           label: "Re Imprimir Factura",
           click() {
             abrirVentana('facturas/facturas.html')

@@ -236,3 +236,7 @@ ipcRenderer.on('actualizacion-descargada', () => {
         ipcRenderer.send('reiniciar-aplicacion');
     }
 });
+
+ipcRenderer.on('paginaWeb', (e, args) => {
+    console.log("a")
+})

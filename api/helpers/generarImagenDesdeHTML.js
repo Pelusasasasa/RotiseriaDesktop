@@ -51,7 +51,13 @@ async function generarImagenDesdeHTML(venta) {
                 </div>
 
                 <div class='mt-4 border-b border-gray-800 pb-1'>
-                        
+
+                <div class='grid grid-cols-3 gap-2 border-b border-gray-800 mb-1'>
+                    <p class='font-bold'>Cantidad</p>
+                    <p class='font-bold'>Producto</p>
+                    <p class='font-bold'>Precio</p>
+                </div>
+                
                 ${venta.listaProductos.map(({ cantidad, producto }) => `
                     <div class='grid grid-cols-3'>
                             <p class='font-bold text-xl'>${cantidad.toFixed(2)}</p>
@@ -230,6 +236,10 @@ const css = `
 
     .grid-cols-3{
         grid-template-columns: 0.5fr 2fr 0.5fr;
+    }
+
+    .gap-2{
+        gap: 2rem;
     }
 
     .gap-4{
