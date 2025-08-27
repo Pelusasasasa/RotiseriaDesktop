@@ -59,17 +59,17 @@ async function generarImagenDesdeHTML(venta) {
                 </div>
                 
                 ${venta.listaProductos.map(({ cantidad, producto }) => `
-                    <div class='grid grid-cols-3'>
-                            <em class='font-bold text-xl'>${cantidad.toFixed(2)}</em>
-                            <em class='font-bold text-xl'>${producto.descripcion}</em>
-                            <em class='font-bold text-xl'>$${producto.precio.toFixed(2)}</em>
+                    <div class='grid grid-cols-3 productos'>
+                            <em class='font-bold text-lg'>${cantidad.toFixed(2)}</em>
+                            <em class='font-bold text-lg'>${producto.descripcion}</em>
+                            <em class='font-bold text-lg'>$${producto.precio.toFixed(2)}</em>
                     </div>
                 `)}
                 </div>
 
 
                 <div id='total' class='flex justify-end border-b border-gray-800 pb-1'>
-                    <p class='font-bold text-2xl'>Total: $${venta.precio.toFixed(2)}</p>
+                    <p class='font-bold text-2xl mt-4'>Total: $${venta.precio.toFixed(2)}</p>
                 </div>
 
                     ${venta?.observaciones ? `
@@ -81,13 +81,13 @@ async function generarImagenDesdeHTML(venta) {
                         : ''}
 
                 <div id='forma'>
-                    <p class='mb-1 text-2xl'>Forma de pago: ${venta.tipo_pago}</p>
+                    <p class='mb-1 mt-5 text-2xl'>Forma de pago: ${venta.tipo_pago}</p>
                     <p class='mb-1 text-2xl'>Modalidad: ${venta.envio ? 'Envio a Domicilio' : 'Retiro en el local'}</p>
                     <p class='text-2xl'>${venta?.vuelto ? `El cliente paga con: $${venta?.vuelto}` : ''}</p>
                 </div>
 
                 <div class='text-center mt-4'>
-                    <p class='font-bold text-xl'>*Gracias por su compra*</p>
+                    <p class='font-bold text-2xl text-sans'>*Gracias por su compra*</p>
                 </div>
 
                 ${venta.F 
@@ -118,8 +118,8 @@ async function mostrarEnElNavegador(html){
 async function imprimirVenta(venta) {
     let printer = new ThermalPrinter({
             type: PrinterTypes.EPSON,
-            // interface: '//localhost/POS-80C'
-            interface: 'tcp://192.168.0.15:6001'
+            interface: '//localhost/POS-80C'
+            // interface: 'tcp://192.168.0.15:6001'
     });
 
     //Redimensionar imagen
@@ -175,7 +175,8 @@ const css = `
         padding: 0;
     }
     body{
-        width: 130mm
+        width: 130mm;
+        font-family: 'Inconsolata', monospace;
     }
     p{
         margin: 0;
@@ -192,6 +193,9 @@ const css = `
     }
     .mt-4{
         margin-top: 1rem;
+    }
+    .mt-5{
+        margin-top: 2rem
     }
     .mb-1{
         margin-bottom: 1rem
@@ -213,8 +217,8 @@ const css = `
         font-size: 18px;
     }
 
-    .text-italic{
-        font-style: italic
+    .text-sans{
+        font-family: sans
     }
 
     .w-full{
