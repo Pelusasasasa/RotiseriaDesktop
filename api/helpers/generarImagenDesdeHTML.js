@@ -60,9 +60,9 @@ async function generarImagenDesdeHTML(venta) {
                 
                 ${venta.listaProductos.map(({ cantidad, producto }) => `
                     <div class='grid grid-cols-3'>
-                            <p class='font-bold text-xl'>${cantidad.toFixed(2)}</p>
-                            <p class='font-bold text-xl'>${producto.descripcion}</p>
-                            <p class='font-bold text-xl'>$${producto.precio.toFixed(2)}</p>
+                            <em class='font-bold text-xl'>${cantidad.toFixed(2)}</em>
+                            <em class='font-bold text-xl'>${producto.descripcion}</em>
+                            <em class='font-bold text-xl'>$${producto.precio.toFixed(2)}</em>
                     </div>
                 `)}
                 </div>
@@ -213,6 +213,10 @@ const css = `
         font-size: 18px;
     }
 
+    .text-italic{
+        font-style: italic
+    }
+
     .w-full{
         width: 100%;
     }
@@ -248,7 +252,7 @@ const css = `
     }
     
     .border-b{
-        border-bottom: 3px solid;
+        border-bottom: 3px dotted;
     }
 
     .border-gray-800{
