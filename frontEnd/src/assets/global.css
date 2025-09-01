@@ -297,3 +297,8 @@ select {
     transform: rotate(360deg);
     }
 }
+
+
+.overflow-auto{
+  overflow: auto;
+}

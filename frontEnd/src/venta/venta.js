@@ -33,7 +33,7 @@ const codBarra = document.querySelector('#cod-barra')
 const precioU = document.querySelector('#precio-U');
 const rubro = document.querySelector('#rubro');
 const tbody = document.querySelector('.tbody');
-const select = document.querySelector('#rubro');
+const secciones = document.querySelector('.secciones');
 
 //parte totales
 const total = document.querySelector('#total');
@@ -86,6 +86,18 @@ window.addEventListener('load', async e => {
         console.log(error.response.data.msg);
         await sweet.fire('No se pudo obtener la carta de empanada', error.response.data.msg, 'error');
     };
+
+    try {
+        const { data } = await axios.get(`${URL}seccion`);
+
+        if(data.ok){
+            listarSecciones(data.secciones)
+        }else{
+            return await sweet.fire('No se pudo obtener las secciones', data.msg, 'error');
+        };
+    } catch (error) {
+        console.log(error);
+    }
 });
 
 document.addEventListener('keydown', e => {
@@ -442,24 +454,6 @@ const listarProducto = async (id) => {
 
 };
 
-//Cargamos el movimiento de producto a la BD
-const cargarMovimiento = async ({ cantidad, producto, observaciones }, numero, cliente, tipo_venta, tipo_comp, caja, vendedor = "") => {
-    const movimiento = {};
-    movimiento.tipo_venta = tipo_venta;
-    movimiento.codProd = producto._id;
-    movimiento.producto = producto.descripcion;
-    movimiento.cliente = cliente
-    movimiento.cantidad = cantidad;
-    movimiento.marca = producto.marca;
-    movimiento.precio = producto.precio //parseFloat(redondear(producto.precio - (producto.precio * parseFloat(descuentoPor.value) / 100),2));
-    movimiento.rubro = producto.rubro;
-    movimiento.nro_venta = numero;
-    movimiento.tipo_comp = tipo_comp;
-    movimiento.caja = caja,
-        movimiento.vendedor = vendedor;
-    movimiento.observaciones = observaciones
-    movimientos.push(movimiento);
-};
 
 const verificarDatosParaventa = async() => {
 
@@ -537,17 +531,6 @@ tbody.addEventListener('click', async e => {
         producto.observaciones = observaciones.value ? observaciones.value : producto.observaciones;
     }
 });
-
-const sumarSaldo = async (id, nuevoSaldo, venta) => {
-    const cliente = (await axios.get(`${URL}clientes/id/${id}`)).data;
-    cliente.listaVentas.push(venta);
-    if (facturaAnterior) {
-        cliente.saldo = (cliente.saldo - nuevoSaldo);
-    } else {
-        cliente.saldo = (cliente.saldo + nuevoSaldo - parseFloat(inputRecibo.value)).toFixed(2);
-    }
-    await axios.put(`${URL}clientes/id/${id}`, cliente);
-};
 
 const sacarIva = (lista) => {
     let totalIva0 = 0;
@@ -978,7 +961,20 @@ const listarTarjetas = async (productos) => {
     }
 };
 
+const listarSecciones = (lista) => {
+    
+    const fragment = document.createDocumentFragment();
+
+    for(let seccion of lista){
+        const p = document.createElement('p');
+
+        p.innerText = seccion.nombre;
+
+        fragment.appendChild(p);
+    };
+
+    secciones.appendChild(fragment)
+};
+
 buscador.addEventListener('keyup', filtrar);
 seccionTarjetas.addEventListener('click', clickEnTarjetas);
-
-

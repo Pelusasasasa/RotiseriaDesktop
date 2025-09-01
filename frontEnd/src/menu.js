@@ -20,10 +20,6 @@ let verVendedores;
 let contrasenaGasto;
 let paginaWebAbierta;
 
-const modificarVariablePaginaWeb = async(e) => {
-    
-    console.log(data)
-}
 
 window.addEventListener('load', async e => {
     let pedido;
@@ -58,7 +54,6 @@ window.addEventListener('load', async e => {
         const { data } = await axios.get(`${URL}variable`);
         if(!data.ok) return await sweet.fire('Error al traer variables', data.msg, 'error');
         contrasenaGasto = data.variable.contrasenaGasto;
-        paginaWebAbierta = data.variable.paginaWebAbierto;
     } catch (error) {
         console.log(error.response.data.msg);
         return await sweet.fire('Error al traer variables', error.response.data.msg, 'error');
@@ -233,6 +228,8 @@ ipcRenderer.on('actualizacion-descargada', () => {
 });
 
 ipcRenderer.on('paginaWeb', async(e, args) => {
+    const { data } = await axios.get(`${URL}variable`);
+    paginaWebAbierta = data.variable.paginaWebAbierto;
     const { isConfirmed } = await sweet.fire({
         html: 
         `

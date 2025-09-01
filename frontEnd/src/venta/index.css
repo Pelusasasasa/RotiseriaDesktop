@@ -1,3 +1,8 @@
+body{
+  padding: 0;
+  margin: 0;
+}
+
 
 .contenedor {
   width: 95%;
@@ -16,7 +21,9 @@ header input,header select{
 
 .principal{
   display: grid;
+  width: 100vw;
   grid-template-columns: 1fr 1fr;
+  gap: 1rem
 }
 
 .negro th,.negro td{
@@ -45,6 +52,22 @@ header input,header select{
   border: .1rem solid black;
   border-top: none;
   padding-bottom: 1rem;
+}
+
+.secciones{
+  width: 90rem;
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.productos .secciones > * {
+  flex: 0 0 auto;
+  padding: .5rem 1rem;
+  background-color: #d9b98f;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .parteCliente2 div input,.parteCliente2 div select{
@@ -247,14 +270,13 @@ footer main,footer button{
 
 
 .tarjetas{
-  height: 70vh;
   max-height: 70vh;
   display: grid;
   grid-template-columns: 1fr 1fr;
   overflow: auto;
   background-color: white;
   padding: .5rem;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .tarjetas .tarjeta{
@@ -264,7 +286,7 @@ footer main,footer button{
   padding-bottom: 2rem;
   margin-left: 2rem;
   margin-right: 2rem;
-  background-color: white;
+  background-color: rgb(209, 209, 209);
   border: .1rem solid gray;
   border-radius: 2rem;
 }
