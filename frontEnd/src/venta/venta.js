@@ -856,22 +856,23 @@ const filtrar = async (e) => {
 
 const clickEnTarjetas = async (e) => {
 
-    seleccionado && seleccionado.classList.toggle('seleccionado');
+    seleccionado && seleccionado.classList.remove('seleccionado');
+    
 
     if (e.target.classList.contains('tarjeta')) {
-        seleccionado = e.target;
+        seleccionado = e.target.parentNode;
     } else if (e.target.nodeName === "IMG") {
-        seleccionado = e.target.parentNode;
-    } else if (e.target.nodeName === "H4") {
-        seleccionado = e.target.parentNode;
-    } else if (e.target.id === "precio") {
-        seleccionado = e.target.parentNode;
-    } else if (e.target.classList.contains('divBotones')) {
-        seleccionado = e.target.parentNode;
-    } else if (e.target.nodeName === "BUTTON") {
         seleccionado = e.target.parentNode.parentNode;
+    } else if (e.target.nodeName === "H4") {
+        seleccionado = e.target.parentNode.parentNode;
+    } else if (e.target.id === "precio") {
+        seleccionado = e.target.parentNode.parentNode;
+    } else if (e.target.classList.contains('divBotones')) {
+        seleccionado = e.target.parentNode.parentNode;
+    } else if (e.target.nodeName === "BUTTON") {
+        seleccionado = e.target.parentNode.parentNode.parentNode;
     } else if (e.target.nodeName === "SPAN") {
-        seleccionado = e.target.parentNode.parentNode.parentNode.parentNode;
+        seleccionado = e.target.parentNode.parentNode.parentNode.parentNode.parentNode;
     };
 
 
@@ -879,22 +880,11 @@ const clickEnTarjetas = async (e) => {
         cantidad.value = '6.00';
     } else if (e.target.innerText === '1k') {
         cantidad.value = '12.00';
-    } else {
-        const { isConfirmed, value } = await sweet.fire({
-            title: "Cantidad",
-            input: "number",
-            confirmButtonText: 'Aceptar'
-        });
-
-        if (isConfirmed && value !== '') {
-            cantidad.value = value;
-            listarProducto(seleccionado.id);
-            return;
-        } else {
-            cantidad.value = '1.00';
-            return;
-        };
+    } else if(e.target.innerText === 'add_shopping_cart'){
+        cantidad.value = '1.00';
     };
+
+    seleccion.classList.add('selecciondo');
 
     listarProducto(seleccionado.id);
 };
@@ -902,6 +892,7 @@ const clickEnTarjetas = async (e) => {
 const listarTarjetas = async (productos) => {
     seccionTarjetas.innerText = "";
     for (let producto of productos) {
+
         const div = document.createElement('div');
         div.classList.add('tarjeta');
         div.id = producto._id;
@@ -912,6 +903,9 @@ const listarTarjetas = async (productos) => {
         divInformacion.classList.add('divInformacion');
 
         const divAuxiliar = document.createElement('div')
+        const divAuxiliarInfo = document.createElement('div')
+        divAuxiliar.classList.add('divImg')
+        divAuxiliarInfo.classList.add('divInfo')
 
         const img = document.createElement('img');
         const titulo = document.createElement('h4');
@@ -970,11 +964,15 @@ const listarTarjetas = async (productos) => {
         producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x6);
         producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x12);
 
-        div.appendChild(img);
-        div.appendChild(titulo);
-        div.appendChild(id);
-        div.appendChild(divInformacion);
-        div.appendChild(divBotones);
+        div.appendChild(divAuxiliar);
+        divAuxiliar.appendChild(img);
+
+
+        div.appendChild(divAuxiliarInfo);
+        divAuxiliarInfo.appendChild(titulo);
+        divAuxiliarInfo.appendChild(id);
+        divAuxiliarInfo.appendChild(divInformacion);
+        divAuxiliarInfo.appendChild(divBotones);
 
         seccionTarjetas.appendChild(div);
     }

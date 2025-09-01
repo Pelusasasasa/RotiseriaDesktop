@@ -60,7 +60,7 @@ seccionCTRL.getSecciones = async (req, res) => {
             return res.status(404).json({ 
                 ok: false,
                 message: 'No hay secciones registradas'
-             });
+            });
         }
         return res.status(200).json({
             ok: true,
@@ -87,7 +87,7 @@ seccionCTRL.getSeccion = async (req, res) => {
             return res.status(404).json({ 
                 ok: false,
                 message: 'No existe la sección'
-             });
+            });
         }
         return res.status(200).json({
             ok: true,
@@ -108,8 +108,8 @@ seccionCTRL.getForCodigo = async (req, res) => {
     try {
         const seccion = await Seccion.findOne({ codigo });
 
-        if(!seccion) return await res.status(404).json({
-            ok: false,
+        if(!seccion) return await res.status(200).json({
+            ok: true,
             msg: 'No existe la sección con ese código'
         });
 
