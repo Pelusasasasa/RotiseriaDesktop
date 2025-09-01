@@ -26,10 +26,15 @@
               <label for="cuit">Cuit</label>
               <input type="text" name="cuit" id="cuit">
             </div>
-            <div>
-              <label for="saldo">Saldo</label>
-              <input type="text" disabled  id="saldo" name="saldo">
-            </div>
+            <main>
+              <label for="condicion">Condicion Iva</label>
+              <select name="condicion" id="condicion">
+                <option value="Consumidor Final">Consumidor Final</option>
+                <option value="Monotributo">Monotributo</option>
+                <option value="Responsable Inscripto">Inscripto</option>
+                <option value="Exento">Exento</option>
+              </select>
+            </main>
           </div>
     
         <div class="parteCliente2">
@@ -47,16 +52,7 @@
             <label for="direccion">Direccion</label>
             <input type="text" id="direccion" name="direccion">
           </div>
-    
-          <main>
-            <label for="condicion">Condicion Iva</label>
-            <select name="condicion" id="condicion">
-              <option value="Consumidor Final">Consumidor Final</option>
-              <option value="Monotributo">Monotributo</option>
-              <option value="Responsable Inscripto">Inscripto</option>
-              <option value="Exento">Exento</option>
-            </select>
-          </main>
+
     
         </div>
     
@@ -92,7 +88,6 @@
                   <th>Cod-Barras</th>
                   <th>Cantidad</th>
                   <th class="th-nombre">Nombre</th>
-                  <!-- <th>Marca</th> -->
                   <th>Precio-U</th>
                   <th>Precio-T</th>
                   <th>Acciones</th>
@@ -106,16 +101,7 @@
   
         <main class="totales">
     
-          <main>
-            <!-- <label for="recibo">Recibo</label>
-            <input type="number" value="0.00" name="recibo" id="recibo"> -->
-          </main>
-    
           <div class="condicionVenta">
-            <!-- <div class="contado">
-              <input type="radio" name="condicion" value="PP" id="presupuesto">
-              <label for="presupuesto">Presupuesto</label>
-            </div> -->
     
             <div class="contado">
               <input type="radio" name="condicion" checked value="CD" id="contado">
@@ -127,10 +113,6 @@
               <label for="tarjetPago">Tarjeta</label>
             </div>
     
-            <!-- <div class="cuentaCorriente none">
-              <input type="radio" name="condicion" value="CC" id="cuentaCorriente">
-              <label for="cuentaCorriente">Cuenta Corriente</label>
-            </div> -->
           </div>
     
           <div class="total">

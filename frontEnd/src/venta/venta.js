@@ -342,7 +342,6 @@ const listarCliente = async (id) => {
 
     if (cliente !== "") {
         nombre.value = cliente.nombre;
-        saldo.value = cliente.saldo;
         telefono.value = cliente.telefono;
         localidad.value = cliente.localidad;
         direccion.value = cliente.direccion;

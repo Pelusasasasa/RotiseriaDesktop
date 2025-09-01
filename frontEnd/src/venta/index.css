@@ -265,12 +265,13 @@ footer main,footer button{
 }
 
 .productos{
-  border-left: .1rem solid black;
+  border: .1rem solid black;
 }
 
 
 .tarjetas{
   max-height: 70vh;
+  height: 70vh;
   display: grid;
   grid-template-columns: 1fr 1fr;
   overflow: auto;
