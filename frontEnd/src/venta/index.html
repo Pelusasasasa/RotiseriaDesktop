@@ -46,82 +46,27 @@
       </div>
     </header>
 
-    <section id="principal" class="grid colums-2 gap-2">
+    <section id="principal" class="grid colums-2">
 
-      <div id="venta">
-        
-    
-        <main class="">
-          <section class="">
-            <div class="cod-barra">
-              <label for="cod-barra">Codigo</label>
-              <input class="w-100" type="text" name="cod-barra" autofocus id="cod-barra">
-            </div>
-    
-            <div>
-              <label for="cantidad">Cantidad</label>
-              <input class="w-100" type="number" name="cantidad" value="1.00" id="cantidad">
-            </div>
-    
-            <div>
-              <label for="descripcion">Descripcion</label>
-              <input class="w-100" type="text" name="descripcion" autofocus id="descripcion">
-            </div>
-    
-            <div>
-              <label for="precio-U">Precio-U</label>
-              <input class="w-100" type="number" name="precio-U" id="precio-U">
-            </div>
-          </section>
-    
-          <section class="listarProductos">
-            <table>
-              <thead>
-                <tr>
-                  <th>Cod-Barras</th>
-                  <th>Cantidad</th>
-                  <th class="th-nombre">Nombre</th>
-                  <th>Precio-U</th>
-                  <th>Precio-T</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody class="tbody"></tbody>
-            </table>
-          </section>
-    
-        </main>
-  
-        <main class="totales">
-    
-          <div class="condicionVenta">
-    
-            <div class="contado">
-              <input type="radio" name="condicion" checked value="CD" id="contado">
-              <label for="contado">Contado</label>
-            </div>
-    
-            <div class="contado">
-              <input type="radio" name="condicion" value="T" id="tarjetPago">
-              <label for="tarjetPago">Tarjeta</label>
-            </div>
-    
+      <div id="venta" class="bg-white">
+        <h4>Carrito de compras</h4>
+        <hr>
+
+        <div id="carrito">
+
+          <div class="flex w-full justify-center">
+            <p>El Carrito esta Vacio</p>
           </div>
-    
-          <div class="total">
-            <label for="total">Total</label>
-            <input type="number" disabled name="total" id="total" value="0.00">
-          </div>
-        </main>
+          
+        </div>
       </div>
 
-      <div id="productos" >
-          <div class="buscador mx-2 flex">
-            <label for="buscador">Buscar Producto</label>
+      <div id="productos">
+          <div class="buscador flex bg-white w-full">
             <input type="text" class="w-full mb-1 border rounded-sm px-1" placeholder="Buscar producto por descripcion..." name="buscarProducto" autofocus id="buscarProducto">
           </div>
           
-          <section class="secciones">
+          <section class="secciones m-0 bg-white">
               
           </section>
 

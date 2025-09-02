@@ -85,6 +85,10 @@ input:disabled {
   font-weight: bold;
 }
 
+.text-sm{
+  font-size: 0.625rem;
+}
+
 select {
   font-size: 2rem;
   padding: 0.5rem;
@@ -335,6 +339,11 @@ select {
 #textSpinner{
     color: white;
     font-size: 2rem;
+}
+
+/* Font */
+.font-semibold{
+  font-weight: 600;
 }
 
 .spinner{

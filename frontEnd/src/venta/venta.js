@@ -18,7 +18,7 @@ const cuit = document.querySelector('#cuit');
 const condicionIva = document.querySelector('#condicionIva');
 
 //parte Buscador
-const buscador = document.getElementById('buscarProducto');
+const buscarProducto = document.getElementById('buscarProducto');
 const seccionTarjetas = document.querySelector('.tarjetas');
 
 //Parte Producto
@@ -53,23 +53,48 @@ const body = document.querySelector('body');
 let tipoFactura = getParameterByName("tipoFactura");
 let facturaAnterior;
 
-let idProducto = 0;
 let situacion = "blanco";
-let descuento = 0;
 let listaProductos = [];
+let carrito = {
+    productos: []
+};
+
+let seccionActivo;
 
 //Empanadas
 let precioEmpanadas = 0;
 let empanadas = 0;
 let descuentoPorDocena = false; //Se usa para que en el ticket si esto es true se muetre un texto que diga que se hizo un descuento por una docena y media
 
-const filtrar = async (e) => {
+const agregarItemCarrito = (e) => {
+    const item = carrito.productos.findIndex(producuto => producuto.producto._id == e.target.id);
+    if(item === -1){
+        const producto = listaProductos.find(elem => elem._id === e.target.id);
+        carrito.productos.push({
+            cantidad: 1,
+            producto: producto,
+            observaciones: ''
+        });
+    }else{
+        carrito.productos[item].cantidad += 1
+    };
+};
 
-    const descripcion = buscador.value !== "" ? buscador.value : "textoVacio";
-    const {data} = await axios.get(`${URL}producto/forSeccionAndDescription/${descripcion}/descripcion`);
-    if(!data.ok) return await sweet.fire('Error al filtrar los productos', data.msg, 'error');
-    console.log(data);
-    listarTarjetas(data.productos);
+const filtrar = async (e) => {
+    const descripcion = buscarProducto.value !== "" ? buscarProducto.value : "textoVacio";
+    try {
+        const {data} = await axios.get(`${URL}producto/forSeccionAndDescription/${descripcion}/descripcion`);
+        if(data.ok){
+            listaProductos = data.productos;
+            listarTarjetas(data.productos);
+        }else{
+            return await sweet.fire('Error al filtrar los productos', data.msg, 'error');  
+        } 
+    } catch (error) {
+        return await sweet.fire('Error al filtrar los productos', data?.response?.data?.msg, 'error');  
+    };
+    
+    
 
 };
 
@@ -86,7 +111,6 @@ const listarCliente = async (id) => {
         console.log(error.response.data.msg);
         return await sweet.fire('No se pudo obtener el cliente', error.response.data.msg, 'error')
     };
-    console.log(cliente);
     if (cliente !== "") {
         nombre.value = cliente.nombre;
         telefono.value = cliente.telefono;
@@ -94,13 +118,32 @@ const listarCliente = async (id) => {
         cuit.value = cliente.cuit === "" ? "00000000" : cliente.cuit;
         condicionIva.value = cliente.condicionIva ? cliente.condicionIva : "Consumidor Final";
 
-        codBarra.focus();
     } else {
         codigo.value = "";
         codigo.focus();
     }
 };
 
+const listarSecciones = (lista) => {
+    
+    const fragment = document.createDocumentFragment();
+
+    for(let seccion of lista){
+        const p = document.createElement('p');
+        p.classList.add('rubro');
+
+        p.innerText = seccion.nombre;
+
+        if(seccion.nombre === 'TODOS'){
+            p.classList.add('rubroActivo');
+            seccionActivo = p;
+        }
+        p.addEventListener('click', setRubroActivo);
+        fragment.appendChild(p);
+    };
+
+    secciones.appendChild(fragment)
+};
 
 const listarTarjetas = async (productos) => {
     seccionTarjetas.innerText = "";
@@ -113,35 +156,32 @@ const listarTarjetas = async (productos) => {
 
 
         const divImg = document.createElement('div')
-        divImg.classList.add('divImg')
-        const divInfo = document.createElement('div')
-        divInfo.classList.add('divInfo')
-
         const img = document.createElement('img');
-        img.classList.add('h-10', 'w-full', 'object-contain', 'rounded-sm')
 
-        // const titulo = document.createElement('h4');
-        // const id = document.createElement('p');
+        divImg.classList.add('divImg')
+        img.classList.add('h-10', 'w-full', 'object-contain', 'rounded-sm');
 
-        // const precio = document.createElement('p');
-        // const stock = document.createElement('p');
+        const divInfo = document.createElement('div');
+        const titulo = document.createElement('h4');
+        const stock = document.createElement('p');
+        divInfo.classList.add('divInfo');
+        titulo.classList.add('titulo');
+        stock.classList.add('stock')
 
-        // id.id = "id"
-        // precio.id = "precio";
-        // stock.id = "stock";
+        const codigo = document.createElement('span')
+        const precio = document.createElement('p');
 
-        // const divBotones = document.createElement('div');
-        // divBotones.classList.add('divBotones');
 
-        // const modificar = document.createElement('button');
-        // const eliminar = document.createElement('button');
-        // const agregar = document.createElement('button');
+        precio.classList.add('precio');
+
+        const divBotones = document.createElement('div');
+        divBotones.classList.add('divBotones');
+
+        const agregar = document.createElement('button');
+
+        agregar.classList.add('boton')
         // const x6 = document.createElement('button');
         // const x12 = document.createElement('button');
-
-        // const bottonModifcar = `<div id=edit class=tool><span id=edit class=material-icons>edit</span><p class=tooltip>Modificar</p></div>`;
-        // const bottonEliminar = `<div id=delete class=tool><span id=delete class=material-icons>delete</span><p class=tooltip>Eliminar</p></div>`;
-        // const bottonAgregar = `<div id=add class=tool><span id=add class=material-icons>add_shopping_cart</span><p class=tooltip>Agregar Carrito</p></div>`;
         // const botonX6 = `<div id=restar class=tool>
         //                     <span id=add class=material-icons>looks_6</span><p class=tooltip>Media Docena</p>
         //                 </div>`
@@ -152,44 +192,47 @@ const listarTarjetas = async (productos) => {
         img.setAttribute('src', `${URL}img/${producto._id}.png`);
         img.setAttribute('alt', producto.descripcion);
 
-        // titulo.innerText = producto.descripcion;
-        // id.innerText = "Codigo: " + producto._id;
-        // precio.innerText = "$" + producto.precio.toFixed(2);
-        // stock.innerText = producto.stock.toFixed(2);
-        // modificar.innerHTML = (bottonModifcar);
-        // eliminar.innerHTML = (bottonEliminar);
-        // agregar.innerHTML = (bottonAgregar);
+        titulo.innerText = producto.descripcion;
+        stock.innerText = producto.stock.toFixed(2);
+
+
+        codigo.innerText = producto._id;
+        precio.innerText = "$" + producto.precio.toFixed(2);
+
+        agregar.innerText = 'Agregar';
+        agregar.id = producto._id;
+        agregar.addEventListener('click', agregarItemCarrito);
         // x6.innerHTML = (botonX6);
         // x12.innerHTML = (botonX12);
 
-        // divInformacion.innerHTML = `
-        //     <div>
-        //         <p>Precio:</p>
-        //         <p id=precio>${precio.innerHTML}</p>
-        //     </div>
-        //     <div>
-        //         <p>Stock:</p>
-        //         <p id=stock>${stock.innerHTML}</p>
-        //     </div>
-        // `;
-        // divBotones.appendChild(agregar);
+        divBotones.appendChild(agregar);
         // producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x6);
         // producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x12);
 
         divImg.appendChild(img);
+        divInfo.appendChild(titulo);
+        divInfo.appendChild(stock);
+
         div.appendChild(divImg);
-
-
-        // div.appendChild(divAuxiliarInfo);
-        // divAuxiliarInfo.appendChild(titulo);
-        // divAuxiliarInfo.appendChild(id);
-        // divAuxiliarInfo.appendChild(divInformacion);
-        // divAuxiliarInfo.appendChild(divBotones);
+        div.appendChild(divInfo);
+        div.appendChild(codigo);
+        div.appendChild(precio);
+        div.appendChild(divBotones);
 
         seccionTarjetas.appendChild(div);
+        
     }
 };
 
+const setRubroActivo = (e) => {
+    seccionActivo.classList.remove('rubroActivo');
+    seccionActivo = e.target;
+    seccionActivo.classList.add('rubroActivo');
+
+    seccionActivo.innerText === 'TODOS'
+        ? listarTarjetas(listaProductos)
+        : listarTarjetas(listaProductos.filter(producto => producto.seccion.nombre === seccionActivo.innerText));
+};
 
 //Por defecto ponemos el A Consumidor Final y tambien el select
 window.addEventListener('load', async e => {
@@ -197,7 +240,6 @@ window.addEventListener('load', async e => {
 
     try {
         const { data } = await axios.get(`${URL}carta`);
-        console.log(data);
         if(!data.ok) return await sweet.fire('No se pudo obtener la carta empanada', data.msg, 'error');
 
         precioEmpanadas = data.carta;
@@ -210,7 +252,6 @@ window.addEventListener('load', async e => {
 
     try {
         const { data } = await axios.get(`${URL}seccion`);
-
         if(data.ok){
             listarSecciones(data.secciones)
         }else{
@@ -221,8 +262,9 @@ window.addEventListener('load', async e => {
     };
 });
 
+buscarProducto.addEventListener('keyup', filtrar);
+
 document.addEventListener('keydown', e => {
-    console.log(e.keyCode);
     if (e.keyCode === 18) {
         document.addEventListener('keydown', event => {
             if (event.keyCode === 120) {
@@ -257,105 +299,9 @@ document.addEventListener('keydown', e => {
     }
 });
 
-//Buscamos un cliente, si sabemos el codigo directamente apretamos enter
-codigo.addEventListener('keypress', async e => {
-    if (e.key === "Enter") {
-        if (codigo.value === "") {
-            const opciones = {
-                path: './clientes/clientes.html',
-                botones: false,
-            }
-            ipcRenderer.send('abrir-ventana', opciones)
-        } else {
-            listarCliente(codigo.value)
-        }
-    }
-});
-
-codBarra.addEventListener('keypress', async e => {
-    if (e.key === "Enter" && codBarra.value !== "" && codBarra.value !== "0") {
-        cantidad.focus();
-    } else if (e.key === "Enter" && codBarra.value === "") {
-        //Esto abre una ventana donde lista todos los productos
-        const opciones = {
-            path: "./productos/productos.html",
-            botones: false
-        }
-        ipcRenderer.send('abrir-ventana', opciones);
-    } else if (codBarra.value === "0") {
-        cantidad.focus();
-    }
-
-    if (e.keyCode === 37) {
-        cantidad.focus();
-    }
-});
-
-descripcion.addEventListener('keypress', e => {
-    if (e.keyCode === 13) {
-        precioU.focus();
-    }
-});
-
-precioU.addEventListener('keypress', async e => {
-    if ((e.key === "Enter")) {
-        if (precioU.value !== "") {
-            crearProducto();
-            // rubro.focus();   
-        } else {
-            await sweet.fire({
-                title: "Poner un precio al Producto",
-            });
-        }
-    }
-});
-
-const crearProducto = () => {
-    idProducto++;
-    const producto = {
-        descripcion: descripcion.value.toUpperCase(),
-        precio: parseFloat(precioU.value),
-        idTabla: `${idProducto}`,
-        impuesto: 0,
-        productoCreado: true
-    };
-
-    listaProductos.push({ cantidad: parseFloat(cantidad.value), producto });
-    tbody.innerHTML += `
-        <tr id=${idProducto}>
-            <td></td>
-            <td>${cantidad.value}</td>
-            <td>${descripcion.value.toUpperCase()}</td>
-            <td>${parseFloat(producto.precio).toFixed(2)}</td>
-            <td>${redondear((producto.precio * parseFloat(cantidad.value)), 2)}</td>
-            <td class=acciones>
-                <div class=tool>
-                    <span class=material-icons>delete</span>
-                    <p class=tooltip>Eliminar</p>
-                </div>
-            </td>
-        </tr>
-    `;
-    tbody.scrollIntoView({
-        block: "end"
-    });
-
-    total.value = redondear((parseFloat(total.value) + parseFloat(producto.precio) * parseFloat(cantidad.value)), 2);
-    totalGlobal = parseFloat(total.value);
-    cantidad.value = "1.00";
-    codBarra.value = "";
-    precioU.value = "";
-    descripcion.value = "";
-    codBarra.focus();
-};
-
 ipcRenderer.on('recibir', (e, args) => {
-    const { tipo, informacion, cantidad: cant, descripcion: desc } = JSON.parse(args);
+    const { tipo, informacion} = JSON.parse(args);
     tipo === "cliente" && listarCliente(informacion);
-    tipo === "producto" && (codBarra.value = informacion);
-    tipo === "producto" && (cantidad.value = cant);
-    tipo === "producto" && (descripcion.value = desc);
-    tipo === "producto" && listarProducto(codBarra.value);
     tipo === "Ningun cliente" && nombre.focus();
 });
 
@@ -370,180 +316,82 @@ const verTipoVenta = () => {
     return retornar;
 };
 
-facturar.addEventListener('click', async e => {
-    //Verificamos los datos para la venta si estan correctos
-    if(!verificarDatosParaventa()) return;
+// facturar.addEventListener('click', async e => {
+//     //Verificamos los datos para la venta si estan correctos
+//     if(!verificarDatosParaventa()) return;
     
-    alerta.classList.remove('none');
+//     alerta.classList.remove('none');
     
-    const venta = {};
+//     const venta = {};
 
-    venta.cliente = nombre.value;
-    venta.fecha = new Date();
-    venta.idCliente = codigo.value;
-    venta.precio = parseFloat(total.value);
-    venta.descuento = descuento;
-    venta.tipo_venta = await verTipoVenta();
-    venta.listaProductos = listaProductos;
+//     venta.cliente = nombre.value;
+//     venta.fecha = new Date();
+//     venta.idCliente = codigo.value;
+//     venta.precio = parseFloat(total.value);
+//     venta.descuento = descuento;
+//     venta.tipo_venta = await verTipoVenta();
+//     venta.listaProductos = listaProductos;
 
-    //Ponemos propiedades para la factura electronica
-    venta.cod_comp = situacion === "blanco" ? await verCodigoComprobante(tipoFactura, cuit.value, condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value) : 0;
-    venta.tipo_comp = situacion === "blanco" ? await verTipoComprobante(venta.cod_comp) : "Comprobante";
-    venta.num_doc = cuit.value !== "" ? cuit.value : "00000000";
-    venta.cod_doc = await verCodigoDocumento(cuit.value);
-    venta.condicionIva = condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value
-    const [iva21, iva0, gravado21, gravado0, iva105, gravado105, cantIva] = await sacarIva(listaProductos); //sacamos el iva de los productos
-    venta.iva21 = iva21;
-    venta.iva0 = iva0;
-    venta.gravado0 = gravado0;
-    venta.gravado21 = gravado21;
-    venta.iva105 = iva105;
-    venta.gravado105 = gravado105;
-    venta.cantIva = cantIva;
-    venta.direccion = direccion.value;
-    venta.telefono = telefono.value;
-    venta.descuentoPorDocena = descuentoPorDocena;
-    venta.dispositivo = 'DESKTOP';
-    venta.caja = require('../configuracion.json').caja; //vemos en que caja se hizo la venta
+//     //Ponemos propiedades para la factura electronica
+//     venta.cod_comp = situacion === "blanco" ? await verCodigoComprobante(tipoFactura, cuit.value, condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value) : 0;
+//     venta.tipo_comp = situacion === "blanco" ? await verTipoComprobante(venta.cod_comp) : "Comprobante";
+//     venta.num_doc = cuit.value !== "" ? cuit.value : "00000000";
+//     venta.cod_doc = await verCodigoDocumento(cuit.value);
+//     venta.condicionIva = condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value
+//     const [iva21, iva0, gravado21, gravado0, iva105, gravado105, cantIva] = await sacarIva(listaProductos); //sacamos el iva de los productos
+//     venta.iva21 = iva21;
+//     venta.iva0 = iva0;
+//     venta.gravado0 = gravado0;
+//     venta.gravado21 = gravado21;
+//     venta.iva105 = iva105;
+//     venta.gravado105 = gravado105;
+//     venta.cantIva = cantIva;
+//     venta.direccion = direccion.value;
+//     venta.telefono = telefono.value;
+//     venta.descuentoPorDocena = descuentoPorDocena;
+//     venta.dispositivo = 'DESKTOP';
+//     venta.caja = require('../configuracion.json').caja; //vemos en que caja se hizo la venta
     
-    venta.facturaAnterior = facturaAnterior ? facturaAnterior : "";
+//     venta.facturaAnterior = facturaAnterior ? facturaAnterior : "";
     
-    if (situacion === "blanco") {
-        alerta.classList.remove('none');
-        venta.afip = await cargarFactura(venta, facturaAnterior ? true : false);
-        venta.F = true;
-    } else {
-        venta.F = false;
-        alerta.children[1].innerHTML = "Generando Venta";
-    };
+//     if (situacion === "blanco") {
+//         alerta.classList.remove('none');
+//         venta.afip = await cargarFactura(venta, facturaAnterior ? true : false);
+//         venta.F = true;
+//     } else {
+//         venta.F = false;
+//         alerta.children[1].innerHTML = "Generando Venta";
+//     };
         
 
-    const {isConfirmed} = await sweet.fire({
-            title: "Imprimir Ticket Cliente",
-            confirmButtonText: "Aceptar",
-            showCancelButton: true
-    });
+//     const {isConfirmed} = await sweet.fire({
+//             title: "Imprimir Ticket Cliente",
+//             confirmButtonText: "Aceptar",
+//             showCancelButton: true
+//     });
 
-    if(isConfirmed){
-        venta.imprimirCliente = true
-    }else{
-        venta.imprimirCliente = false
-    };
+//     if(isConfirmed){
+//         venta.imprimirCliente = true
+//     }else{
+//         venta.imprimirCliente = false
+//     };
         
-    try {
+//     try {
 
-        const { data } = await axios.post(`${URL}venta`, venta);
-        if(!data.ok) return await sweet.fire('Error al hacer la venta', error.response.data.msg, 'error');
+//         const { data } = await axios.post(`${URL}venta`, venta);
+//         if(!data.ok) return await sweet.fire('Error al hacer la venta', error.response.data.msg, 'error');
 
-        location.reload();
+//         location.reload();
 
-    } catch (error) {
+//     } catch (error) {
 
-        console.log(error.response.data.msg);
-        sweet.fire('Error al hacer la venta', error.reponse.data.msg, 'error');
+//         console.log(error.response.data.msg);
+//         sweet.fire('Error al hacer la venta', error.reponse.data.msg, 'error');
 
-    };
+//     };
 
-    alerta.classList.add('none')
-});
-
-//Lo que hacemos es listar el producto traido
-const listarProducto = async (id) => {
-    let producto;
-    try {
-        const { data } = await axios.get(`${URL}producto/${id}`);
-        if(!data.ok) return await sweet.fire('Error al obtener el producto', data.msg, 'error');    
-        producto = data.producto;
-    } catch (error) {
-        console.log(error.response.data.msg);
-        await sweet.fire('Error al obtener el producto', error.response.data.msg)
-    }
-    
-    
-
-    if (producto) {
-        //Vemos si el producto ya fue usado
-        const productoYaUsado = listaProductos.find(({ producto: product }) => {
-            if (product._id === producto._id) {
-                return product
-            };
-        });
-
-        if (producto !== "" && !productoYaUsado) {
-            if (producto.stock === 0 && archivo.stockNegativo) {
-                await sweet.fire({
-                    title: "Producto con Stock en 0"
-                });
-            };
-            if (producto.stock - (parseFloat(cantidad.value)) < 0 && archivo.stockNegativo) {
-                await sweet.fire({
-                    title: "Producto con Stock menor a 0",
-                });
-            }
-
-            idProducto++;
-            producto.idTabla = `${idProducto}`;
-            listaProductos.push({ cantidad: parseFloat(cantidad.value), producto });
-            codBarra.value = producto._id;
-            precioU.value = redondear(producto.precio, 2);
-            total.value = redondear(parseFloat(total.value) + (parseFloat(cantidad.value) * parseFloat(precioU.value)), 2);
-
-            tbody.innerHTML += `
-            <tr id=${producto.idTabla}>
-                <td>${codBarra.value}</td>
-                <td>${parseFloat(cantidad.value).toFixed(2)}</td>
-                <td>${producto.descripcion.toUpperCase()}</td>
-                <td>${parseFloat(precioU.value).toFixed(2)}</td>
-                <td>${redondear(parseFloat(precioU.value) * parseFloat(cantidad.value), 2)}</td>
-                <td class=acciones>
-                    <div class=tool>
-                        <span class=material-icons>edit</span>
-                        <p class=tooltip>Modificar</p>
-                    </div>
-                    <div class=tool>
-                        <span class=material-icons>manage_search</span>
-                        <p class=tooltip>Observaciones</p>
-                    </div>
-                    <div class=tool>
-                        <span class=material-icons>delete</span>
-                        <p class=tooltip>Eliminar</p>
-                    </div>
-                </td>
-            </tr>
-            `;
-            tbody.scrollIntoView({
-                block: "end"
-            });
-
-            totalGlobal = parseFloat(total.value);
-
-        } else if (producto !== "" && productoYaUsado) {
-            productoYaUsado.cantidad += parseFloat(cantidad.value);
-            producto.idTabla = productoYaUsado.producto.idTabla;
-            const tr = document.getElementById(producto.idTabla);
-            tr.children[1].innerHTML = redondear(parseFloat(tr.children[1].innerHTML) + parseFloat(cantidad.value), 2);
-            tr.children[4].innerHTML = redondear(parseFloat(tr.children[1].innerHTML) * producto.precio, 2);
-            total.value = redondear(parseFloat(total.value) + (parseFloat(cantidad.value) * producto.precio), 2);
-            totalGlobal = parseFloat(total.value);
-        };
-
-        if (producto.seccion?.nombre === "EMPANADAS") {
-            await calcularTotal();
-            await calcularEmpanadas(producto, cantidad);
-        };
-
-
-
-        cantidad.value = "1.00";
-        codBarra.value = "";
-        descripcion.value = "";
-        precioU.value = "";
-        codBarra.focus();
-    } else {
-        descripcion.focus();
-    }
-
-};
+//     alerta.classList.add('none')
+// });
 
 const verificarDatosParaventa = async() => {
 
@@ -581,46 +429,6 @@ const verificarDatosParaventa = async() => {
 
 let seleccionado;
 //Hacemos para que se seleccione un tr
-
-tbody.addEventListener('click', async e => {
-    seleccionado && seleccionado.classList.remove('seleccionado');
-    if (e.target.nodeName === "TD") {
-        seleccionado = e.target.parentNode;
-    } else if (e.target.nodeName === "DIV") {
-        seleccionado = e.target.parentNode.parentNode;
-    } else if (e.target.nodeName === "SPAN") {
-        seleccionado = e.target.parentNode.parentNode.parentNode;
-    }
-    seleccionado.classList.add('seleccionado');
-    if (e.target.innerHTML === "delete") {
-        sweet.fire({
-            title: "Borrar?",
-            confirmButtonText: "Aceptar",
-            showCancelButton: true
-        }).then(({ isConfirmed }) => {
-            if (isConfirmed) {
-                tbody.removeChild(seleccionado);
-                calcularTotal();
-                const productoABorrar = listaProductos.findIndex(({ producto, cantidad }) => seleccionado.id === producto.idTabla);
-                if (listaProductos[productoABorrar].producto.seccion?.nombre === "EMPANADAS") {
-                    empanadas -= parseFloat(seleccionado.children[1].innerText)
-                }
-                listaProductos.splice(productoABorrar, 1);
-            }
-        });
-    } else if (e.target.innerText === "edit") {
-        cambiarPrecio();
-    } else if (e.target.innerText === "manage_search") {
-        const producto = listaProductos.find(producto => producto.producto.idTabla === seleccionado.id);
-
-        const observaciones = await sweet.fire({
-            title: "Agregar Obseraciones",
-            input: 'textarea',
-            inputValue: producto.observaciones ? producto.observaciones : ""
-        });
-        producto.observaciones = observaciones.value ? observaciones.value : producto.observaciones;
-    }
-});
 
 const sacarIva = (lista) => {
     let totalIva0 = 0;
@@ -680,10 +488,6 @@ nombre.addEventListener('focus', e => {
     nombre.select();
 });
 
-localidad.addEventListener('focus', e => {
-    localidad.select();
-});
-
 telefono.addEventListener('focus', e => {
     telefono.select();
 });
@@ -692,17 +496,6 @@ direccion.addEventListener('focus', e => {
     direccion.select();
 });
 
-total.addEventListener('focus', e => {
-    total.select();
-});
-
-cobrado.addEventListener('focus', e => {
-    cobrado.select();
-});
-
-cantidad.addEventListener('focus', e => {
-    cantidad.select();
-});
 
 document.addEventListener('keydown', e => {
     if (e.key === "Escape") {
@@ -749,9 +542,6 @@ telefono.addEventListener('keypress', async e => {
     }
 });
 
-localidad.addEventListener('keypress', e => {
-    apretarEnter(e, direccion);
-});
 
 direccion.addEventListener('keypress', e => {
     apretarEnter(e, condicionIva);
@@ -762,33 +552,11 @@ condicionIva.addEventListener('keypress', e => {
     apretarEnter(e, codBarra);
 });
 
-cantidad.addEventListener('keypress', async e => {
-    if (e.keyCode === 13) {
-        listarProducto(codBarra.value);
-    }
-});
-
-cantidad.addEventListener('keydown', e => {
-    if (e.keyCode === 39) {
-        codBarra.focus();
-    }
-});
-
-cobrado.addEventListener('keyup', (e) => {
-    vuelto.value = redondear(parseFloat(cobrado.value) - parseFloat(total.value), 2);
-});
 
 //selects
 cuit.addEventListener('focus', e => {
     cuit.select();
 });
-
-volver.addEventListener('click', () => {
-    location.href = "../menu.html";
-});
-
-//Cambiamos los precios si elegimos
-tbody.addEventListener('dblclick', cambiarPrecio);
 
 async function cambiarPrecio(e) {
     const { value, isConfirmed } = await sweet.fire({
@@ -913,55 +681,3 @@ function cambiarTr(idtabla, precio, cantidad) {
     }
 };
 
-const clickEnTarjetas = async (e) => {
-
-    seleccionado && seleccionado.classList.remove('seleccionado');
-    
-
-    if (e.target.classList.contains('tarjeta')) {
-        seleccionado = e.target.parentNode;
-    } else if (e.target.nodeName === "IMG") {
-        seleccionado = e.target.parentNode.parentNode;
-    } else if (e.target.nodeName === "H4") {
-        seleccionado = e.target.parentNode.parentNode;
-    } else if (e.target.id === "precio") {
-        seleccionado = e.target.parentNode.parentNode;
-    } else if (e.target.classList.contains('divBotones')) {
-        seleccionado = e.target.parentNode.parentNode;
-    } else if (e.target.nodeName === "BUTTON") {
-        seleccionado = e.target.parentNode.parentNode.parentNode;
-    } else if (e.target.nodeName === "SPAN") {
-        seleccionado = e.target.parentNode.parentNode.parentNode.parentNode.parentNode;
-    };
-
-
-    if (e.target.innerText === 'looks_6') {
-        cantidad.value = '6.00';
-    } else if (e.target.innerText === '1k') {
-        cantidad.value = '12.00';
-    } else if(e.target.innerText === 'add_shopping_cart'){
-        cantidad.value = '1.00';
-    };
-
-    seleccion.classList.add('selecciondo');
-
-    listarProducto(seleccionado.id);
-};
-
-const listarSecciones = (lista) => {
-    
-    const fragment = document.createDocumentFragment();
-
-    for(let seccion of lista){
-        const p = document.createElement('p');
-
-        p.innerText = seccion.nombre;
-
-        fragment.appendChild(p);
-    };
-
-    secciones.appendChild(fragment)
-};
-
-buscador.addEventListener('keyup', filtrar);
-seccionTarjetas.addEventListener('click', clickEnTarjetas);
