@@ -8,58 +8,51 @@
     <link href="../../node_modules/material-icons/iconfont/material-icons.css" rel="stylesheet">
   </head>
   <body>
-    <section class="principal">
 
-      <div class="venta">
-        <header>
-          <div class="parteCliente">
-            
-            <div>
-              <label for="codigo">Codigo</label>
-              <input placeholder="Codigo" type="text" id="codigo" name="codigo">
-            </div>
-            <div>
-              <label for="nombre">Nombre Cliente</label>
-              <input placeholder="Nombre" type="text" id="nombre" name="nombre">
-            </div>
-            <div>
-              <label for="cuit">Cuit</label>
-              <input type="text" name="cuit" id="cuit">
-            </div>
-            <main>
-              <label for="condicion">Condicion Iva</label>
-              <select name="condicion" id="condicion">
-                <option value="Consumidor Final">Consumidor Final</option>
-                <option value="Monotributo">Monotributo</option>
-                <option value="Responsable Inscripto">Inscripto</option>
-                <option value="Exento">Exento</option>
-              </select>
-            </main>
-          </div>
-    
-        <div class="parteCliente2">
-          <div>
-            <label for="telefono">Telefono</label>
-            <input type="text" id="telefono" name="telefono">
-          </div>
-    
-          <div>
-            <label for="localidad">Localidad</label>
-            <input type="text" id="localidad" name="localidad">
-          </div>
-    
-          <div>
-            <label for="direccion">Direccion</label>
-            <input type="text" id="direccion" name="direccion">
-          </div>
+    <header class="grid colums-3 gap-1 mx-2 mb-1">
+      <div class="flex flex-col">
+        <label for="codigo">Codigo</label>
+        <input type="text" name="codigo" id="codigo">
+      </div>
 
+      <div class="flex flex-col">
+        <label for="nombre">Nombre</label>
+        <input type="text" placeholder="Nombre del Cliente" name="nombre" id="nombre">
+      </div>
+
+      <div class="flex flex-col">
+        <label for="direccion">Direccion</label>
+        <input type="text" name="direccion" id="direccion">
+      </div>
+
+      <div class="flex flex-col">
+        <label for="telefono">Telefono</label>
+        <input type="text" name="telefono" id="telefono">
+      </div>
+
+      <div class="flex flex-col">
+        <label for="cuit">Cuit</label>
+        <input type="text" name="cuit" id="cuit">
+      </div>
+
+      <div class="flex flex-col">
+        <label for="condicionIva">Condicion Iva</label>
+        <select name="condicionIva" id="condicionIva">
+          <option value="Consumidor Final">Consumidor Final</option>
+          <option value="monotributo">Monotributo</option>
+          <option value="inscripto">Inscripto</option>
+          <option value="exento">Exento</option>
+        </select>
+      </div>
+    </header>
+
+    <section id="principal" class="grid colums-2 gap-2">
+
+      <div id="venta">
+        
     
-        </div>
-    
-        </header>
-    
-        <main class="parteProductos">
-          <section class="buscarProductos">
+        <main class="">
+          <section class="">
             <div class="cod-barra">
               <label for="cod-barra">Codigo</label>
               <input class="w-100" type="text" name="cod-barra" autofocus id="cod-barra">
@@ -122,40 +115,24 @@
         </main>
       </div>
 
-      <div class="productos">
-          <div class="buscador">
-              <fieldset>
-
-                  <main class="cajaBuscador">
-                    <div class="caja" id="select">
-                        <label for="seleccion">Seleccion</label>
-                        <select name="seleccion" id="seleccion">
-                            <option value="codigo">Codigo</option> 
-                            <option selected="true" value="descripcion">Descripcion</option>
-                        </select>
-                    </div>
-                    <div class="caja" id="input">
-                        <label for="buscador">Buscar Producto</label>
-                        <input type="text" name="buscarProducto" autofocus id="buscarProducto">
-                    </div>
-                  </main>
-
-              </fieldset>
+      <div id="productos" >
+          <div class="buscador mx-2 flex">
+            <label for="buscador">Buscar Producto</label>
+            <input type="text" class="w-full mb-1 border rounded-sm px-1" placeholder="Buscar producto por descripcion..." name="buscarProducto" autofocus id="buscarProducto">
           </div>
           
           <section class="secciones">
               
           </section>
 
-          <section class="tarjetas">
+          <section class="tarjetas bg-white gap-2 h-50 grid colums-3">
 
           </section>
           
       </div>
     </section>
 
-
-    <footer class="botones">
+    <!-- <footer class="botones">
         <main class="">
           <label for="impresion">Impresion (F6)</label>
           <input type="checkbox" checked name="impresion" id="impresion">
@@ -174,7 +151,7 @@
           <input type="number" id="vuelto" value="0.00" disabled name="vuelto">
         </main>
         </div>
-    </footer>
+    </footer> -->
 
     <div class="alerta none">
       <div class="spinner"></div>

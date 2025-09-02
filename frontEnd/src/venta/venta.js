@@ -4,26 +4,20 @@ const { apretarEnter, redondear, cargarFactura, ponerNumero, verCodigoComprobant
 
 const sweet = require('sweetalert2');
 const axios = require('axios');
-const path = require('path');
 const archivo = require('../configuracion.json');
 
 const URL = process.env.ROTISERIA_URL;
-
-let tarjetaSeleccionada;
-let vendedor = getParameterByName('vendedor');
 
 
 //Parte Cliente
 const codigo = document.querySelector('#codigo');
 const nombre = document.querySelector('#nombre');
 const telefono = document.querySelector('#telefono');
-const localidad = document.querySelector('#localidad');
 const direccion = document.querySelector('#direccion');
 const cuit = document.querySelector('#cuit');
-const condicionIva = document.querySelector('#condicion');
+const condicionIva = document.querySelector('#condicionIva');
 
 //parte Buscador
-const seleccion = document.getElementById('seleccion');
 const buscador = document.getElementById('buscarProducto');
 const seccionTarjetas = document.querySelector('.tarjetas');
 
@@ -59,31 +53,158 @@ const body = document.querySelector('body');
 let tipoFactura = getParameterByName("tipoFactura");
 let facturaAnterior;
 
-let movimientos = [];
-let descuentoStock = [];
 let idProducto = 0;
 let situacion = "blanco";
 let descuento = 0;
 let listaProductos = [];
-let pedido;
 
 //Empanadas
 let precioEmpanadas = 0;
 let empanadas = 0;
 let descuentoPorDocena = false; //Se usa para que en el ticket si esto es true se muetre un texto que diga que se hizo un descuento por una docena y media
 
+const filtrar = async (e) => {
+
+    const descripcion = buscador.value !== "" ? buscador.value : "textoVacio";
+    const {data} = await axios.get(`${URL}producto/forSeccionAndDescription/${descripcion}/descripcion`);
+    if(!data.ok) return await sweet.fire('Error al filtrar los productos', data.msg, 'error');
+    console.log(data);
+    listarTarjetas(data.productos);
+
+};
+
+//Lo que hacemos es listar el cliente traido
+const listarCliente = async (id) => {
+    codigo.value = id;
+    
+    let cliente;
+    try {
+        const { data } = await axios.get(`${URL}cliente/${id}`);
+        cliente = data.cliente;
+        if(!data.ok) return await sweet.fire('No se pudo obtener el cliente', data.msg, 'error');
+    } catch (error) {
+        console.log(error.response.data.msg);
+        return await sweet.fire('No se pudo obtener el cliente', error.response.data.msg, 'error')
+    };
+    console.log(cliente);
+    if (cliente !== "") {
+        nombre.value = cliente.nombre;
+        telefono.value = cliente.telefono;
+        direccion.value = cliente.direccion;
+        cuit.value = cliente.cuit === "" ? "00000000" : cliente.cuit;
+        condicionIva.value = cliente.condicionIva ? cliente.condicionIva : "Consumidor Final";
+
+        codBarra.focus();
+    } else {
+        codigo.value = "";
+        codigo.focus();
+    }
+};
+
+
+const listarTarjetas = async (productos) => {
+    seccionTarjetas.innerText = "";
+    for (let producto of productos) {
+
+        const div = document.createElement('div');
+        div.classList.add('tarjeta');
+        div.id = producto._id;
+        div.classList.add(producto._id);
+
+
+        const divImg = document.createElement('div')
+        divImg.classList.add('divImg')
+        const divInfo = document.createElement('div')
+        divInfo.classList.add('divInfo')
+
+        const img = document.createElement('img');
+        img.classList.add('h-10', 'w-full', 'object-contain', 'rounded-sm')
+
+        // const titulo = document.createElement('h4');
+        // const id = document.createElement('p');
+
+        // const precio = document.createElement('p');
+        // const stock = document.createElement('p');
+
+        // id.id = "id"
+        // precio.id = "precio";
+        // stock.id = "stock";
+
+        // const divBotones = document.createElement('div');
+        // divBotones.classList.add('divBotones');
+
+        // const modificar = document.createElement('button');
+        // const eliminar = document.createElement('button');
+        // const agregar = document.createElement('button');
+        // const x6 = document.createElement('button');
+        // const x12 = document.createElement('button');
+
+        // const bottonModifcar = `<div id=edit class=tool><span id=edit class=material-icons>edit</span><p class=tooltip>Modificar</p></div>`;
+        // const bottonEliminar = `<div id=delete class=tool><span id=delete class=material-icons>delete</span><p class=tooltip>Eliminar</p></div>`;
+        // const bottonAgregar = `<div id=add class=tool><span id=add class=material-icons>add_shopping_cart</span><p class=tooltip>Agregar Carrito</p></div>`;
+        // const botonX6 = `<div id=restar class=tool>
+        //                     <span id=add class=material-icons>looks_6</span><p class=tooltip>Media Docena</p>
+        //                 </div>`
+        // const botonX12 = `<div id=restar class=tool>
+        //                     <span id=add class=material-icons>1k</span><p class=tooltip>Docena</p>
+        //                 </div>`
+
+        img.setAttribute('src', `${URL}img/${producto._id}.png`);
+        img.setAttribute('alt', producto.descripcion);
+
+        // titulo.innerText = producto.descripcion;
+        // id.innerText = "Codigo: " + producto._id;
+        // precio.innerText = "$" + producto.precio.toFixed(2);
+        // stock.innerText = producto.stock.toFixed(2);
+        // modificar.innerHTML = (bottonModifcar);
+        // eliminar.innerHTML = (bottonEliminar);
+        // agregar.innerHTML = (bottonAgregar);
+        // x6.innerHTML = (botonX6);
+        // x12.innerHTML = (botonX12);
+
+        // divInformacion.innerHTML = `
+        //     <div>
+        //         <p>Precio:</p>
+        //         <p id=precio>${precio.innerHTML}</p>
+        //     </div>
+        //     <div>
+        //         <p>Stock:</p>
+        //         <p id=stock>${stock.innerHTML}</p>
+        //     </div>
+        // `;
+        // divBotones.appendChild(agregar);
+        // producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x6);
+        // producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x12);
+
+        divImg.appendChild(img);
+        div.appendChild(divImg);
+
+
+        // div.appendChild(divAuxiliarInfo);
+        // divAuxiliarInfo.appendChild(titulo);
+        // divAuxiliarInfo.appendChild(id);
+        // divAuxiliarInfo.appendChild(divInformacion);
+        // divAuxiliarInfo.appendChild(divBotones);
+
+        seccionTarjetas.appendChild(div);
+    }
+};
+
+
 //Por defecto ponemos el A Consumidor Final y tambien el select
 window.addEventListener('load', async e => {
+    listarCliente(1);//listanos los clientes
+
     try {
         const { data } = await axios.get(`${URL}carta`);
-        
+        console.log(data);
         if(!data.ok) return await sweet.fire('No se pudo obtener la carta empanada', data.msg, 'error');
 
         precioEmpanadas = data.carta;
-        listarCliente(1);//listanos los clientes
+        
         filtrar();
     } catch (error) {
-        console.log(error.response.data.msg);
+        console.log(error?.response?.data?.msg);
         await sweet.fire('No se pudo obtener la carta de empanada', error.response.data.msg, 'error');
     };
 
@@ -97,7 +218,7 @@ window.addEventListener('load', async e => {
         };
     } catch (error) {
         console.log(error);
-    }
+    };
 });
 
 document.addEventListener('keydown', e => {
@@ -326,35 +447,6 @@ facturar.addEventListener('click', async e => {
     alerta.classList.add('none')
 });
 
-
-//Lo que hacemos es listar el cliente traido
-const listarCliente = async (id) => {
-    codigo.value = id;
-    let cliente;
-    try {
-        const { data } = await axios.get(`${URL}cliente/${id}`);
-        cliente = data.cliente;
-        if(!data.ok) return await sweet.fire('No se pudo obtener el cliente', data.msg, 'error');
-    } catch (error) {
-        console.log(error.response.data.msg);
-        return await sweet.fire('No se pudo obtener el cliente', error.response.data.msg, 'error')
-    };
-
-    if (cliente !== "") {
-        nombre.value = cliente.nombre;
-        telefono.value = cliente.telefono;
-        localidad.value = cliente.localidad;
-        direccion.value = cliente.direccion;
-        cuit.value = cliente.cuit === "" ? "00000000" : cliente.cuit;
-        condicionIva.value = cliente.condicionIva ? cliente.condicionIva : "Consumidor Final";
-
-        codBarra.focus();
-    } else {
-        codigo.value = "";
-        codigo.focus();
-    }
-};
-
 //Lo que hacemos es listar el producto traido
 const listarProducto = async (id) => {
     let producto;
@@ -452,7 +544,6 @@ const listarProducto = async (id) => {
     }
 
 };
-
 
 const verificarDatosParaventa = async() => {
 
@@ -822,20 +913,6 @@ function cambiarTr(idtabla, precio, cantidad) {
     }
 };
 
-const filtrar = async (e) => {
-    let condicion = seleccion.value;
-
-    if (condicion === "codigo") {
-        condicion = "_id";
-    };
-    const descripcion = buscador.value !== "" ? buscador.value : "textoVacio";
-    const {data} = await axios.get(`${URL}producto/forSeccionAndDescription/${descripcion}/${condicion}`);
-    if(!data.ok) return await sweet.fire('Error al filtrar los productos', data.msg, 'error');
-    
-    listarTarjetas(data.productos);
-
-};
-
 const clickEnTarjetas = async (e) => {
 
     seleccionado && seleccionado.classList.remove('seleccionado');
@@ -869,95 +946,6 @@ const clickEnTarjetas = async (e) => {
     seleccion.classList.add('selecciondo');
 
     listarProducto(seleccionado.id);
-};
-
-const listarTarjetas = async (productos) => {
-    seccionTarjetas.innerText = "";
-    for (let producto of productos) {
-
-        const div = document.createElement('div');
-        div.classList.add('tarjeta');
-        div.id = producto._id;
-        div.classList.add(producto._id);
-
-        //Div de informacion de stock y precio
-        const divInformacion = document.createElement('div');
-        divInformacion.classList.add('divInformacion');
-
-        const divAuxiliar = document.createElement('div')
-        const divAuxiliarInfo = document.createElement('div')
-        divAuxiliar.classList.add('divImg')
-        divAuxiliarInfo.classList.add('divInfo')
-
-        const img = document.createElement('img');
-        const titulo = document.createElement('h4');
-        const id = document.createElement('p');
-
-        const precio = document.createElement('p');
-        const stock = document.createElement('p');
-
-        id.id = "id"
-        precio.id = "precio";
-        stock.id = "stock";
-
-        const divBotones = document.createElement('div');
-        divBotones.classList.add('divBotones');
-
-        const modificar = document.createElement('button');
-        const eliminar = document.createElement('button');
-        const agregar = document.createElement('button');
-        const x6 = document.createElement('button');
-        const x12 = document.createElement('button');
-
-        const bottonModifcar = `<div id=edit class=tool><span id=edit class=material-icons>edit</span><p class=tooltip>Modificar</p></div>`;
-        const bottonEliminar = `<div id=delete class=tool><span id=delete class=material-icons>delete</span><p class=tooltip>Eliminar</p></div>`;
-        const bottonAgregar = `<div id=add class=tool><span id=add class=material-icons>add_shopping_cart</span><p class=tooltip>Agregar Carrito</p></div>`;
-        const botonX6 = `<div id=restar class=tool>
-                            <span id=add class=material-icons>looks_6</span><p class=tooltip>Media Docena</p>
-                        </div>`
-        const botonX12 = `<div id=restar class=tool>
-                            <span id=add class=material-icons>1k</span><p class=tooltip>Docena</p>
-                        </div>`
-
-        img.setAttribute('src', `${URL}img/${producto._id}.png`);
-        img.setAttribute('alt', producto.descripcion);
-
-        titulo.innerText = producto.descripcion;
-        id.innerText = "Codigo: " + producto._id;
-        precio.innerText = "$" + producto.precio.toFixed(2);
-        stock.innerText = producto.stock.toFixed(2);
-        modificar.innerHTML = (bottonModifcar);
-        eliminar.innerHTML = (bottonEliminar);
-        agregar.innerHTML = (bottonAgregar);
-        x6.innerHTML = (botonX6);
-        x12.innerHTML = (botonX12);
-
-        divInformacion.innerHTML = `
-            <div>
-                <p>Precio:</p>
-                <p id=precio>${precio.innerHTML}</p>
-            </div>
-            <div>
-                <p>Stock:</p>
-                <p id=stock>${stock.innerHTML}</p>
-            </div>
-        `;
-        divBotones.appendChild(agregar);
-        producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x6);
-        producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x12);
-
-        div.appendChild(divAuxiliar);
-        divAuxiliar.appendChild(img);
-
-
-        div.appendChild(divAuxiliarInfo);
-        divAuxiliarInfo.appendChild(titulo);
-        divAuxiliarInfo.appendChild(id);
-        divAuxiliarInfo.appendChild(divInformacion);
-        divAuxiliarInfo.appendChild(divBotones);
-
-        seccionTarjetas.appendChild(div);
-    }
 };
 
 const listarSecciones = (lista) => {
