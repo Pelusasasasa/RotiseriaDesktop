@@ -34,7 +34,20 @@ funciones.cerrarVentana = (e) => {
     if (e.key === "Escape") {
         window.close();
     }
-}
+};
+
+//Ver Codigo Documento
+funciones.verCodigoDocumento = async (cuit) => {
+    if (cuit !== "00000000" && cuit !== "") {
+        if (cuit.length === 8) {
+            return 96
+        } else {
+            return 80
+        }
+    }
+
+    return 99
+};
 
 funciones.apretarEnter = async (e, input) => {
     if (e.key === "Enter") {

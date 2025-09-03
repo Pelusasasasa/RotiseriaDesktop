@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { ipcRenderer } = require('electron');
-const { apretarEnter, redondear, cargarFactura, ponerNumero, verCodigoComprobante, verTipoComprobante, verSiHayInternet, getParameterByName } = require('../helpers');
+const { apretarEnter, redondear, cargarFactura, ponerNumero, verCodigoComprobante, verTipoComprobante, verSiHayInternet, getParameterByName, verCodigoDocumento } = require('../helpers');
 
 const sweet = require('sweetalert2');
 const axios = require('axios');
@@ -24,28 +24,26 @@ const seccionTarjetas = document.querySelector('.tarjetas');
 //Carrito
 const limpiar = document.getElementById('limpiar');
 const divCarrito = document.getElementById('divCarrito');
+const efectivo = document.getElementById('efectivo');
+const tarjetaCredito = document.getElementById('tarjetaCredito');
 const total = document.querySelector('#total');
 const precioTotal = document.querySelector('#precioTotal');
 
 //Parte Producto
-const cantidad = document.querySelector('#cantidad');
-const codBarra = document.querySelector('#cod-barra')
 const secciones = document.querySelector('.secciones');
 
 //parte totales
 const radio = document.querySelectorAll('input[name="condicion"]');
 
 //botones
-const facturar = document.querySelector('.facturar');
+const facturar = document.getElementById('facturar');
 const volver = document.querySelector('.volver');
-const impresion = document.querySelector("#impresion");
 
 //alerta
 const alerta = document.querySelector('.alerta');
 
 //body
 const body = document.querySelector('body');
-
 
 let tipoFactura = getParameterByName("tipoFactura");
 let facturaAnterior;
@@ -55,6 +53,7 @@ let listaProductos = [];
 let carrito = {
     productos: []
 };
+let tipoPago = '';
 
 let seccionActivo;
 
@@ -78,6 +77,30 @@ const agregarItemCarrito = (e) => {
 
 
     listarProductos(carrito.productos)
+};
+
+const calcularTotal = async() => {
+    let aux = 0;
+
+    for await (let {cantidad, producto} of carrito.productos) {
+        aux += cantidad * producto.precio;
+    };
+    precioTotal.innerText = redondear(aux, 2);
+};
+
+//Lo usamos para mostrar o ocultar cuestiones que tiene que ver con las ventas
+const cambiarSituacion = (situacion) => {
+    situacion === "negro" ? tarjetaCredito.classList.add('none') : tarjetaCredito.classList.remove('none');
+};
+
+const clickEnCarrito = async(e) => {
+    if(e.target.id === 'limpiarProductoCarrito'){
+        const elemento = e.target.parentNode.parentNode.parentNode;
+        const id = elemento.id;
+
+        quitarElemento(id);
+        elemento.parentNode.remove();
+    };
 };
 
 const filtrar = async (e) => {
@@ -151,7 +174,7 @@ const listarProductos = (lista) => {
                     <img class='w-full' src=${URL}img/${producto._id}.png alt=${producto.descripcion} />
                 </div>
                 
-                <div class='flex flex-col flex-1'>
+                <div class='flex flex-col flex-1' id='${producto._id}'>
                     <h4 class='m-0 text-xs font-semibold text-balance'>${producto.descripcion}</h4>
                     <span class='text-muted-foreground'>${producto._id}</span>
 
@@ -276,6 +299,11 @@ const listarTarjetas = async (productos) => {
     }
 };
 
+const quitarElemento = (id) => {
+    carrito.productos = carrito.productos.filter(elem => elem.producto._id !== id);
+    calcularTotal();
+};
+
 const setRubroActivo = (e) => {
     seccionActivo.classList.remove('rubroActivo');
     seccionActivo = e.target;
@@ -286,7 +314,6 @@ const setRubroActivo = (e) => {
         : listarTarjetas(listaProductos.filter(producto => producto.seccion.nombre === seccionActivo.innerText));
 };
 
-//Por defecto ponemos el A Consumidor Final y tambien el select
 window.addEventListener('load', async e => {
     listarCliente(1);//listanos los clientes
 
@@ -315,6 +342,8 @@ window.addEventListener('load', async e => {
 });
 
 buscarProducto.addEventListener('keyup', filtrar);
+
+divCarrito.addEventListener('click', clickEnCarrito);
 
 document.addEventListener('keydown', e => {
     if (e.keyCode === 18) {
@@ -351,99 +380,90 @@ document.addEventListener('keydown', e => {
     }
 });
 
-ipcRenderer.on('recibir', (e, args) => {
-    const { tipo, informacion} = JSON.parse(args);
-    tipo === "cliente" && listarCliente(informacion);
-    tipo === "Ningun cliente" && nombre.focus();
+efectivo.addEventListener('click', () => {
+    tipoPago = 'EFECTIVO';
+    tarjetaCredito.classList.remove('tipoPagoSeleccionado');
+    efectivo.classList.add('tipoPagoSeleccionado');
 });
 
-//Vemos que input tipo radio esta seleccionado
-const verTipoVenta = () => {
-    let retornar;
-    radio.forEach(input => {
-        if (input.checked) {
-            retornar = input.value;
-        }
+tarjetaCredito.addEventListener('click', () => {
+    tipoPago = 'TARJETA';
+    efectivo.classList.remove('tipoPagoSeleccionado');
+    tarjetaCredito.classList.add('tipoPagoSeleccionado');
+});
+
+facturar.addEventListener('click', async e => {
+    //Verificamos los datos para la venta si estan correctos
+    if(!verificarDatosParaventa()) return;
+    
+    alerta.classList.remove('none');
+    
+    const venta = {};
+
+    venta.cliente = nombre.value;
+    venta.idCliente = codigo.value;
+    venta.direccion = direccion.value;
+    venta.telefono = telefono.value;
+    venta.precio = parseFloat(precioTotal.innerText);
+    venta.tipo_venta = 'CD';
+    venta.dispositivo = 'DESKTOP';
+    venta.listaProductos = carrito.productos;
+    venta.num_doc = cuit.value !== "" ? cuit.value : "00000000";
+    venta.cod_doc = await verCodigoDocumento(cuit.value);
+    venta.condicionIva = condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value
+
+     //Ponemos propiedades para la factura electronica
+    venta.cod_comp = situacion === "blanco" ? await verCodigoComprobante(tipoFactura, cuit.value, condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value) : 0;
+    venta.tipo_comp = situacion === "blanco" ? await verTipoComprobante(venta.cod_comp) : "Comprobante";
+
+    const [iva21, iva0, gravado21, gravado0, iva105, gravado105, cantIva] = await sacarIva(carrito.productos); //  acamos el iva de los productos
+    venta.iva21 = iva21;
+    venta.iva0 = iva0;
+    venta.gravado0 = gravado0;
+    venta.gravado21 = gravado21;
+    venta.iva105 = iva105;
+    venta.gravado105 = gravado105;
+    venta.cantIva = cantIva;
+    venta.facturaAnterior = facturaAnterior ? facturaAnterior : "";
+    
+    if (situacion === "blanco") {
+        alerta.classList.remove('none');
+        venta.afip = await cargarFactura(venta, facturaAnterior ? true : false);
+        venta.F = true;
+    } else {
+        venta.F = false;
+        alerta.children[1].innerHTML = "Generando Venta";
+    };
+        
+
+    const {isConfirmed} = await sweet.fire({
+            title: "Imprimir Ticket Cliente",
+            confirmButtonText: "Aceptar",
+            showCancelButton: true
     });
-    return retornar;
-};
 
-// facturar.addEventListener('click', async e => {
-//     //Verificamos los datos para la venta si estan correctos
-//     if(!verificarDatosParaventa()) return;
-    
-//     alerta.classList.remove('none');
-    
-//     const venta = {};
-
-//     venta.cliente = nombre.value;
-//     venta.fecha = new Date();
-//     venta.idCliente = codigo.value;
-//     venta.precio = parseFloat(total.value);
-//     venta.descuento = descuento;
-//     venta.tipo_venta = await verTipoVenta();
-//     venta.listaProductos = listaProductos;
-
-//     //Ponemos propiedades para la factura electronica
-//     venta.cod_comp = situacion === "blanco" ? await verCodigoComprobante(tipoFactura, cuit.value, condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value) : 0;
-//     venta.tipo_comp = situacion === "blanco" ? await verTipoComprobante(venta.cod_comp) : "Comprobante";
-//     venta.num_doc = cuit.value !== "" ? cuit.value : "00000000";
-//     venta.cod_doc = await verCodigoDocumento(cuit.value);
-//     venta.condicionIva = condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value
-//     const [iva21, iva0, gravado21, gravado0, iva105, gravado105, cantIva] = await sacarIva(listaProductos); //sacamos el iva de los productos
-//     venta.iva21 = iva21;
-//     venta.iva0 = iva0;
-//     venta.gravado0 = gravado0;
-//     venta.gravado21 = gravado21;
-//     venta.iva105 = iva105;
-//     venta.gravado105 = gravado105;
-//     venta.cantIva = cantIva;
-//     venta.direccion = direccion.value;
-//     venta.telefono = telefono.value;
-//     venta.descuentoPorDocena = descuentoPorDocena;
-//     venta.dispositivo = 'DESKTOP';
-//     venta.caja = require('../configuracion.json').caja; //vemos en que caja se hizo la venta
-    
-//     venta.facturaAnterior = facturaAnterior ? facturaAnterior : "";
-    
-//     if (situacion === "blanco") {
-//         alerta.classList.remove('none');
-//         venta.afip = await cargarFactura(venta, facturaAnterior ? true : false);
-//         venta.F = true;
-//     } else {
-//         venta.F = false;
-//         alerta.children[1].innerHTML = "Generando Venta";
-//     };
+    if(isConfirmed){
+        venta.imprimirCliente = true
+    }else{
+        venta.imprimirCliente = false
+    };
         
+    try {
 
-//     const {isConfirmed} = await sweet.fire({
-//             title: "Imprimir Ticket Cliente",
-//             confirmButtonText: "Aceptar",
-//             showCancelButton: true
-//     });
+        const { data } = await axios.post(`${URL}venta`, venta);
+        if(!data.ok) return await sweet.fire('Error al hacer la venta', error.response.data.msg, 'error');
 
-//     if(isConfirmed){
-//         venta.imprimirCliente = true
-//     }else{
-//         venta.imprimirCliente = false
-//     };
-        
-//     try {
+        location.reload();
 
-//         const { data } = await axios.post(`${URL}venta`, venta);
-//         if(!data.ok) return await sweet.fire('Error al hacer la venta', error.response.data.msg, 'error');
+    } catch (error) {
 
-//         location.reload();
+        console.log(error.response.data.msg);
+        sweet.fire('Error al hacer la venta', error.reponse.data.msg, 'error');
 
-//     } catch (error) {
+    };
 
-//         console.log(error.response.data.msg);
-//         sweet.fire('Error al hacer la venta', error.reponse.data.msg, 'error');
-
-//     };
-
-//     alerta.classList.add('none')
-// });
+    alerta.classList.add('none')
+});
 
 const verificarDatosParaventa = async() => {
 
@@ -476,6 +496,10 @@ const verificarDatosParaventa = async() => {
         }
     };
 
+    if(tipoPago === ''){
+        return await sweet.fire('No se puede generar la venta', 'Elegir el metodo de pago', 'error')
+    }
+
     return true;
 };
 
@@ -486,6 +510,7 @@ const sacarIva = (lista) => {
     let gravado0 = 0;
     let totalIva105 = 0;
     let gravado105 = 0;
+
     lista.forEach(({ producto, cantidad }) => {
         if (producto.impuesto === 21) {
             gravado21 += cantidad * producto.precio / 1.21;
@@ -509,110 +534,6 @@ const sacarIva = (lista) => {
         cantIva++;
     }
     return [parseFloat(totalIva21.toFixed(2)), parseFloat(totalIva0.toFixed(2)), parseFloat(gravado21.toFixed(2)), parseFloat(gravado0.toFixed(2)), parseFloat(totalIva105.toFixed(2)), parseFloat(gravado105.toFixed(2)), cantIva]
-};
-
-//Lo usamos para mostrar o ocultar cuestiones que tiene que ver con las ventas
-const cambiarSituacion = (situacion) => {
-    situacion === "negro" ? document.querySelector('#tarjetPago').parentNode.classList.add('none') : document.querySelector('#tarjetPago').parentNode.classList.remove('none');
-};
-
-limpiar.addEventListener('click', limpiarCarrito);
-
-//Ver Codigo Documento
-const verCodigoDocumento = async (cuit) => {
-    if (cuit !== "00000000" && cuit !== "") {
-        if (cuit.length === 8) {
-            return 96
-        } else {
-            return 80
-        }
-    }
-
-    return 99
-};
-
-codigo.addEventListener('focus', e => {
-    codigo.select();
-});
-
-nombre.addEventListener('focus', e => {
-    nombre.select();
-});
-
-telefono.addEventListener('focus', e => {
-    telefono.select();
-});
-
-direccion.addEventListener('focus', e => {
-    direccion.select();
-});
-
-document.addEventListener('keydown', e => {
-    if (e.key === "Escape") {
-
-        sweet.fire({
-            title: "Cancelar Venta?",
-            "showCancelButton": true,
-            "confirmButtonText": "Aceptar",
-            "cancelButtonText": "Cancelar"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                location.href = "../menu.html";
-            }
-        });
-    };
-});
-
-//ponemos un numero para la venta y luego mandamos a imprimirla
-ipcRenderer.on('poner-numero', async (e, args) => {
-    ponerNumero();
-});
-
-nombre.addEventListener('keypress', e => {
-    apretarEnter(e, cuit);
-});
-
-cuit.addEventListener('keypress', e => {
-    apretarEnter(e, telefono);
-});
-
-telefono.addEventListener('keypress', async e => {
-    if (e.keyCode === 13) {
-        const { data } = await axios.get(`${URL}cliente/forTelefono/${telefono.value.trim()}`);
-        if(!data.ok) return await sweet.fire('Error al obtener el cliente por telefono', data.msg, 'error');
-
-        const cliente = data.cliente;
-        codigo.value = cliente._id;
-        nombre.value = cliente.nombre;
-        cuit.value = cliente.cuit;
-        direccion.value = cliente.direccion;
-        localidad.value = cliente.localidad;
-        condicionIva.value = cliente.condicionIva;
-
-    }
-});
-
-direccion.addEventListener('keypress', e => {
-    apretarEnter(e, condicionIva);
-});
-
-condicionIva.addEventListener('keypress', e => {
-    e.preventDefault();
-    apretarEnter(e, codBarra);
-});
-
-cuit.addEventListener('focus', e => {
-    cuit.select();
-});
-
-//Calculamos el total que representa los tr
-async function calcularTotal() {
-    let aux = 0;
-
-    for await (let {cantidad, producto} of carrito.productos) {
-        aux += cantidad * producto.precio;
-    };
-    precioTotal.innerText = redondear(aux, 2);
 };
 
 async function calcularEmpanadas(producto, cantidadProducto) {
@@ -705,11 +626,85 @@ async function calcularEmpanadas(producto, cantidadProducto) {
     }
 };
 
-function cambiarTr(idtabla, precio, cantidad) {
-    const tr = document.getElementById(idtabla);
-    if (tr) {
-        tr.children[3].innerText = precio.toFixed(2);
-        tr.children[4].innerText = redondear(cantidad * precio, 2);
-    }
-};
+limpiar.addEventListener('click', limpiarCarrito);
 
+codigo.addEventListener('focus', e => {
+    codigo.select();
+});
+
+nombre.addEventListener('focus', e => {
+    nombre.select();
+});
+
+telefono.addEventListener('focus', e => {
+    telefono.select();
+});
+
+direccion.addEventListener('focus', e => {
+    direccion.select();
+});
+
+document.addEventListener('keydown', e => {
+    if (e.key === "Escape") {
+
+        sweet.fire({
+            title: "Cancelar Venta?",
+            "showCancelButton": true,
+            "confirmButtonText": "Aceptar",
+            "cancelButtonText": "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                location.href = "../menu.html";
+            }
+        });
+    };
+});
+
+nombre.addEventListener('keypress', e => {
+    apretarEnter(e, cuit);
+});
+
+cuit.addEventListener('keypress', e => {
+    apretarEnter(e, telefono);
+});
+
+telefono.addEventListener('keypress', async e => {
+    if (e.keyCode === 13) {
+        const { data } = await axios.get(`${URL}cliente/forTelefono/${telefono.value.trim()}`);
+        if(!data.ok) return await sweet.fire('Error al obtener el cliente por telefono', data.msg, 'error');
+
+        const cliente = data.cliente;
+        codigo.value = cliente._id;
+        nombre.value = cliente.nombre;
+        cuit.value = cliente.cuit;
+        direccion.value = cliente.direccion;
+        localidad.value = cliente.localidad;
+        condicionIva.value = cliente.condicionIva;
+
+    }
+});
+
+direccion.addEventListener('keypress', e => {
+    apretarEnter(e, condicionIva);
+});
+
+condicionIva.addEventListener('keypress', e => {
+    e.preventDefault();
+    apretarEnter(e, codBarra);
+});
+
+cuit.addEventListener('focus', e => {
+    cuit.select();
+});
+
+
+ipcRenderer.on('recibir', (e, args) => {
+    const { tipo, informacion} = JSON.parse(args);
+    tipo === "cliente" && listarCliente(informacion);
+    tipo === "Ningun cliente" && nombre.focus();
+});
+
+//ponemos un numero para la venta y luego mandamos a imprimirla
+ipcRenderer.on('poner-numero', async (e, args) => {
+    ponerNumero();
+});
