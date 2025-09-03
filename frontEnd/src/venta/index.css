@@ -24,7 +24,6 @@ header input,header select{
 } 
 
 
-
 #limpiar:hover{
   background-color: #84cc16;
   border-radius: 0.75rem;
@@ -34,11 +33,17 @@ header input,header select{
 #principal{
   display: grid;
   grid-template-columns: 1fr 2fr;
+  height: 85vh;
 }
 
 #venta{
   border-right: .1rem solid lightgray;
   background-color: #f0fdf4;
+}
+
+#divCarrito{
+  height: 60vh;
+  overflow-y: scroll;
 }
 
 #divCarrito, #total{
@@ -61,6 +66,7 @@ header input,header select{
 #productos{
   background-color: white;
   padding-left: .5rem;
+  height: inherit
 }
 
 #limpiarProductoCarrito{
@@ -97,6 +103,7 @@ header input,header select{
   display: flex;
   gap: 2rem;
   padding: .5rem;
+  width: 70vw;
 }
 
 .rubro{
@@ -107,6 +114,7 @@ header input,header select{
   font-size: small;
   color: #374151;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .rubro:hover{
@@ -122,6 +130,8 @@ header input,header select{
 
 .tarjetas{
   padding: 1.25rem;
+  overflow-y: auto;
+  height: 75vh;
 }
 
 .tarjeta{
