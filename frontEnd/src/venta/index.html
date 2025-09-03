@@ -46,19 +46,41 @@
       </div>
     </header>
 
-    <section id="principal" class="grid colums-2">
+    <section id="principal" class="grid colums-2 px-1">
 
-      <div id="venta" class="bg-white">
-        <h4>Carrito de compras</h4>
-        <hr>
+      <div id="venta" class="bg-white flex flex-col">
 
-        <div id="carrito">
+        <div class="flex justify-around items-center">
+          <h4>Carrito de compras</h4>
+          <span id="limpiar" class="text-destructive font-semibold p-1">Limpiar</span>
+        </div>
+
+        <div id="divCarrito" class="mx-1">
 
           <div class="flex w-full justify-center">
             <p>El Carrito esta Vacio</p>
           </div>
           
         </div>
+
+        <div id="total" class="none mx-1 mt-auto mb-1">
+
+          <div class="flex justify-between items-center">
+            <h4 class="text-balance">Total: </h4>
+            <span id="precioTotal" class="text-primary font-semibold"></span>
+          </div>
+
+          <div class="flex justify-around gap-2" id="botonesTotales">
+            <button class="w-50">$ Efectivo</button>
+            <button class="w-50">Tarjeta</button>
+          </div>
+
+          <div class="mt-2 justify-center flex" id="facturar">
+            <button class="w-90">Procesar Venta</button>
+          </div>
+
+        </div>
+
       </div>
 
       <div id="productos">
@@ -76,27 +98,6 @@
           
       </div>
     </section>
-
-    <!-- <footer class="botones">
-        <main class="">
-          <label for="impresion">Impresion (F6)</label>
-          <input type="checkbox" checked name="impresion" id="impresion">
-        </main>
-
-        <button class="facturar hijoFooter">Facturar</button>
-        <button class="volver hijoFooter">Volver</button>
-
-        <div class="cobrado hijoFooter">
-          <main>
-            <label for="cobrado">Cobrado</label>
-            <input type="number" value="0.00" id="cobrado" name="cobrado">
-          </main>
-          <main>
-          <label for="vuelto">Vuelto</label>
-          <input type="number" id="vuelto" value="0.00" disabled name="vuelto">
-        </main>
-        </div>
-    </footer> -->
 
     <div class="alerta none">
       <div class="spinner"></div>

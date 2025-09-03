@@ -21,22 +21,19 @@ const condicionIva = document.querySelector('#condicionIva');
 const buscarProducto = document.getElementById('buscarProducto');
 const seccionTarjetas = document.querySelector('.tarjetas');
 
+//Carrito
+const limpiar = document.getElementById('limpiar');
+const divCarrito = document.getElementById('divCarrito');
+const total = document.querySelector('#total');
+const precioTotal = document.querySelector('#precioTotal');
+
 //Parte Producto
 const cantidad = document.querySelector('#cantidad');
 const codBarra = document.querySelector('#cod-barra')
-const precioU = document.querySelector('#precio-U');
-const rubro = document.querySelector('#rubro');
-const tbody = document.querySelector('.tbody');
 const secciones = document.querySelector('.secciones');
 
 //parte totales
-const total = document.querySelector('#total');
-const inputRecibo = document.querySelector('#recibo');
-const porcentaje = document.querySelector('#porcentaje');
 const radio = document.querySelectorAll('input[name="condicion"]');
-const cuentaCorrientediv = document.querySelector('.cuentaCorriente');
-const cobrado = document.getElementById('cobrado');
-const vuelto = document.getElementById('vuelto');
 
 //botones
 const facturar = document.querySelector('.facturar');
@@ -78,6 +75,9 @@ const agregarItemCarrito = (e) => {
     }else{
         carrito.productos[item].cantidad += 1
     };
+
+
+    listarProductos(carrito.productos)
 };
 
 const filtrar = async (e) => {
@@ -98,7 +98,11 @@ const filtrar = async (e) => {
 
 };
 
-//Lo que hacemos es listar el cliente traido
+const limpiarCarrito = () => {
+    carrito.productos = [];
+    listarProductos(carrito.productos);
+};
+
 const listarCliente = async (id) => {
     codigo.value = id;
     
@@ -122,6 +126,54 @@ const listarCliente = async (id) => {
         codigo.value = "";
         codigo.focus();
     }
+};
+
+const listarProductos = (lista) => {
+
+    divCarrito.innerHTML = '';
+
+    if(lista.length === 0){
+        total.classList.add('none');
+        divCarrito.innerHTML = `
+            <div class="flex w-full justify-center">
+                <p>El Carrito esta Vacio</p>
+            </div>`
+            return
+    }
+
+
+    let div = document.createElement('div');
+    
+    for(let {cantidad, producto, observaciones} of lista){
+        div.innerHTML += `
+            <div class='flex gap-2' id='tarjetaCarrito'>
+                <div class='w-20 h-10'>
+                    <img class='w-full' src=${URL}img/${producto._id}.png alt=${producto.descripcion} />
+                </div>
+                
+                <div class='flex flex-col flex-1'>
+                    <h4 class='m-0 text-xs font-semibold text-balance'>${producto.descripcion}</h4>
+                    <span class='text-muted-foreground'>${producto._id}</span>
+
+                    <div class='flex justify-between'>
+                        <span class='text-primary  font-semibold'>$ ${producto.precio.toFixed(2)}</span>
+
+                        <div class='flex gap-2 items-center' >
+                            <button>-</button>
+                            <span>${cantidad}</span>
+                            <button>+</button>
+                            <span class='text-destructive' id='limpiarProductoCarrito'>x</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+    };
+
+    total.classList.remove('none');
+    calcularTotal();
+    
+    divCarrito.appendChild(div);
 };
 
 const listarSecciones = (lista) => {
@@ -427,9 +479,6 @@ const verificarDatosParaventa = async() => {
     return true;
 };
 
-let seleccionado;
-//Hacemos para que se seleccione un tr
-
 const sacarIva = (lista) => {
     let totalIva0 = 0;
     let totalIva21 = 0;
@@ -467,6 +516,8 @@ const cambiarSituacion = (situacion) => {
     situacion === "negro" ? document.querySelector('#tarjetPago').parentNode.classList.add('none') : document.querySelector('#tarjetPago').parentNode.classList.remove('none');
 };
 
+limpiar.addEventListener('click', limpiarCarrito);
+
 //Ver Codigo Documento
 const verCodigoDocumento = async (cuit) => {
     if (cuit !== "00000000" && cuit !== "") {
@@ -495,7 +546,6 @@ telefono.addEventListener('focus', e => {
 direccion.addEventListener('focus', e => {
     direccion.select();
 });
-
 
 document.addEventListener('keydown', e => {
     if (e.key === "Escape") {
@@ -542,7 +592,6 @@ telefono.addEventListener('keypress', async e => {
     }
 });
 
-
 direccion.addEventListener('keypress', e => {
     apretarEnter(e, condicionIva);
 });
@@ -552,35 +601,18 @@ condicionIva.addEventListener('keypress', e => {
     apretarEnter(e, codBarra);
 });
 
-
-//selects
 cuit.addEventListener('focus', e => {
     cuit.select();
 });
 
-async function cambiarPrecio(e) {
-    const { value, isConfirmed } = await sweet.fire({
-        title: "Cambiar Precio",
-        input: "number",
-        showCancelButton: true,
-        confirmButtonText: "Aceptar"
-    });
-    const producto = listaProductos.find(elem => elem.producto.idTabla === seleccionado.id);
-    producto.producto.precio = parseFloat(value);
-    seleccionado.children[3].innerText = redondear(producto.producto.precio, 2);
-    seleccionado.children[4].innerText = redondear(producto.cantidad * producto.producto.precio, 2);
-    calcularTotal();
-};
-
 //Calculamos el total que representa los tr
 async function calcularTotal() {
-    const trs = document.querySelectorAll('tbody tr');
     let aux = 0;
-    for await (let tr of trs) {
-        aux += parseFloat(tr.children[4].innerText);
-    };
 
-    total.value = redondear(aux, 2);
+    for await (let {cantidad, producto} of carrito.productos) {
+        aux += cantidad * producto.precio;
+    };
+    precioTotal.innerText = redondear(aux, 2);
 };
 
 async function calcularEmpanadas(producto, cantidadProducto) {

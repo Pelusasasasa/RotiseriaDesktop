@@ -24,6 +24,13 @@ header input,header select{
 } 
 
 
+
+#limpiar:hover{
+  background-color: #84cc16;
+  border-radius: 0.75rem;
+  cursor: pointer;
+}
+
 #principal{
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -34,9 +41,56 @@ header input,header select{
   background-color: #f0fdf4;
 }
 
+#divCarrito, #total{
+  border-top: .1rem solid #979797;
+}
+
+#tarjetaCarrito{
+  border: .1rem solid #e5e7eb;
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0;
+}
+
+#tarjetaCarrito h4{
+  font-size: 1.50rem;
+}
+
+
 #productos{
   background-color: white;
   padding-left: .5rem;
+}
+
+#limpiarProductoCarrito{
+  padding: 0.5rem;
+}
+
+#limpiarProductoCarrito:hover{
+  background-color: #84cc16;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+#botonesTotales button{
+  border: .1rem solid #e5e7eb;
+}
+
+#botonesTotales button:hover{
+  background-color: #84cc16;
+  transform: scale(1);
+  color: white;
+}
+
+#facturar button{
+  color: white;
+  background-color: #15803d;
+}
+
+#facturar button:hover{
+  transform: scale(1);
+  opacity: 90%;
 }
 
 .secciones{
