@@ -53,6 +53,7 @@
       <div id="venta" class="bg-white flex flex-col">
         <div class="flex justify-around items-center">
           <h4>Carrito de compras</h4>
+          <button id="manual">+ Manual</button>
           <span id="limpiar" class="text-destructive font-semibold p-1">Limpiar</span>
         </div>
 
@@ -100,6 +101,30 @@
       <div class="spinner"></div>
       <p class="texto">Generando certificado de AFIP</p>
     </div>
+
+    <!-- Modal Producto Manual -->
+     <div id="modal">
+      <div class="modalContainer">
+        <h4>Agregar Producto Manual</h4>
+
+        <main>
+          <div>
+            <label for="descripcion">Descripcion del producto</label>
+            <input type="text" name="descripcion" id="descripcion" placeholder="Ej: Producto Especial">
+          </div>
+
+          <div>
+            <label for="precio">Precio</label>
+            <input type="number" name="precio" placeholder="0.00" id="precio">
+          </div>
+
+          <div>
+            <label for="impuesto">Impuesto</label>
+            <input type="number" value="21.00" name="impuesto" id="impuesto">
+          </div>
+        </main>
+      </div>  
+     </div>
 
 
     <script src="./venta.js"></script>

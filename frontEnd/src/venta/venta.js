@@ -8,7 +8,6 @@ const archivo = require('../configuracion.json');
 
 const URL = process.env.ROTISERIA_URL;
 
-
 //Parte Cliente
 const codigo = document.querySelector('#codigo');
 const nombre = document.querySelector('#nombre');
@@ -114,8 +113,6 @@ const agregarDocena = (e) => {
 }
 
 const calcularTotal = async() => {
-    let aux = 0;
-
     let total = 0;
 
     let cantidadEmapandas = 0;
@@ -380,6 +377,8 @@ const restarElemento = (id) => {
     const index = carrito.productos.findIndex(elem => elem.producto._id === id);
     carrito.productos[index].cantidad -= 1;
 
+    carrito.productos = carrito.productos.filter(elem => elem.cantidad !== 0);
+
     listarProductos(carrito.productos);
 };
 
@@ -620,96 +619,6 @@ const sacarIva = (lista) => {
         cantIva++;
     }
     return [parseFloat(totalIva21.toFixed(2)), parseFloat(totalIva0.toFixed(2)), parseFloat(gravado21.toFixed(2)), parseFloat(gravado0.toFixed(2)), parseFloat(totalIva105.toFixed(2)), parseFloat(gravado105.toFixed(2)), cantIva]
-};
-
-async function calcularEmpanadas(producto, cantidadProducto) {
-    empanadas = producto.seccion?.nombre === "EMPANADAS" ? empanadas + parseFloat(cantidad.value) : empanadas;
-
-    if (empanadas % 12 === 0 && empanadas !== 0) {
-        let aux = precioEmpanadas.docena / 12;
-        for await (let { cantidad, producto } of listaProductos) {
-            if (producto.seccion?.nombre === "EMPANADAS") {
-                producto.precio = aux;
-                cambiarTr(producto.idTabla, producto.precio, cantidad)
-            }
-        };
-        calcularTotal();
-        descuentoPorDocena = false;
-    } else if (empanadas === 6) {
-        //Si es media docena
-        let aux = precioEmpanadas.mediaDocena / 6;
-        for await (let { cantidad, producto } of listaProductos) {
-            if (producto.seccion?.nombre === "EMPANADAS") {
-                producto.precio = aux;
-                cambiarTr(producto.idTabla, producto.precio, cantidad);
-            }
-        };
-        calcularTotal();
-        descuentoPorDocena = false;
-
-    } else if (empanadas % 12 === 6 && empanadas > 6) {
-        let totalEmpanadas = 0;
-        let cantDocena = 0;
-        let aux = empanadas;
-        while (aux > 12) {
-            aux -= 12;
-            cantDocena++;
-        }
-
-        for await (let { cantidad: cant, producto } of listaProductos) {
-            if (producto.seccion?.nombre === "EMPANADAS") {
-                producto.precio = precioEmpanadas.mediaDocena / 6;
-                cambiarTr(producto.idTabla, producto.precio, cant);
-                totalEmpanadas += (producto.precio * cant);
-            }
-            await calcularTotal();
-        }
-        descuentoPorDocena = true;
-        total.value = (parseFloat(total.value) - totalEmpanadas + (precioEmpanadas.docena * cantDocena) + precioEmpanadas.mediaDocena).toFixed(2);
-    } else {
-        let empenadaDocena = empanadas;
-        let empanadaIndividual = 0;
-        let aux = empanadas;
-        let cantDocena = 0;
-        let cantMediaDocena = 0;
-        let totalAux = 0;
-
-        while (empenadaDocena % 12 !== 0 && empenadaDocena % 12 !== 6) {
-            empenadaDocena--;
-            empanadaIndividual++;
-        };
-
-        while (aux > 12) {
-            aux -= 12;
-            cantDocena++;
-        }
-
-        while (aux > 6) {
-            aux -= 6;
-            cantMediaDocena++;
-        }
-
-
-        for await (let { cantidad, producto } of listaProductos) {
-            if (producto.seccion?.nombre === "EMPANADAS") {
-                const { data } = await axios.get(`${URL}producto/${producto._id}`);
-                if(!data.ok) return await sweet.fire('Error al obtener el producto', data.msg, 'error');
-
-                const precio = data.producto.precio;
-                producto.precio = precio;
-                cambiarTr(producto.idTabla, producto.precio, cantidad);
-            } else {
-                totalAux += cantidad * producto.precio;
-            };
-        };
-        await calcularTotal();
-
-        if (empanadas > 6) {
-            descuentoPorDocena = true;
-        }
-        total.value = redondear((cantDocena * precioEmpanadas.docena) + (cantMediaDocena * precioEmpanadas.mediaDocena) + (empanadaIndividual * producto.precio) + totalAux, 2);
-
-    };
 };
 
 limpiar.addEventListener('click', limpiarCarrito);

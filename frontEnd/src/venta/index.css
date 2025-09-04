@@ -22,8 +22,19 @@ header input,header select{
   color: white;
 }
 
+#manual{
+  transform: scale(1);
+  border: .1rem solid #979797;
+  background-color: white;
+  color: #374151;
+  font-weight: 600;
+}
 
-#limpiar:hover{
+#manual:hover{
+  color: white;
+}
+
+#limpiar:hover, #manual:hover{
   background-color: #84cc16;
   border-radius: 0.75rem;
   cursor: pointer;
@@ -247,4 +258,41 @@ animation: spin 1s linear infinite
 100%{
   transform: rotate(360deg);
 }
+}
+
+
+
+#modal{
+  position: absolute;
+  opacity: 80;
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+}
+
+.modalContainer{
+  padding: 2rem 4rem;
+  border-radius: 1rem;
+  background-color: white;
+  width: 50rem;
+}
+
+
+#modal h4{
+  margin: 0;
+  margin-bottom: 1rem;
+  color: #374151;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+#modal main{
+  display: flex;  
+  gap: 2rem;
+  flex-direction: column;
+}
+
+#modal main div{
+  display: flex;
+  flex-direction: column;
 }
