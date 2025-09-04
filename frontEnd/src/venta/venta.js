@@ -101,6 +101,21 @@ const clickEnCarrito = async(e) => {
         quitarElemento(id);
         elemento.parentNode.remove();
     };
+
+
+    if(e.target.id === 'sumar'){
+        const elemento = e.target.parentNode.parentNode.parentNode;
+        const id = elemento.id;
+
+        sumarElemento(id);
+    }
+
+    if(e.target.id === 'restar'){
+        const elemento = e.target.parentNode.parentNode.parentNode;
+        const id = elemento.id;
+
+        restarElemento(id);
+    }
 };
 
 const filtrar = async (e) => {
@@ -182,9 +197,9 @@ const listarProductos = (lista) => {
                         <span class='text-primary  font-semibold'>$ ${producto.precio.toFixed(2)}</span>
 
                         <div class='flex gap-2 items-center' >
-                            <button>-</button>
+                            <button id='restar'>-</button>
                             <span>${cantidad}</span>
-                            <button>+</button>
+                            <button id='sumar'>+</button>
                             <span class='text-destructive' id='limpiarProductoCarrito'>x</span>
                         </div>
                     </div>
@@ -304,6 +319,13 @@ const quitarElemento = (id) => {
     calcularTotal();
 };
 
+const restarElemento = (id) => {
+    const index = carrito.productos.findIndex(elem => elem.producto._id === id);
+    carrito.productos[index].cantidad -= 1;
+
+    listarProductos(carrito.productos);
+};
+
 const setRubroActivo = (e) => {
     seccionActivo.classList.remove('rubroActivo');
     seccionActivo = e.target;
@@ -312,6 +334,13 @@ const setRubroActivo = (e) => {
     seccionActivo.innerText === 'TODOS'
         ? listarTarjetas(listaProductos)
         : listarTarjetas(listaProductos.filter(producto => producto.seccion.nombre === seccionActivo.innerText));
+};
+
+const sumarElemento = (id) => {
+    const index = carrito.productos.findIndex(elem => elem.producto._id === id);
+    carrito.productos[index].cantidad += 1;
+
+    listarProductos(carrito.productos);
 };
 
 window.addEventListener('load', async e => {
@@ -696,7 +725,6 @@ condicionIva.addEventListener('keypress', e => {
 cuit.addEventListener('focus', e => {
     cuit.select();
 });
-
 
 ipcRenderer.on('recibir', (e, args) => {
     const { tipo, informacion} = JSON.parse(args);
