@@ -41,7 +41,8 @@ header input,header select{
 }
 
 #divCarrito{
-  min-height: 50vh;
+  min-height: 60vh;
+  max-height: 60vh;
   overflow-y: scroll;
 }
 
@@ -162,7 +163,7 @@ header input,header select{
 .tarjetas{
   padding: 1.25rem;
   overflow-y: auto;
-  height: 75vh;
+  height: 73vh;
 }
 
 .tarjeta{
@@ -185,6 +186,7 @@ header input,header select{
 
 .divInfo{
   display: flex;
+  justify-content: space-between;
   font-size: 1.2rem;
   gap: 2rem;
   align-items: center;

@@ -63,7 +63,7 @@ let empanadas = 0;
 let descuentoPorDocena = false; //Se usa para que en el ticket si esto es true se muetre un texto que diga que se hizo un descuento por una docena y media
 
 const agregarItemCarrito = (e) => {
-    const item = carrito.productos.findIndex(producuto => producuto.producto._id == e.target.id);
+    const item = carrito.productos.findIndex(producto => producto.producto._id == e.target.id);
     if(item === -1){
         const producto = listaProductos.find(elem => elem._id === e.target.id);
         carrito.productos.push({
@@ -79,13 +79,67 @@ const agregarItemCarrito = (e) => {
     listarProductos(carrito.productos)
 };
 
+const agregarMediaDocena = (e) => {
+    const item = carrito.productos.findIndex(producto => producto.producto._id === e.target.id);
+    
+    if(item === -1){
+        const producto = listaProductos.find(elem => elem._id === e.target.id);
+        carrito.productos.push({
+            cantidad: 6,
+            producto: producto,
+            observaciones: ''
+        });
+    }else{
+        carrito.productos[item].cantidad += 6;
+    }
+
+    listarProductos(carrito.productos)
+};
+
+const agregarDocena = (e) => {
+    const item = carrito.productos.findIndex(producto => producto.producto._id === e.target.id);
+    
+    if(item === -1){
+        const producto = listaProductos.find(elem => elem._id === e.target.id);
+        carrito.productos.push({
+            cantidad: 12,
+            producto: producto,
+            observaciones: ''
+        });
+    }else{
+        carrito.productos[item].cantidad += 12;
+    }
+
+    listarProductos(carrito.productos)
+}
+
 const calcularTotal = async() => {
     let aux = 0;
 
-    for await (let {cantidad, producto} of carrito.productos) {
-        aux += cantidad * producto.precio;
+    let total = 0;
+
+    let cantidadEmapandas = 0;
+
+    for(let item of carrito.productos){
+        if(item.producto?.seccion?.nombre === 'EMPANADAS'){
+            cantidadEmapandas += item.cantidad;
+        }else{
+            total += item.producto.precio * item.cantidad
+        }
     };
-    precioTotal.innerText = redondear(aux, 2);
+
+
+    if(cantidadEmapandas > 0){
+        let docenas = Math.floor(cantidadEmapandas / 12);
+        let resto = cantidadEmapandas % 12;
+
+        let medias = Math.floor(resto / 6);
+        let sueltas = resto % 6;
+
+        total += (docenas * precioEmpanadas.docena) + (medias * precioEmpanadas.mediaDocena) + (sueltas * 2000); 
+    };
+    
+    precioTotal.innerText = redondear(total, 2);
 };
 
 //Lo usamos para mostrar o ocultar cuestiones que tiene que ver con las ventas
@@ -268,36 +322,39 @@ const listarTarjetas = async (productos) => {
         divBotones.classList.add('divBotones');
 
         const agregar = document.createElement('button');
+        const x6 = document.createElement('button');
+        const x12 = document.createElement('button');
 
-        agregar.classList.add('boton')
-        // const x6 = document.createElement('button');
-        // const x12 = document.createElement('button');
-        // const botonX6 = `<div id=restar class=tool>
-        //                     <span id=add class=material-icons>looks_6</span><p class=tooltip>Media Docena</p>
-        //                 </div>`
-        // const botonX12 = `<div id=restar class=tool>
-        //                     <span id=add class=material-icons>1k</span><p class=tooltip>Docena</p>
-        //                 </div>`
+        agregar.classList.add('boton');
+        x6.classList.add('boton');
+        x12.classList.add('boton');
 
         img.setAttribute('src', `${URL}img/${producto._id}.png`);
-        img.setAttribute('alt', producto.descripcion);
+        img.setAttribute('alt', producto.descripcion);;
 
         titulo.innerText = producto.descripcion;
         stock.innerText = producto.stock.toFixed(2);
-
 
         codigo.innerText = producto._id;
         precio.innerText = "$" + producto.precio.toFixed(2);
 
         agregar.innerText = 'Agregar';
+        x6.innerText = 'X6';
+        x12.innerText = 'X12';
+
         agregar.id = producto._id;
+        x6.id = producto._id;
+        x12.id = producto._id;
+
         agregar.addEventListener('click', agregarItemCarrito);
-        // x6.innerHTML = (botonX6);
-        // x12.innerHTML = (botonX12);
+        x6.addEventListener('click', agregarMediaDocena);
+        x12.addEventListener('click', agregarDocena)
 
         divBotones.appendChild(agregar);
-        // producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x6);
-        // producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x12);
+        producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x6);
+        producto.seccion?.nombre === "EMPANADAS" && divBotones.appendChild(x12);
+
+        divBotones.classList.add('flex', 'gap-2')
 
         divImg.appendChild(img);
         divInfo.appendChild(titulo);
@@ -333,7 +390,7 @@ const setRubroActivo = (e) => {
 
     seccionActivo.innerText === 'TODOS'
         ? listarTarjetas(listaProductos)
-        : listarTarjetas(listaProductos.filter(producto => producto.seccion.nombre === seccionActivo.innerText));
+        : listarTarjetas(listaProductos.filter(producto => producto.seccion?.nombre === seccionActivo.innerText));
 };
 
 const sumarElemento = (id) => {
@@ -652,7 +709,7 @@ async function calcularEmpanadas(producto, cantidadProducto) {
         }
         total.value = redondear((cantDocena * precioEmpanadas.docena) + (cantMediaDocena * precioEmpanadas.mediaDocena) + (empanadaIndividual * producto.precio) + totalAux, 2);
 
-    }
+    };
 };
 
 limpiar.addEventListener('click', limpiarCarrito);
