@@ -61,6 +61,11 @@ const Venta = new Schema({
         enum: ['MOVIL', 'DESKTOP', '', 'WEB'],
         set: value => value.toUpperCase().trim()
     },
+    observaciones: {
+        type: String,
+        default: '',
+        set: value => value.toUpperCase().trim()
+    },
 
 
     //Persona

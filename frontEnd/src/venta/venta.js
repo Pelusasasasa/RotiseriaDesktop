@@ -21,8 +21,10 @@ const buscarProducto = document.getElementById('buscarProducto');
 const seccionTarjetas = document.querySelector('.tarjetas');
 
 //Carrito
+const manual = document.getElementById('manual');
 const limpiar = document.getElementById('limpiar');
 const divCarrito = document.getElementById('divCarrito');
+const observaciones = document.getElementById('observaciones');
 const efectivo = document.getElementById('efectivo');
 const tarjetaCredito = document.getElementById('tarjetaCredito');
 const total = document.querySelector('#total');
@@ -44,6 +46,14 @@ const alerta = document.querySelector('.alerta');
 //body
 const body = document.querySelector('body');
 
+//Modal
+const modal = document.getElementById('modal');
+const descripcionProducto = document.getElementById('descripcionProducto');
+const precioProducto = document.getElementById('precioProducto');
+const impuestoProducto = document.getElementById('impuestoProducto');
+const aceptar = document.getElementById('aceptar');
+
+
 let tipoFactura = getParameterByName("tipoFactura");
 let facturaAnterior;
 
@@ -60,6 +70,10 @@ let seccionActivo;
 let precioEmpanadas = 0;
 let empanadas = 0;
 let descuentoPorDocena = false; //Se usa para que en el ticket si esto es true se muetre un texto que diga que se hizo un descuento por una docena y media
+
+const abrirModal = () => {
+    modal.classList.remove('none');
+};
 
 const agregarItemCarrito = (e) => {
     const item = carrito.productos.findIndex(producto => producto.producto._id == e.target.id);
@@ -111,6 +125,26 @@ const agregarDocena = (e) => {
 
     listarProductos(carrito.productos)
 }
+
+const agregarProductoManual = () => {
+    const producto = {
+        _id: new Date().getTime(),
+        descripcion: descripcionProducto.value,
+        precio: parseFloat(precioProducto.value),
+        impuesto: parseFloat(impuestoProducto.value)
+    };
+
+    carrito.productos.push({
+        cantidad: 1,
+        producto,
+        observaciones: ''
+    });
+
+    modal.classList.add('none');
+    listarProductos(carrito.productos);
+
+    
+};
 
 const calcularTotal = async() => {
     let total = 0;
@@ -166,6 +200,12 @@ const clickEnCarrito = async(e) => {
         const id = elemento.id;
 
         restarElemento(id);
+    }
+};
+
+const clickModal = async(e) => {
+    if(e.target.classList.contains('cerrarModal')){
+        modal.classList.add('none');
     }
 };
 
@@ -374,7 +414,7 @@ const quitarElemento = (id) => {
 };
 
 const restarElemento = (id) => {
-    const index = carrito.productos.findIndex(elem => elem.producto._id === id);
+    const index = carrito.productos.findIndex(elem => elem.producto._id == id);
     carrito.productos[index].cantidad -= 1;
 
     carrito.productos = carrito.productos.filter(elem => elem.cantidad !== 0);
@@ -393,7 +433,7 @@ const setRubroActivo = (e) => {
 };
 
 const sumarElemento = (id) => {
-    const index = carrito.productos.findIndex(elem => elem.producto._id === id);
+    const index = carrito.productos.findIndex(elem => elem.producto._id == id);
     carrito.productos[index].cantidad += 1;
 
     listarProductos(carrito.productos);
@@ -425,6 +465,8 @@ window.addEventListener('load', async e => {
         console.log(error);
     };
 });
+
+aceptar.addEventListener('click', agregarProductoManual )
 
 buscarProducto.addEventListener('keyup', filtrar);
 
@@ -496,6 +538,7 @@ facturar.addEventListener('click', async e => {
     venta.num_doc = cuit.value !== "" ? cuit.value : "00000000";
     venta.cod_doc = await verCodigoDocumento(cuit.value);
     venta.condicionIva = condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value
+    venta.observaciones = observaciones.value
 
      //Ponemos propiedades para la factura electronica
     venta.cod_comp = situacion === "blanco" ? await verCodigoComprobante(tipoFactura, cuit.value, condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value) : 0;
@@ -621,6 +664,7 @@ const sacarIva = (lista) => {
     return [parseFloat(totalIva21.toFixed(2)), parseFloat(totalIva0.toFixed(2)), parseFloat(gravado21.toFixed(2)), parseFloat(gravado0.toFixed(2)), parseFloat(totalIva105.toFixed(2)), parseFloat(gravado105.toFixed(2)), cantIva]
 };
 
+manual.addEventListener('click', abrirModal);
 limpiar.addEventListener('click', limpiarCarrito);
 
 codigo.addEventListener('focus', e => {
@@ -654,6 +698,8 @@ document.addEventListener('keydown', e => {
         });
     };
 });
+
+modal.addEventListener('click', clickModal);
 
 nombre.addEventListener('keypress', e => {
     apretarEnter(e, cuit);

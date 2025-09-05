@@ -265,12 +265,12 @@ ventaCTRL.postOne = async(req, res) => {
         // }
 
         await newVenta.save();
-        await imprimirVenta(newVenta);
+        // await imprimirVenta(newVenta);
 
         
 
         if(imprimirCliente){
-            await imprimirVenta(newVenta);
+            // await imprimirVenta(newVenta);
         };
 
 

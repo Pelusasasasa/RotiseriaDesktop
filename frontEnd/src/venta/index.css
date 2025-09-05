@@ -52,13 +52,18 @@ header input,header select{
 }
 
 #divCarrito{
-  min-height: 60vh;
-  max-height: 60vh;
   overflow-y: scroll;
 }
 
 #divCarrito, #total{
   border-top: .1rem solid #979797;
+}
+
+#observaciones{
+  border: .1rem solid #979797;
+  background-color: transparent;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
 }
 
 #tarjetaCarrito{
@@ -296,3 +301,28 @@ animation: spin 1s linear infinite
   display: flex;
   flex-direction: column;
 }
+
+
+#modalBotones{
+  display: flex;
+  margin-top: 2rem;
+  justify-content: space-between;
+}
+
+#modalBotones #aceptar{
+  border: .1rem solid #979797;
+  background-color: #15803d;
+  color: white;
+}
+
+#modalBotones #cancelar{
+  border: .1rem solid #979797;
+  background: white;
+}
+
+#cancelar:hover, #aceptar:hover{
+  transform: scale(1);
+  opacity: 60%;
+}
+
+

@@ -109,6 +109,10 @@ input:disabled {
   font-size: 0.625rem;
 }
 
+.text-xl{
+  font-size: 2rem;
+}
+
 select {
   font-size: 2rem;
   padding: 0.5rem;

@@ -64,6 +64,11 @@
         </div>
 
         <div id="total" class="none mx-1 mt-auto mb-1">
+          <div class="flex flex-col">
+            <span class="mt-1">Observaciones: </span>
+            <textarea name="observaciones" rows="3" id="observaciones"></textarea>
+          </div>
+
           <div class="flex justify-between items-center">
             <h4 class="text-balance">Total: </h4>
             <span id="precioTotal" class="text-primary font-semibold"></span>
@@ -103,26 +108,34 @@
     </div>
 
     <!-- Modal Producto Manual -->
-     <div id="modal">
+     <div id="modal" class="none">
       <div class="modalContainer">
-        <h4>Agregar Producto Manual</h4>
+        <div class="flex justify-between">
+          <h4>Agregar Producto Manual</h4>
+          <span class="font-bold cursor-pointer text-xl cerrarModal">x</span>
+        </div>
 
         <main>
           <div>
-            <label for="descripcion">Descripcion del producto</label>
-            <input type="text" name="descripcion" id="descripcion" placeholder="Ej: Producto Especial">
+            <label for="descripcionProducto">Descripcion del producto</label>
+            <input type="text" name="descripcionProducto" id="descripcionProducto" placeholder="Ej: Producto Especial">
           </div>
 
           <div>
-            <label for="precio">Precio</label>
-            <input type="number" name="precio" placeholder="0.00" id="precio">
+            <label for="precioProducto">Precio</label>
+            <input type="number" name="precioProducto" placeholder="0.00" id="precioProducto">
           </div>
 
           <div>
-            <label for="impuesto">Impuesto</label>
-            <input type="number" value="21.00" name="impuesto" id="impuesto">
+            <label for="impuestoProducto">Impuesto</label>
+            <input type="number" value="21.00" name="impuestoProducto" id="impuestoProducto">
           </div>
         </main>
+
+        <div id="modalBotones">
+          <button id="aceptar">Agregar</button>
+          <button id="cancelar" class="cerrarModal">Cancelar</button>
+        </div>
       </div>  
      </div>
 

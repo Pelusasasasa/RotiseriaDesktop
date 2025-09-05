@@ -118,8 +118,8 @@ async function mostrarEnElNavegador(html){
 async function imprimirVenta(venta) {
     let printer = new ThermalPrinter({
             type: PrinterTypes.EPSON,
-            // interface: '//localhost/POS-80C'
-            interface: 'tcp://192.168.0.15:6001'
+            // // interface: '//localhost/POS-80C'
+            // interface: 'tcp://192.168.0.15:6001'
     });
 
     //Redimensionar imagen
