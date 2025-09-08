@@ -315,6 +315,10 @@ select {
   margin: 2rem;
 }
 
+.my-1{
+  margin: 1rem 0;
+}
+
 .mt-auto {
   margin-top: auto;
 }
