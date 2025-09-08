@@ -175,6 +175,18 @@ select {
   height: 50rem;
 }
 
+.h-40 {
+  height: 40rem;
+}
+
+.h-35 {
+  height: 35rem;
+}
+
+.h-30 {
+  height: 30rem;
+}
+
 .h-20 {
   height: 20rem;
 }
