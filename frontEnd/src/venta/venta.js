@@ -140,6 +140,8 @@ const agregarProductoManual = () => {
         observaciones: ''
     });
 
+    descripcionProducto.value = '';
+    precioProducto.value = '';
     modal.classList.add('none');
     listarProductos(carrito.productos);
 
@@ -697,6 +699,12 @@ document.addEventListener('keydown', e => {
             }
         });
     };
+});
+
+document.addEventListener('dblclick', () => {
+    situacion = situacion === 'blanco' ? 'negro' : 'blanco';
+    body.classList.toggle('negro');
+    cambiarSituacion(situacion);
 });
 
 modal.addEventListener('click', clickModal);
