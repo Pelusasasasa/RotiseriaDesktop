@@ -394,8 +394,7 @@ select {
   border-radius: 2rem;
 }
 
-
-#modal{
+.modal{
   position: absolute;
   height: calc(100% - 0px);
   width: calc(100% - 0px);;
@@ -424,7 +423,7 @@ select {
 }
 
 .spinner{
-    border: .4rem solid rgba(0,0,0,1);
+    border: .4rem solid rgb(145, 145, 145);
     width: 3.6rem;
     height: 3.6rem;
     border-radius: 50%;

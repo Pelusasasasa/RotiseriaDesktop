@@ -280,12 +280,12 @@ const listarProductos = (lista) => {
             <div class='flex gap-2' id='tarjetaCarrito'>
                 <div class='w-20 h-10'>
                     <img class='w-full' src=${URL}img/${producto._id}.png alt=${producto.descripcion} />
-                    <span class='text-muted-foreground'>${producto._id}</span>
+                    <span id='productoId' class='text-muted-foreground'>${producto._id}</span>
                 </div>
                 
                 <div class='flex flex-col flex-1' id='${producto._id}'>
                     <h4 class='m-0 text-xs font-semibold text-balance'>${producto.descripcion}</h4>
-                    <span class='text-primary  font-semibold'>$ ${producto.precio.toFixed(2)}</span>
+                    <span class='text-primary font-semibold'>$ ${producto.precio.toFixed(2)}</span>
 
                     <div class='flex justify-between  mt-auto'>
 

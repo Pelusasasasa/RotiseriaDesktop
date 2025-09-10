@@ -55,6 +55,11 @@ header input,header select{
   overflow-y: scroll;
 }
 
+#divCarrito #productoId{
+  white-space: normal;
+  word-wrap: break-word;
+}
+
 #divCarrito, #total{
   border-top: .1rem solid #979797;
 }
@@ -242,29 +247,6 @@ header input,header select{
   opacity: 80%;
   margin-top: auto;
 }
-
-.spinner{
-margin-left: 5rem;
-border: .4rem solid rgba(0,0,0,1);
-width: 3.6rem;
-height: 3.6rem;
-border-radius: 50%;
-border-left-color: transparent;
-
-animation: spin 1s linear infinite
-
-}
-
-@keyframes spin{
-0%{
-  transform: rotate(0deg);
-}
-
-100%{
-  transform: rotate(360deg);
-}
-}
-
 
 
 #modal{
