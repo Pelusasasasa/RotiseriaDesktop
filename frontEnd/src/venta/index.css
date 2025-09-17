@@ -43,7 +43,7 @@ header input,header select{
 #principal{
   display: grid;
   grid-template-columns: 1fr 2fr;
-  height: 85vh;
+  /* height: 85vh; */
 }
 
 #venta{
@@ -183,7 +183,7 @@ header input,header select{
 .tarjetas{
   padding: 1.25rem;
   overflow-y: auto;
-  height: 73vh;
+  height: 100vh;
 }
 
 .tarjeta{
