@@ -6,7 +6,7 @@ const fs = require('fs');
 const DB_NAME = 'Rotiseria';
 const BACKUP_DIR = path.join(__dirname, './backups');
 
-if(!fs.existsSync(BACKUP_DIR)){
+if (!fs.existsSync(BACKUP_DIR)) {
     fs.mkdirSync(BACKUP_DIR)
 };
 
@@ -17,13 +17,13 @@ const backUpMongoLocal = () => {
         const cmd = `mongodump --db ${DB_NAME} --out ${backUpDir}`;
 
         exec(cmd, (error, stdout, stderr) => {
-            if(error){
+            if (error) {
                 console.error(`Error haciendo el backup: ${error.message}`);
                 return
             }
 
-            if(stderr){
-                console.error(`Error en stderr: ${stderr}`);
+            if (stderr) {
+                console.log(`Error en stderr: ${stderr}`);
                 return
             }
 
@@ -32,7 +32,7 @@ const backUpMongoLocal = () => {
     } catch (error) {
         console.error(error);
     }
-    
+
 };
 
 module.exports = backUpMongoLocal;
