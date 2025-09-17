@@ -92,8 +92,8 @@ async function generarImagenDesdeHTML(venta) {
 
                 ${venta.F 
                     ? ` <div class='flex justify-center gap-4 mt-4'>
-                        <p class='text-xs'>CAE: ${venta.afip.cae}</p>
-                        <p class='text-xs'>CAE: ${venta.afip.vencimiento}</p>
+                        <p class='text-lg'>CAE: ${venta.afip.cae}</p>
+                        <p class='text-lg'>Vencimiento CAE: ${venta.afip.vencimiento}</p>
                     </div>`
                     : ''
                 }
@@ -118,8 +118,8 @@ async function mostrarEnElNavegador(html){
 async function imprimirVenta(venta) {
     let printer = new ThermalPrinter({
             type: PrinterTypes.EPSON,
-            // // interface: '//localhost/POS-80C'
-            // interface: 'tcp://192.168.0.15:6001'
+            interface: '//localhost/POS-80C'
+            //interface: 'tcp://192.168.0.15:6001'
     });
 
     //Redimensionar imagen

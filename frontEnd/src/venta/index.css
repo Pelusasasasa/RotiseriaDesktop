@@ -18,7 +18,7 @@ header input,header select{
   background-color: rgb(0, 0, 0);
 }
 
-.negro label{
+.negro header label{
   color: white;
 }
 
@@ -183,7 +183,7 @@ header input,header select{
 .tarjetas{
   padding: 1.25rem;
   overflow-y: auto;
-  height: 100vh;
+  height: 50rem;
 }
 
 .tarjeta{
@@ -308,3 +308,10 @@ header input,header select{
 }
 
 
+
+@media (min-height: 755px) {
+  .tarjetas{
+    height: 55rem;
+  }
+  
+}

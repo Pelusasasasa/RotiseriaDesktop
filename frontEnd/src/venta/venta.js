@@ -411,7 +411,7 @@ const listarTarjetas = async (productos) => {
 };
 
 const quitarElemento = (id) => {
-    carrito.productos = carrito.productos.filter(elem => elem.producto._id !== id);
+    carrito.productos = carrito.productos.filter(elem => elem.producto._id != id);
     calcularTotal();
 };
 

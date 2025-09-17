@@ -187,6 +187,10 @@ select {
   height: 30rem;
 }
 
+.h-25 {
+  height: 25rem;
+}
+
 .h-20 {
   height: 20rem;
 }
