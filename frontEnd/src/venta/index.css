@@ -28,6 +28,7 @@ header input,header select{
   background-color: white;
   color: #374151;
   font-weight: 600;
+  padding: 0.5rem;
 }
 
 #manual:hover{
@@ -42,7 +43,7 @@ header input,header select{
 
 #principal{
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1fr 1fr;
   /* height: 85vh; */
 }
 

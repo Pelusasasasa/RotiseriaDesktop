@@ -280,7 +280,6 @@ const listarProductos = (lista) => {
             <div class='flex gap-2' id='tarjetaCarrito'>
                 <div class='w-20 h-10'>
                     <img class='w-full' src=${URL}img/${producto._id}.png alt=${producto.descripcion} />
-                    <span id='productoId' class='text-muted-foreground'>${producto._id}</span>
                 </div>
                 
                 <div class='flex flex-col flex-1' id='${producto._id}'>
@@ -351,7 +350,6 @@ const listarTarjetas = async (productos) => {
         titulo.classList.add('titulo');
         stock.classList.add('stock')
 
-        const codigo = document.createElement('span')
         const precio = document.createElement('p');
 
 
@@ -374,7 +372,6 @@ const listarTarjetas = async (productos) => {
         titulo.innerText = producto.descripcion;
         stock.innerText = producto.stock.toFixed(2);
 
-        codigo.innerText = producto._id;
         precio.innerText = "$" + producto.precio.toFixed(2);
 
         agregar.innerText = 'Agregar';
@@ -401,7 +398,6 @@ const listarTarjetas = async (productos) => {
 
         div.appendChild(divImg);
         div.appendChild(divInfo);
-        div.appendChild(codigo);
         div.appendChild(precio);
         div.appendChild(divBotones);
 
@@ -442,6 +438,11 @@ const sumarElemento = (id) => {
 };
 
 window.addEventListener('load', async e => {
+    situacion = situacion === 'blanco' ? 'negro' : 'blanco';
+    body.classList.toggle('negro');
+    cambiarSituacion(situacion);
+    console.log(situacion);
+        
     listarCliente(1);//listanos los clientes
 
     try {
