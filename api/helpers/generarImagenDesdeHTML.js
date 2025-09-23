@@ -60,9 +60,9 @@ async function generarImagenDesdeHTML(venta) {
                 
                 ${venta.listaProductos.map(({ cantidad, producto }) => `
                     <div class='grid grid-cols-3 productos'>
-                            <em class='font-bold text-lg'>${cantidad.toFixed(2)}</em>
-                            <em class='font-bold text-lg'>${producto.descripcion}</em>
-                            <em class='font-bold text-lg'>$${producto.precio.toFixed(2)}</em>
+                            <em class='font-bold text-xl'>${cantidad.toFixed(2)}</em>
+                            <em class='font-bold text-xl'>${producto.descripcion}</em>
+                            <em class='font-bold text-xl'>$${producto.precio.toFixed(2)}</em>
                     </div>
                 `)}
                 </div>

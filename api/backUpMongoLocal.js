@@ -14,7 +14,7 @@ const backUpMongoLocal = () => {
     try {
         const backUpDir = path.join(BACKUP_DIR);
 
-        const cmd = `mongodump --db ${DB_NAME} --out ${backUpDir}`;
+        const cmd = `mongodump --db ${DB_NAME} --out "${backUpDir}"`;
 
         exec(cmd, (error, stdout, stderr) => {
             if (error) {
