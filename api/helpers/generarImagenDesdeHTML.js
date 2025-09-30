@@ -9,7 +9,6 @@ const sharp = require('sharp');
 async function generarImagenDesdeHTML(venta) {
     const browser = await puppeteer.launch();
     const page = await browser.newPage(); 
-    console.log(venta);
     const html =
     `
         <html>
