@@ -148,6 +148,12 @@ const agregarProductoManual = () => {
     
 };
 
+const buscarCliente = (e) => {
+    if(e.key === 'Enter'){
+        listarCliente(e.target.value);
+    }
+}
+
 const calcularTotal = async() => {
     let total = 0;
 
@@ -472,6 +478,8 @@ window.addEventListener('load', async e => {
 aceptar.addEventListener('click', agregarProductoManual )
 
 buscarProducto.addEventListener('keyup', filtrar);
+
+codigo.addEventListener('keypress', buscarCliente);
 
 divCarrito.addEventListener('click', clickEnCarrito);
 
