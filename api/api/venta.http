@@ -1,5 +1,9 @@
 GET http://localhost:4000/rotiseria/venta/day/2025-07-31
 
+###Get Eliminadas
+GET http://localhost:4000/rotiseria/venta/eliminadas
+
+###POST
 POST http://localhost:3000/rotiseria/venta
 Content-Type: application/json
 

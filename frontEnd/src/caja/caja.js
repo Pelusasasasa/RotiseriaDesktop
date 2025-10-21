@@ -40,6 +40,7 @@ let gastos = [];
 let presupuestos = [];
 let cuentasCorrientes = [];
 let tipoVenta = "CD";
+let eliminadas = false;
 let filtro = "Ingresos";
 const fechaHoy = new Date();
 let d = fechaHoy.getDate();
@@ -104,6 +105,26 @@ window.addEventListener('load', async e => {
     }
     
 });
+
+document.addEventListener('keydown', e => {
+    if (e.keyCode === 18) {
+        document.addEventListener('keydown', async event => {
+            if (event.keyCode === 120) {
+                eliminadas = !eliminadas    ;
+                if(!eliminadas) {
+                    const retorno = await verQueTraer();
+                    listarVentas(retorno);
+                }else{
+                    const { data } = await axios.get(`${URL}venta/eliminadas`);
+                    if(data.ok){
+                        listarVentas(data.ventas);
+                    }
+                }
+
+            }
+        }, { once: true })
+}})
+
 
 const eliminarVenta = async (e) => {
     const target = e.target.parentNode.parentNode;
@@ -201,30 +222,36 @@ const eliminarVenta = async (e) => {
 };
 
 const verQueTraer = async () => {
+    console.log(botonSeleccionado);
     if (botonSeleccionado.classList.contains("botonDia")) {
+        
         if (filtro === "Ingresos") {
-            ventas = (await axios.get(`${URL}ventas/dia/${fecha.value}`)).data;
-            recibos = (await axios.get(`${URL}recibo/dia/${fecha.value}`)).data;
-            return ([...ventas, ...recibos]);
+            const { data} = await axios.get(`${URL}venta/day/${fecha.value}`)
+            return ([...data.ventas]);
         } else if (filtro === "Presupuestos") {
             presupuestos = (await axios.get(`${URL}presupuesto/forDay/${fecha.value}`)).data;
             return presupuestos
         } else {
             return ((await axios.get(`${URL}gastos/dia/${fecha.value}`)).data);
         }
-    } else if (botonSeleccionado.classList.contains("mes")) {
+    } else if (botonSeleccionado.classList.contains("botonMes")) {
+        
         if (filtro === "Ingresos") {
-            ventas = (await axios.get(`${URL}ventas/mes/${selectMes.value}`)).data;
-            recibos = (await axios.get(`${URL}recibo/mes/${selectMes.value}`)).data;
-            return ([...ventas, ...recibos])
+            const { data } = await axios.get(`${URL}venta/mes/${selectMes.value}`);
+
+            if(data.ok){
+                return ([...data.ventas]);
+            }
         } else {
             return ((await axios.get(`${URL}gastos/mes/${selectMes.value}`)).data);
         }
     } else {
         if (filtro === "Ingresos") {
-            ventas = (await axios.get(`${URL}ventas/anio/${inputAnio.value}`)).data;
-            recibos = (await axios.get(`${URL}recibo/anio/${inputAnio.value}`)).data;
-            return ([...ventas, ...recibos])
+            const { data } = await axios.get(`${URL}venta/anio/${inputAnio.value}`);
+
+            if(data.ok){
+                return ([...data.ventas])
+            };
         } else {
             return ((await axios.get(`${URL}gastos/anio/${inputAnio.value}`)).data)
         }
@@ -416,6 +443,9 @@ const listarVentas = async (ventas) => {
         const tr = document.createElement('tr');
         tr.id = venta._id;
         tr.classList.add('bold');
+        if(venta.eliminada){
+            tr.classList.add('eliminada');
+        }
 
         let textoDispositivo = '';
 

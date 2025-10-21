@@ -66,8 +66,10 @@ const Venta = new Schema({
         default: '',
         set: value => value.toUpperCase().trim()
     },
-
-
+    eliminada: {
+        type: Boolean,
+        default: false
+    },
     //Persona
     direccion: {
         type: String,

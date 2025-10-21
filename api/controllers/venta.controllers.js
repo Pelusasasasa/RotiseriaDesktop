@@ -12,7 +12,7 @@ ventaCTRL.deleteVenta = async(req, res) => {
     const { id } = req.params;
 
     try {
-        const ventaEliminada = await Venta.findByIdAndDelete(id);
+        const ventaEliminada = await Venta.findByIdAndUpdate(id, {eliminada: true}, {new: true});
         if(!ventaEliminada) return res.status(404).json({
             ok: false,
             msg: 'No se encontró la venta',
@@ -93,7 +93,8 @@ ventaCTRL.getForDia = async(req, res) => {
         const ventas = await Venta.find({
             $and: [
                 { fecha: { $gte: inicioDia } },
-                { fecha: { $lte: finDia } }
+                { fecha: { $lte: finDia } },
+                {eliminada: { $ne: true }}
             ]
         });
 
@@ -112,6 +113,27 @@ ventaCTRL.getForDia = async(req, res) => {
     }
 };
 
+ventaCTRL.getVentasEliminadas = async(req, res) => {
+    try {
+        const ventas = await Venta.find({
+            $and: [
+                {eliminada: true }
+            ]
+        });
+
+        res.status(200).json({
+            ok: true,
+            ventas
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'No se pudo obtener las ventas eliminadas, hable con el administrador',
+        })
+    }
+}
+
 ventaCTRL.getForMes = async(req, res) => {
     const {fecha} = req.params;
 
@@ -128,7 +150,8 @@ ventaCTRL.getForMes = async(req, res) => {
         const ventas = await Venta.find({
             $and: [
                 { fecha: { $gte: inicioMes } },
-                { fecha: { $lt: finMes } }
+                { fecha: { $lt: finMes } },
+                {eliminada: { $ne: true }}
             ]
         });
 
@@ -161,7 +184,8 @@ ventaCTRL.getforAnio = async(req, res) => {
         const ventas = await Venta.find({
             $and: [
                 { fecha: { $gte: inicioYear } },
-                { fecha: { $lte: finYear } }
+                { fecha: { $lte: finYear } },
+                {eliminada: { $ne: true }}
             ]
         }); 
 
