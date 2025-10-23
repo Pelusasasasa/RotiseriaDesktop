@@ -1,7 +1,8 @@
-const { cerrarVentana, redondear, agregarMovimientoVendedores, cargarNotaCredito, getParameterByName } = require("../helpers");
+const { cerrarVentana, redondear, agregarMovimientoVendedores, cargarNotaCredito, getParameterByName, verificarUsuarios } = require("../helpers");
 
 const sweet = require('sweetalert2');
 const axios = require('axios');
+const { default: Swal } = require("sweetalert2");
 require('dotenv').config();
 const URL = process.env.ROTISERIA_URL;
 
@@ -35,8 +36,8 @@ const total = document.querySelector('#total');
 const pestaña = document.querySelector('.pestaña')
 
 let ventas = [];
-let recibos = [];
 let gastos = [];
+let contrasenaGasto = ''
 let presupuestos = [];
 let cuentasCorrientes = [];
 let tipoVenta = "CD";
@@ -96,34 +97,57 @@ window.addEventListener('load', async e => {
     selectMes.value = m;
     inputAnio.value = a;
 
-    const  { data } = await axios.get(`${URL}venta/day/${fecha.value}`);
-    if(data.ok){
+    const { data } = await axios.get(`${URL}venta/day/${fecha.value}`);
+    if (data.ok) {
         ventas = data.ventas;
         listarVentas(data.ventas);
-    }else{
+    } else {
         await sweet.fire('Error al traer las ventas', 'No se pudieron obtener las ventas', 'error');
+    };
+
+    try {
+        const { data } = await axios.get(`${URL}variable`);
+        if (!data.ok) return await Swal.fire('Error al trear variables', data.msg, 'error');
+        contrasenaGasto = data.variable.contrasenaGasto;
+    } catch (error) {
+        console.log(error.response.data.msg);
+        return await sweet.fire('Error al traer variables', error.response.data.msg, 'error');
     }
-    
+
 });
 
 document.addEventListener('keydown', e => {
     if (e.keyCode === 18) {
         document.addEventListener('keydown', async event => {
             if (event.keyCode === 120) {
-                eliminadas = !eliminadas    ;
-                if(!eliminadas) {
+
+                if (eliminadas) {
+                    eliminadas = !eliminadas;
                     const retorno = await verQueTraer();
                     listarVentas(retorno);
-                }else{
+                    return;
+                };
+
+                const { isConfirmed, value } = await Swal.fire({
+                    title: 'Contraseña',
+                    confirmButtonText: 'Aceptar',
+                    showCancelButton: true,
+                    input: 'password'
+                });
+
+                if (isConfirmed) {
+                    if (value !== contrasenaGasto) return;
+
+                    eliminadas = !eliminadas;
                     const { data } = await axios.get(`${URL}venta/eliminadas`);
-                    if(data.ok){
+                    if (data.ok) {
                         listarVentas(data.ventas);
                     }
                 }
-
             }
         }, { once: true })
-}})
+    }
+})
 
 
 const eliminarVenta = async (e) => {
@@ -140,7 +164,7 @@ const eliminarVenta = async (e) => {
         let venta = {}
         try {
             const { data } = await axios.get(`${URL}venta/${id}`);
-            if(!data.ok) return await sweet.fire('Error al obtener la venta', data.msg, 'error');
+            if (!data.ok) return await sweet.fire('Error al obtener la venta', data.msg, 'error');
             venta = data.venta;
         } catch (error) {
             console.log(error.response.data.msg);
@@ -169,18 +193,18 @@ const eliminarVenta = async (e) => {
             venta.afip.cae = res.cae;
             venta.afip.vencimiento = res.vencimiento;
             venta.notaCredito = true;
-            
+
             let aux;
             try {
                 const { data } = await axios.patch(`${URL}venta/notaCredito/${venta._id}`);
-                if(!data.ok) return await sweet.fire('Error al cargar la nota de credito', data.msg, 'error');
+                if (!data.ok) return await sweet.fire('Error al cargar la nota de credito', data.msg, 'error');
                 aux = data.venta;
             } catch (error) {
                 console.log(error.reponse.data.msg);
                 await sweet.fire('Error al cargar la nota de credito', error.response.data.msg, 'error');
             };
-            
-            
+
+
             delete venta._id;
 
             //Modificamos la lista de prodcutos para hacer que el movimiento se ponga en negativo
@@ -202,7 +226,7 @@ const eliminarVenta = async (e) => {
 
             const { data } = await axios.delete(`${URL}venta/${id}`);
 
-            if(data.ok){
+            if (data.ok) {
                 ventas = ventas.filter(elem => elem._id !== data.ventaEliminada._id);
                 const trEliminado = document.getElementById(`${data.ventaEliminada._id}`);
 
@@ -214,19 +238,35 @@ const eliminarVenta = async (e) => {
                 };
                 tbody.removeChild(trEliminado);
                 total.value = redondear(parseFloat(total.value) - parseFloat(trEliminado.children[6].innerText), 2);
-            }else{
+            } else {
                 await sweet.fire('Error al eliminar la venta', 'No se pudo eliminar la venta', 'error');
             }
         }
     }
 };
 
+const restaurarVenta = async (e) => {
+    const target = e.target.parentNode.parentNode;
+    const id = target.id;
+
+    const { isConfirmed } = await Swal.fire({
+        title: 'Quiere restaurar venta?',
+        showCancelButton: true,
+        confirmButtonText: 'Aceptar'
+    });
+
+    if (isConfirmed) {
+        await axios.patch(`${URL}venta/restaurar/${id}`);
+        tbody.removeChild(target);
+    };
+
+}
+
 const verQueTraer = async () => {
-    console.log(botonSeleccionado);
     if (botonSeleccionado.classList.contains("botonDia")) {
-        
+
         if (filtro === "Ingresos") {
-            const { data} = await axios.get(`${URL}venta/day/${fecha.value}`)
+            const { data } = await axios.get(`${URL}venta/day/${fecha.value}`)
             return ([...data.ventas]);
         } else if (filtro === "Presupuestos") {
             presupuestos = (await axios.get(`${URL}presupuesto/forDay/${fecha.value}`)).data;
@@ -235,11 +275,11 @@ const verQueTraer = async () => {
             return ((await axios.get(`${URL}gastos/dia/${fecha.value}`)).data);
         }
     } else if (botonSeleccionado.classList.contains("botonMes")) {
-        
+
         if (filtro === "Ingresos") {
             const { data } = await axios.get(`${URL}venta/mes/${selectMes.value}`);
 
-            if(data.ok){
+            if (data.ok) {
                 return ([...data.ventas]);
             }
         } else {
@@ -249,7 +289,7 @@ const verQueTraer = async () => {
         if (filtro === "Ingresos") {
             const { data } = await axios.get(`${URL}venta/anio/${inputAnio.value}`);
 
-            if(data.ok){
+            if (data.ok) {
                 return ([...data.ventas])
             };
         } else {
@@ -315,14 +355,14 @@ botonMes.addEventListener('click', async e => {
     //vemos que tipo de filtro es y ahi vemos si traemos los ingresos o gastos
     if (filtro === "Ingresos") {
         const { data } = await axios.get(`${URL}venta/mes/${selectMes.value}`);
-        if(data.ok){
+        if (data.ok) {
             ventas = data.ventas;
             listarVentas(ventas);
-        }else{
+        } else {
             await sweet.fire('Error al traer las ventas', 'No se pudieron obtener las ventas', 'error');
         };
 
-        
+
     } else {
         gastos = (await axios.get(`${URL}gastos/mes/${selectMes.value}`)).data;
         listarGastos(gastos);
@@ -338,12 +378,12 @@ botonAnio.addEventListener('click', async e => {
     mes.classList.add('none');
 
     botonSeleccionado.classList.add('seleccionado');
-    
+
     const { data } = await axios.get(`${URL}venta/anio/${inputAnio.value}`);
-    if(data.ok){
+    if (data.ok) {
         ventas = data.ventas;
     }
-    
+
     listarVentas(ventas);
 });
 
@@ -353,19 +393,19 @@ fecha.addEventListener('keypress', async e => {
         if (data.ok) {
             ventas = data.ventas;
             listarVentas(ventas);
-        }else{
+        } else {
             await sweet.fire('Error al traer las ventas', 'No se pudieron obtener las ventas', 'error');
-        };    
-        
+        };
+
     }
 });
 
 selectMes.addEventListener('click', async e => {
-    const  { data } = await axios.get(`${URL}venta/mes/${selectMes.value}`);
-    if(data.ok){
+    const { data } = await axios.get(`${URL}venta/mes/${selectMes.value}`);
+    if (data.ok) {
         ventas = data.ventas;
-        listarVentas(ventas);   
-    }else{
+        listarVentas(ventas);
+    } else {
         await sweet.fire('Error al traer las ventas', 'No se pudieron obtener las ventas', 'error');
     };
 });
@@ -374,11 +414,11 @@ inputAnio.addEventListener('keypress', async e => {
     if (e.key === "Enter") {
         const { data } = await axios.get(`${URL}venta/anio/${inputAnio.value}`);
 
-        if(data.ok){
+        if (data.ok) {
             ventas = data.ventas;
             listarVentas(ventas);
         }
-        
+
     }
 });
 
@@ -410,7 +450,7 @@ tbodyGastos.addEventListener('click', e => {
 
 const listarVentas = async (ventas) => {
     tbody.innerHTML = ``;
-    let lista = []; 
+    let lista = [];
     //organizamos las ventas por fecha
     ventas.sort((a, b) => {
         if (a.fecha > b.fecha) {
@@ -433,7 +473,7 @@ const listarVentas = async (ventas) => {
     };
 
 
-    if(facturas.checked){
+    if (facturas.checked) {
         lista = lista.filter(venta => venta.tipo_comp === 'Factura C' || venta.tipo_comp === 'Nota Credito C')
     };
 
@@ -443,19 +483,19 @@ const listarVentas = async (ventas) => {
         const tr = document.createElement('tr');
         tr.id = venta._id;
         tr.classList.add('bold');
-        if(venta.eliminada){
+        if (venta.eliminada) {
             tr.classList.add('eliminada');
         }
 
         let textoDispositivo = '';
 
-        if(venta.dispositivo === 'DESKTOP'){
+        if (venta.dispositivo === 'DESKTOP') {
             textoDispositivo = 'PC';
-        }else if(venta.dispositivo === 'MOBILE'){
+        } else if (venta.dispositivo === 'MOBILE') {
             textoDispositivo = 'CELULAR';
-        }else if(venta.dispositivo === 'WEB'){
+        } else if (venta.dispositivo === 'WEB') {
             textoDispositivo = 'WEB';
-        }else{
+        } else {
             textoDispositivo = 'PC';
         }
 
@@ -472,11 +512,17 @@ const listarVentas = async (ventas) => {
 
         const buttonAccion = document.createElement('button');
 
-        buttonAccion.addEventListener('click', eliminarVenta);
+        if (eliminadas) {
+            buttonAccion.addEventListener('click', restaurarVenta);
+        } else {
+            buttonAccion.addEventListener('click', eliminarVenta);
+        }
 
         tdAccion.classList.add('tool');
         buttonAccion.classList.add('material-icons')
-        if (venta.F) {
+        if (eliminadas) {
+            buttonAccion.innerText = 'update';
+        } else if (venta.F) {
             buttonAccion.innerText = venta.tipo_comp === 'Factura C' ? 'assignment' : '';
         } else {
             buttonAccion.innerText = 'delete';

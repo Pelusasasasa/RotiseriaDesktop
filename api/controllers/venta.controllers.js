@@ -8,12 +8,12 @@ const Venta = require('../models/Venta');
 const Producto = require('../models/Producto');
 const { imprimirVenta } = require('../helpers/generarImagenDesdeHTML');
 
-ventaCTRL.deleteVenta = async(req, res) => {
+ventaCTRL.deleteVenta = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const ventaEliminada = await Venta.findByIdAndUpdate(id, {eliminada: true}, {new: true});
-        if(!ventaEliminada) return res.status(404).json({
+        const ventaEliminada = await Venta.findByIdAndUpdate(id, { eliminada: true }, { new: true });
+        if (!ventaEliminada) return res.status(404).json({
             ok: false,
             msg: 'No se encontró la venta',
         });
@@ -31,10 +31,10 @@ ventaCTRL.deleteVenta = async(req, res) => {
     }
 };
 
-ventaCTRL.getAll = async(req, res) => {
+ventaCTRL.getAll = async (req, res) => {
     try {
         const ventas = await Venta.find();
-        
+
         res.status(200).json({
             ok: true,
             ventas
@@ -44,12 +44,12 @@ ventaCTRL.getAll = async(req, res) => {
         res.status(500).json({
             ok: false,
             msg: 'No se pudo obtener las ventas, hable con el administrador',
-            
+
         })
     }
 };
 
-ventaCTRL.getFacturas = async(req, res) => {
+ventaCTRL.getFacturas = async (req, res) => {
     const { desde, hasta } = req.params;
     const inicioDia = new Date(`${desde}T00:00:00`);
     const finDia = new Date(`${hasta}T23:59:59`);
@@ -57,13 +57,13 @@ ventaCTRL.getFacturas = async(req, res) => {
     try {
         const ventas = await Venta.find({
             $and: [
-                { fecha: { $gte: inicioDia }},
-                { fecha: { $lte: finDia }},
-                { F: true}
+                { fecha: { $gte: inicioDia } },
+                { fecha: { $lte: finDia } },
+                { F: true }
             ]
         });
 
-        if(!ventas || ventas.length === 0) return res.status(404).json({
+        if (!ventas || ventas.length === 0) return res.status(404).json({
             ok: false,
             msg: 'No se encontraron facturas para esta fecha',
         });
@@ -82,8 +82,8 @@ ventaCTRL.getFacturas = async(req, res) => {
     }
 };
 
-ventaCTRL.getForDia = async(req, res) => {
-    const {fecha} = req.params;
+ventaCTRL.getForDia = async (req, res) => {
+    const { fecha } = req.params;
     try {
         const fechaBase = new Date(`${fecha}T00:00:00-03:00`)
         const inicioDia = new Date(fechaBase);
@@ -94,7 +94,7 @@ ventaCTRL.getForDia = async(req, res) => {
             $and: [
                 { fecha: { $gte: inicioDia } },
                 { fecha: { $lte: finDia } },
-                {eliminada: { $ne: true }}
+                { eliminada: { $ne: true } }
             ]
         });
 
@@ -108,16 +108,16 @@ ventaCTRL.getForDia = async(req, res) => {
         console.error(error);
         res.status(500).json({
             ok: false,
-            msg: 'No se pudo obtener las ventas del dia, hable con el administrador',  
+            msg: 'No se pudo obtener las ventas del dia, hable con el administrador',
         })
     }
 };
 
-ventaCTRL.getVentasEliminadas = async(req, res) => {
+ventaCTRL.getVentasEliminadas = async (req, res) => {
     try {
         const ventas = await Venta.find({
             $and: [
-                {eliminada: true }
+                { eliminada: true }
             ]
         });
 
@@ -134,15 +134,15 @@ ventaCTRL.getVentasEliminadas = async(req, res) => {
     }
 }
 
-ventaCTRL.getForMes = async(req, res) => {
-    const {fecha} = req.params;
+ventaCTRL.getForMes = async (req, res) => {
+    const { fecha } = req.params;
 
     try {
 
         const anio = new Date().getFullYear();
         const mesActual = parseInt(fecha);
         const siguienteMes = mesActual + 1;
-        
+
 
         const inicioMes = new Date(`${anio}-${mesActual.toString().padStart(2, '0')}-01T00:00:00-03:00`);
         const finMes = new Date(`${siguienteMes > 12 ? anio + 1 : anio}-${(siguienteMes % 13 || 1).toString().padStart(2, '0')}-01T00:00:00-03:00`);
@@ -151,11 +151,11 @@ ventaCTRL.getForMes = async(req, res) => {
             $and: [
                 { fecha: { $gte: inicioMes } },
                 { fecha: { $lt: finMes } },
-                {eliminada: { $ne: true }}
+                { eliminada: { $ne: true } }
             ]
         });
 
-        if(!ventas || ventas.length === 0)return res.status(404).json({
+        if (!ventas || ventas.length === 0) return res.status(404).json({
             ok: false,
             msg: 'No se encontraron ventas para este mes',
         });
@@ -168,13 +168,13 @@ ventaCTRL.getForMes = async(req, res) => {
         console.error(error);
         res.status(500).json({
             ok: false,
-            msg: 'No se pudo obtener las ventas del mes, hable con el administrador',  
+            msg: 'No se pudo obtener las ventas del mes, hable con el administrador',
         })
     }
 
 };
 
-ventaCTRL.getforAnio = async(req, res) => {
+ventaCTRL.getforAnio = async (req, res) => {
     const { fecha } = req.params;
 
     try {
@@ -185,11 +185,11 @@ ventaCTRL.getforAnio = async(req, res) => {
             $and: [
                 { fecha: { $gte: inicioYear } },
                 { fecha: { $lte: finYear } },
-                {eliminada: { $ne: true }}
+                { eliminada: { $ne: true } }
             ]
-        }); 
+        });
 
-        if(!ventas || ventas.length === 0)return res.status(404).json({
+        if (!ventas || ventas.length === 0) return res.status(404).json({
             ok: false,
             msg: 'No se encontraron ventas para este año',
         });
@@ -202,18 +202,18 @@ ventaCTRL.getforAnio = async(req, res) => {
         console.error(error);
         res.status(500).json({
             ok: false,
-            msg: 'No se pudo obtener las ventas del año, hable con el administrador',  
+            msg: 'No se pudo obtener las ventas del año, hable con el administrador',
         })
     }
 
 };
 
-ventaCTRL.getOne = async(req, res) => {
+ventaCTRL.getOne = async (req, res) => {
     const { id } = req.params;
     try {
         const venta = await Venta.findById(id);
 
-        if(!venta){
+        if (!venta) {
             return res.status(404).json({
                 ok: false,
                 msg: 'No se encontró la venta',
@@ -233,12 +233,13 @@ ventaCTRL.getOne = async(req, res) => {
     }
 };
 
-ventaCTRL.notaCreditoTrue = async(req, res) => {
+
+ventaCTRL.notaCreditoTrue = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const venta = await Venta.findOneAndUpdate({_id: id}, { notaCredito: true }, { new: true });
-        if(!venta){
+        const venta = await Venta.findOneAndUpdate({ _id: id }, { notaCredito: true }, { new: true });
+        if (!venta) {
             return res.status(404).json({
                 ok: false,
                 msg: 'No se encontró la venta',
@@ -259,22 +260,22 @@ ventaCTRL.notaCreditoTrue = async(req, res) => {
     }
 };
 
-ventaCTRL.postOne = async(req, res) => {
+ventaCTRL.postOne = async (req, res) => {
 
     const { listaProductos, tipo_comp, imprimirCliente, F, dispositivo } = req.body;
-    
+
     try {
 
         const numero = await getNextNumberContado();
         const nPedido = await getNextNumberPedido(tipo_comp);
 
-        listaProductos.forEach(async({producto, cantidad}) => {
-            if(producto._id){    
-            await Producto.findOneAndUpdate(
-                { _id: producto._id },
-                { $inc: { stock: -cantidad } },
-                { new: true }
-            );
+        listaProductos.forEach(async ({ producto, cantidad }) => {
+            if (producto._id) {
+                await Producto.findOneAndUpdate(
+                    { _id: producto._id },
+                    { $inc: { stock: -cantidad } },
+                    { new: true }
+                );
             };
         })
 
@@ -291,9 +292,9 @@ ventaCTRL.postOne = async(req, res) => {
         await newVenta.save();
         await imprimirVenta(newVenta);
 
-        
 
-        if(imprimirCliente){
+
+        if (imprimirCliente) {
             await imprimirVenta(newVenta);
         };
 
@@ -301,14 +302,38 @@ ventaCTRL.postOne = async(req, res) => {
         res.status(201).json({
             ok: true,
             venta: newVenta
-        });    
-        
+        });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({
             ok: false,
             msg: 'No se pudo cargar la venta, hable con el administrador',
             error
+        })
+    }
+};
+
+ventaCTRL.restaurarVenta = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const venta = await Venta.findOneAndUpdate({ _id: id }, { eliminada: false }, { new: true });
+        if (!venta) return res.status({
+            ok: false,
+            msg: 'No existe la venta'
+        });
+
+
+        res.status(200).json({
+            ok: true,
+            venta
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'No se pudo restaurar la venta, hable con el administrador'
         })
     }
 };
