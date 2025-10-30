@@ -8,9 +8,9 @@ const sharp = require('sharp');
 
 async function generarImagenDesdeHTML(venta) {
     const browser = await puppeteer.launch();
-    const page = await browser.newPage(); 
+    const page = await browser.newPage();
     const html =
-    `
+        `
         <html>
             <head>
                 <style>
@@ -24,8 +24,8 @@ async function generarImagenDesdeHTML(venta) {
                 </div>
 
                 <div id='encabezado' class='border-b border-gray-800 pb-1'>
-                    ${venta.F 
-                        ? `
+                    ${venta.F
+            ? `
                             <p>Razon Social: AYALA NORMA BEATRIZ</p>
                             <p>Domicilio Comercial: 9 de Julio 4080</p>
                             <p>CUIT: 27272214900</p>
@@ -33,8 +33,8 @@ async function generarImagenDesdeHTML(venta) {
                             <p>Inicio de actividades: 01/01/2021</p>
                             <p>Conmidicion Frente Iva: Responsable Monotributo</p>
                             <p>Factura C: ${venta.afip.puntoVenta.padStart(4, '0')}-${venta.afip.numero.toString().padStart(8, '0')}</p>
-                        ` 
-                        : `
+                        `
+            : `
                             <p>Comprobante: ${venta.numero.toString().padStart(8, '0')}</p>
                         `}
                     
@@ -76,8 +76,8 @@ async function generarImagenDesdeHTML(venta) {
                         <div id='varios' class='border-b border-gray-800 pb-1'>
                             <p class='text-2xl'>Observaciones: ${venta.observaciones}</p>
                         </div>
-                        ` 
-                        : ''}
+                        `
+            : ''}
 
                 <div id='forma'>
                     <p class='mb-1 mt-5 text-2xl'>Forma de pago: ${venta.tipo_pago}</p>
@@ -89,19 +89,19 @@ async function generarImagenDesdeHTML(venta) {
                     <p class='font-bold text-2xl text-sans'>*Gracias por su compra*</p>
                 </div>
 
-                ${venta.F 
-                    ? ` <div class='flex justify-center gap-4 mt-4'>
+                ${venta.F
+            ? ` <div class='flex justify-center gap-4 mt-4'>
                         <p class='text-lg'>CAE: ${venta.afip.cae}</p>
                         <p class='text-lg'>Vencimiento CAE: ${venta.afip.vencimiento}</p>
                     </div>`
-                    : ''
-                }
+            : ''
+        }
             </body>
         </html>
     `;
 
     await page.setContent(html, { waitUntil: 'networkidle0' });
-    const buffer = await page.screenshot({ type:'png', fullPage: true});
+    const buffer = await page.screenshot({ type: 'png', fullPage: true });
     const pdfPath = path.join(process.cwd(), `factura.pdf`);
     await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
     await browser.close();
@@ -109,23 +109,23 @@ async function generarImagenDesdeHTML(venta) {
     return buffer;
 };
 
-async function mostrarEnElNavegador(html){
+async function mostrarEnElNavegador(html) {
     const filePath = path.join(process.cwd(), 'ticket.html');
     fs.writeFileSync(filePath, html, 'utf-8');
 }
 
 async function imprimirVenta(venta) {
     let printer = new ThermalPrinter({
-            type: PrinterTypes.EPSON,
-            interface: '//localhost/POS-80C'
-            //interface: 'tcp://192.168.0.15:6001'
+        type: PrinterTypes.EPSON,
+        interface: '//localhost/POS-80C'
+        //interface: 'tcp://192.168.0.15:6001'
     });
 
     //Redimensionar imagen
     const resizedImagePath = 'img/reducida.png';
-    
+
     await sharp('img/Logo.png')
-        .resize({width: 200})
+        .resize({ width: 200 })
         .toFile(resizedImagePath)
 
     const imagenBuffer = await generarImagenDesdeHTML(venta);
@@ -143,8 +143,12 @@ async function imprimirVenta(venta) {
     });
 
     await printer.cut();
-    await printer.execute();
-    console.log("✅ Ticket impreso");
+    try {
+        await printer.execute();
+        console.log("✅ Ticket impreso");
+    } catch (error) {
+        console.error("❌ Error al imprimir ticket:", error.message || error);
+    };
 };
 
 module.exports = {
