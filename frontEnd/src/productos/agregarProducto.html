@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,88 +9,96 @@
     <link rel="stylesheet" href="../assets/global.css">
     <link rel="stylesheet" href="productos.css">
 </head>
+
 <body class="agregarProducto h-screen m-0">
-        <section id="titulo m-0">
-            <h1>Agregar Producto</h1>
-        </section>
+    <section id="titulo m-0">
+        <h1>Agregar Producto</h1>
+    </section>
 
-        <fieldset>
-            <legend>Identificador</legend>
-            <section class="identificador">
-                <div class="input">
-                    <label for="codigo">Codigo</label>
-                    <input type="text" autofocus name="codigo" id="codigo">
-                </div>
-        
-                <div class="input descripcion">
-                    <label for="descripcion">Descripcion</label>
-                    <input type="text" name="descripcion" id="descripcion">
-                </div>
-
-                <div class="input secciones">
-                    <label for="secciones">Secciones</label>
-                    <select name="secciones" id="secciones">
-                        <option value="">--Seleccionar--</option>
-                    </select>
-                </div>
-            </section>
-        </fieldset>
-
-        <fieldset>
-            <legend>Informacion</legend>
-            <section class="informacion">
-                <div class="input">
-                    <label for="provedor">Provedor</label>
-                    <input type="text" name="provedor" id="provedor">
-                </div>
-                <div class="input">
-                    <label for="img">Imagen</label>
-                    <input type="file" name="img" id="img">
-                </div>
-                <div class="input">
-                    <label for="sinStock">Sin Stock</label>
-                    <input type="checkbox" id="sinStock" name="sinStock">
-                </div>
-                <div class="input">
-                    <label for="stock">Stock</label>
-                    <input type="number" value="0.00" name="stock" id="stock">
-                </div>
-            </section>
-        </fieldset>
-        
-        <fieldset>
-            <legend>Total</legend>
-
-            <section class="total">
-                <div class="input">
-                    <label for="costo">Costo</label>
-                    <input type="number" value="0.00" name="costo" id="costo"> 
-                </div>
-                
-                <div class="input">
-                    <label for="total">Total</label>
-                    <input type="number" value="0.00" name="total" id="total"> 
-                </div>
-
-                <div class="input">
-                    <label for="ganancia">Ganancia %</label>
-                    <input type="number" value="0.00" name="ganancia" id="ganancia"> 
-                </div>
-                
-            </section>
-        </fieldset>
-        
-        <main class="botones mt-auto mb-1">
-            <button class="guardar">Guardar Producto</button>
-            <button class="salir">Salir</button>
-        </main>
-
-        <div id="modal" class="none">
-            <div id="divSpinner">
-                <div class="spinner"></div>
-                <p id="textSpinner">Guardando...</p>
+    <fieldset>
+        <legend>Identificador</legend>
+        <section class="identificador">
+            <div class="input">
+                <label for="codigo">Codigo</label>
+                <input type="text" autofocus name="codigo" id="codigo">
             </div>
+
+            <div class="input descripcion">
+                <label for="descripcion">Descripcion</label>
+                <input type="text" name="descripcion" id="descripcion">
+            </div>
+
+            <div class="input secciones">
+                <label for="secciones">Secciones</label>
+                <select name="secciones" id="secciones">
+                    <option value="">--Seleccionar--</option>
+                </select>
+            </div>
+        </section>
+    </fieldset>
+
+    <fieldset>
+        <legend>Informacion</legend>
+        <section class="informacion">
+            <div class="input">
+                <label for="provedor">Provedor</label>
+                <input type="text" name="provedor" id="provedor">
+            </div>
+            <div class="input">
+                <label for="img">Imagen</label>
+                <input type="file" name="img" id="img">
+            </div>
+            <div class="input">
+                <label for="sinStock">Sin Stock</label>
+                <input type="checkbox" id="sinStock" name="sinStock">
+            </div>
+            <div class="input">
+                <label for="stock">Stock</label>
+                <input type="number" value="0.00" name="stock" id="stock">
+            </div>
+        </section>
+    </fieldset>
+
+    <fieldset>
+        <legend>Total</legend>
+
+        <section class="total">
+            <div class="input">
+                <label for="costo">Costo</label>
+                <input type="number" value="0.00" name="costo" id="costo">
+            </div>
+
+            <div class="input">
+                <label for="total">Total</label>
+                <input type="number" value="0.00" name="total" id="total">
+            </div>
+
+            <div class="input">
+                <label for="ganancia">Ganancia %</label>
+                <input type="number" value="0.00" name="ganancia" id="ganancia">
+            </div>
+
+        </section>
+    </fieldset>
+
+    <fieldset>
+        <legend>Observaciones</legend>
+        <Textarea name="observaciones" id="observaciones" cols="10" class="w-full text-xl font-bold"
+            rows="5"></Textarea>
+    </fieldset>
+
+    <main class="botones mt-auto mb-1">
+        <button class="guardar">Guardar Producto</button>
+        <button class="salir">Salir</button>
+    </main>
+
+    <div id="modal" class="none">
+        <div id="divSpinner">
+            <div class="spinner"></div>
+            <p id="textSpinner">Guardando...</p>
         </div>
+    </div>
 </body>
 <script src="./agregarProducto.js"></script>
+
 </html>

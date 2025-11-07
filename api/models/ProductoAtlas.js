@@ -16,8 +16,8 @@ const ProductoAtlasSchema = new Schema({
         type: Number,
         required: true
     },
-    sinStock:{
-        type:Boolean,
+    sinStock: {
+        type: Boolean,
         default: false
     },
     imgCloudinaryPath: {
@@ -27,6 +27,11 @@ const ProductoAtlasSchema = new Schema({
     seccion: {
         type: Schema.Types.ObjectId,
         ref: 'Seccion',
+        default: ''
+    },
+    observaciones: {
+        type: String,
+        trim: true,
         default: ''
     }
 }, {

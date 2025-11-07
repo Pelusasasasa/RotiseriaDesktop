@@ -1,13 +1,13 @@
-const {Schema, model} = require('mongoose');
+const { Schema, model } = require('mongoose');
 
 const Producto = new Schema({
-    _id:{
+    _id: {
         type: String,
-        required:true
+        required: true
     },
-    descripcion:{
+    descripcion: {
         type: String,
-        required:true,
+        required: true,
         trim: true,
         set: value => value.toUpperCase()
     },
@@ -23,29 +23,34 @@ const Producto = new Schema({
         type: Number,
         required: true,
     },
-    ganancia:{
+    ganancia: {
         type: Number,
-        required:true
+        required: true
     },
-    precio:{
-        type:Number,
-        required:true
+    precio: {
+        type: Number,
+        required: true
     },
-    sinStock:{
-        type:Boolean,
+    sinStock: {
+        type: Boolean,
         default: false
     },
     imgCloudinaryPath: {
         type: String,
         default: ''
     },
-    seccion:{
+    seccion: {
         type: Schema.Types.ObjectId,
         ref: 'Seccion',
+        default: ''
+    },
+    observaciones: {
+        type: String,
+        trim: true,
         default: ''
     }
 }, {
     timestamps: true,
 });
 
-module.exports = model('Producto',Producto);
+module.exports = model('Producto', Producto);
