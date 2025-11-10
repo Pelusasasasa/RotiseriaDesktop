@@ -1,0 +1,77 @@
+#boton_abrir_mesa {
+    background-color: green;
+}
+
+#modal {
+    position: absolute;
+    opacity: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalContainer {
+    padding: 2rem 4rem;
+    border-radius: 1rem;
+    background-color: white;
+    width: 50rem;
+}
+
+
+#modal h4 {
+    margin: 0;
+    margin-bottom: 1rem;
+    color: #374151;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+
+.mesaModal {
+    border: .1rem solid gray;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.mesaModal:hover {
+    cursor: pointer;
+    background-color: rgb(104, 153, 30);
+    color: white;
+}
+
+.mesaAbierta {
+    border: .1rem solid gray;
+    border-radius: 8px;
+    text-align: center;
+    background-color: #FFF;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.mesaAbierta:hover {
+    cursor: pointer;
+}
+
+
+.mesaAbierta span {
+    color: #15803d;
+    font-weight: bold;
+}
+
+#mesas_abiertas {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+}
+
+
+.modalMesaAbierta {
+    background-color: #15803d;
+    --tw-ring-color: #15803d;
+    border-color: white;
+    border-width: .2rem;
+    box-shadow: 0 0 0 4px #15803d, 0 2px 8px;
+    color: white;
+}
+
+.modalMesaAbierta span {
+    font-size: 1.1rem;
+}

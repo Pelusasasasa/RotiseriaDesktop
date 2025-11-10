@@ -1,0 +1,38 @@
+### Obtener todas las mesas
+GET http://localhost:4000/rotiseria/mesa
+Content-Type: application/json
+
+###
+
+### Crear una nueva mesa
+POST http://localhost:4000/rotiseria/mesa
+Content-Type: application/json
+
+{
+  "nombre": "1",
+  "cliente": "Consumidor Final",
+  "precio": 1500,
+  "dispositivo": "Desktop",
+  "observaciones": "",
+  "estado": "cerrado",
+  "productos": []
+
+}
+
+###
+
+### Actualizar una mesa por ID
+PUT http://localhost:4000/rotiseria/mesa/690f334ee77fccadde7dea29
+Content-Type: application/json
+
+{
+  "nombre": "Mesa Actualizada",
+  "cantidad": 10
+}
+
+###
+
+### Eliminar una mesa por ID
+DELETE http://localhost:4000/rotiseria/mesa/690f3339e77fccadde7dea0e
+Content-Type: application/json
+

@@ -113,6 +113,18 @@ input:disabled {
   font-size: 2rem;
 }
 
+.text-2xl {
+  font-size: 4rem;
+}
+
+.text-3xl {
+  font-size: 6rem;
+}
+
+.text-4xl {
+  font-size: 8rem;
+}
+
 select {
   font-size: 2rem;
   padding: 0.5rem;
@@ -241,6 +253,7 @@ select {
 .object-contain {
   object-fit: contain;
 }
+
 /* Grid */
 
 .grid {
@@ -253,6 +266,14 @@ select {
 
 .colums-3 {
   grid-template-columns: repeat(3, 1fr);
+}
+
+.colums-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.colums-5 {
+  grid-template-columns: repeat(5, 1fr);
 }
 
 /* Grid */
@@ -374,6 +395,16 @@ select {
 .px-1 {
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+.py-1 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.py-2 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 .gap-1 {

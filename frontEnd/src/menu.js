@@ -1,4 +1,4 @@
-require('dotenv').config(); 
+require('dotenv').config();
 const { ipcRenderer } = require("electron");
 const axios = require('axios');
 const sweet = require('sweetalert2');
@@ -15,6 +15,7 @@ const clientes = document.querySelector('.clientes');
 const caja = document.querySelector('.caja');
 const productos = document.querySelector('.productos');
 const gastos = document.querySelector('.gastos');
+const mesas = document.querySelector('.mesas');
 
 let verVendedores;
 let contrasenaGasto;
@@ -25,11 +26,11 @@ window.addEventListener('load', async e => {
     let pedido;
     try {
         const { data } = await axios.get(`${URL}pedido`);
-        if(!data.ok ) return await sweet.fire('Error al traer pedido numeros', data.msg, 'error');
+        if (!data.ok) return await sweet.fire('Error al traer pedido numeros', data.msg, 'error');
         pedido = data.pedido;
     } catch (error) {
         console.log(error);
-        const { data } = await axios.post(`${URL}pedido`, {numero: 0, fecha: new Date().toISOString()});
+        const { data } = await axios.post(`${URL}pedido`, { numero: 0, fecha: new Date().toISOString() });
         pedido = data.pedido;
     };
 
@@ -37,7 +38,7 @@ window.addEventListener('load', async e => {
     const fecha = new Date();
     const hoy = (new Date(fecha.getTime() - fecha.getTimezoneOffset() * 60000).toISOString());
     const diaHoy = hoy.slice(8, 10);
-    
+
     if (!(diaPedido === diaHoy)) {
         pedido.numero = 0;
         pedido.fecha = hoy;
@@ -52,7 +53,7 @@ window.addEventListener('load', async e => {
 
     try {
         const { data } = await axios.get(`${URL}variable`);
-        if(!data.ok) return await sweet.fire('Error al traer variables', data.msg, 'error');
+        if (!data.ok) return await sweet.fire('Error al traer variables', data.msg, 'error');
         contrasenaGasto = data.variable.contrasenaGasto;
     } catch (error) {
         console.log(error.response.data.msg);
@@ -69,7 +70,7 @@ window.addEventListener('load', async e => {
 
         if (isConfirmed) {
             try {
-                const {data} = await axios.post(`${URL}variable`, { contrasenaGasto: value });
+                const { data } = await axios.post(`${URL}variable`, { contrasenaGasto: value });
                 if (!data.ok) return await sweet.fire('Error al guardar la contraseña', data.msg, 'error');
                 contrasenaGasto = data.variable.contrasenaGasto;
             } catch (error) {
@@ -78,7 +79,7 @@ window.addEventListener('load', async e => {
             }
         };
     };
-    
+
 });
 
 //Al tocar el atajo de teclado, abrimos ventanas
@@ -203,6 +204,10 @@ gastos.addEventListener('click', async e => {
 
 });
 
+mesas.addEventListener('click', async e => {
+    location.href = './mesas/mesa.html'
+});
+
 //ponemos un numero para la venta y luego mandamos a imprimirla
 ipcRenderer.on('poner-numero', async (e, args) => {
     ponerNumero();
@@ -227,12 +232,12 @@ ipcRenderer.on('actualizacion-descargada', () => {
     }
 });
 
-ipcRenderer.on('paginaWeb', async(e, args) => {
+ipcRenderer.on('paginaWeb', async (e, args) => {
     const { data } = await axios.get(`${URL}variable`);
     paginaWebAbierta = data.variable.paginaWebAbierto;
     const { isConfirmed } = await sweet.fire({
-        html: 
-        `
+        html:
+            `
             <select class='p-2 rounded-lg border mb-2' name=paginaWeb id='paginaWeb'}> 
                 <option ${paginaWebAbierta ? 'selected' : ''} value='true'>Reanudar Pagina</option>
                 <option ${!paginaWebAbierta ? 'selected' : ''} value='false'>Pausar Pagina</option>
@@ -242,12 +247,12 @@ ipcRenderer.on('paginaWeb', async(e, args) => {
         showCancelButton: true
     });
 
-    if(isConfirmed){
+    if (isConfirmed) {
         const valor = document.getElementById('paginaWeb');
         const bandera = valor.value === 'false' ? false : true;
         try {
-            const {data} = await axios.patch(`${URL}variable/tooglePaginaWeb`, {paginaWebAbierto: bandera});
-            if(data.ok){
+            const { data } = await axios.patch(`${URL}variable/tooglePaginaWeb`, { paginaWebAbierto: bandera });
+            if (data.ok) {
                 paginaWebAbierta = bandera;
             };
         } catch (error) {

@@ -22,6 +22,7 @@ app.use('/rotiseria/carta', require('./routes/carta.routes'));
 app.use('/rotiseria/categoriaGasto', require('./routes/categoriaGasto.routes'));
 app.use('/rotiseria/cliente', require('./routes/cliente.routes'));
 app.use('/rotiseria/gasto', require('./routes/gasto.routes'));
+app.use('/rotiseria/mesa', require('./routes/mesa.routes'));
 app.use('/rotiseria/numero', require('./routes/numero.routes'));
 app.use('/rotiseria/pedido', require('./routes/pedido.routes'));
 app.use('/rotiseria/producto', require('./routes/producto.routes'));
@@ -36,6 +37,7 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+    console.log(err)
     res.status(500).json({
         ok: false,
         msg: 'Error interno del servidor'

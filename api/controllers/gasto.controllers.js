@@ -1,13 +1,13 @@
-const { Types } = require("mongoose");
+
 const Gasto = require("../models/Gasto");
 const validarId = require("../helpers/validarId");
 
 const gastoCTRL = {};
 
-gastoCTRL.deleteOne = async(req, res) => {
+gastoCTRL.deleteOne = async (req, res) => {
     const { id } = req.params;
-    
-    if(!validarId(id)) {
+
+    if (!validarId(id)) {
         return res.status(400).json({
             ok: false,
             message: 'El ID del gasto no es valido'
@@ -16,7 +16,7 @@ gastoCTRL.deleteOne = async(req, res) => {
 
     try {
         const gastoEliminado = await Gasto.findByIdAndDelete(id);
-        if(!gastoEliminado) return res.status(404).json({
+        if (!gastoEliminado) return res.status(404).json({
             ok: false,
             message: 'No existe un gasto con ese ID'
         });
@@ -34,11 +34,11 @@ gastoCTRL.deleteOne = async(req, res) => {
     }
 };
 
-gastoCTRL.getGastos = async(req, res) => {
+gastoCTRL.getGastos = async (req, res) => {
     try {
         const gastos = await Gasto.find();
 
-        if(!gastos) return res.status(404).json({
+        if (!gastos) return res.status(404).json({
             ok: false,
             message: 'No existen gastos'
         });
@@ -57,18 +57,18 @@ gastoCTRL.getGastos = async(req, res) => {
 
 };
 
-gastoCTRL.getGastosForDate = async(req, res) => {
+gastoCTRL.getGastosForDate = async (req, res) => {
     const { desde, hasta } = req.params;
 
     try {
         const gastos = await Gasto.find({
             $and: [
                 { fecha: { $gte: new Date(`${desde}T00:00:00.000Z`) } },
-                {fecha: { $lte: new Date(`${hasta}T23:59:59.999Z`) }}
+                { fecha: { $lte: new Date(`${hasta}T23:59:59.999Z`) } }
             ]
         }).populate('categoria', 'nombre');
 
-        if(!gastos) return res.status(404).json({
+        if (!gastos) return res.status(404).json({
             ok: false,
             message: 'No existen gastos para las fechas indicadas'
         });
@@ -85,14 +85,14 @@ gastoCTRL.getGastosForDate = async(req, res) => {
         });
     }
 
-    
+
 };
 
-gastoCTRL.patchOne = async(req, res) => {
+gastoCTRL.patchOne = async (req, res) => {
     const { id } = req.params;
 
 
-    if(!validarId(id)) {
+    if (!validarId(id)) {
         return res.status(400).json({
             ok: false,
             message: 'El ID del gasto no es valido'
@@ -100,9 +100,9 @@ gastoCTRL.patchOne = async(req, res) => {
     }
 
     try {
-        const gastoModificado = await Gasto.findByIdAndUpdate(id, req.body, {new: true}).populate('categoria', 'nombre');;
+        const gastoModificado = await Gasto.findByIdAndUpdate(id, req.body, { new: true }).populate('categoria', 'nombre');;
 
-        if(!gastoModificado) return res.status(404).json({
+        if (!gastoModificado) return res.status(404).json({
             ok: false,
             message: 'No existe un gasto con ese ID'
         });
@@ -120,7 +120,7 @@ gastoCTRL.patchOne = async(req, res) => {
     }
 }
 
-gastoCTRL.postOne = async(req, res) => {
+gastoCTRL.postOne = async (req, res) => {
 
     try {
         const now = new Date();
