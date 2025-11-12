@@ -54,6 +54,7 @@
 
     <div id="venta" class="bg-white flex flex-col">
       <div class="flex justify-around items-center my-1">
+        <h3 id="tituloMesa" class="none">Mesa: </h3>
         <button id="manual">+ Manual</button>
         <span id="limpiar" class="text-destructive font-semibold p-1">Limpiar</span>
       </div>
@@ -87,9 +88,13 @@
     </div>
 
     <div id="productos">
-      <div class="buscador flex bg-white mt-1 mx-2 w-90">
-        <input type="text" class="w-full mb-1 px-1" placeholder="Buscar producto por descripcion..."
+      <div class="buscador flex bg-white mt-1 mx-2 mb-2  gap-2">
+        <input type="text" class="w-full mb-1 px-1 w-90" placeholder="Buscar producto por descripcion..."
           name="buscarProducto" autofocus id="buscarProducto">
+        <button class="flex items-center none" id="botonCambiarMesa">
+          <span class="material-icons">dashboard</span>
+          Cambiar Mesa
+        </button>
       </div>
 
       <section class="secciones overflow-auto m-0 bg-white">

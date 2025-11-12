@@ -32,6 +32,12 @@ const abrirMesa = async (e) => {
     }
 };
 
+const abrirVenta = async (e) => {
+    console.log(e.currentTarget)
+
+    location.href = `../venta/index.html?mesa=${e.currentTarget.id}`;
+}
+
 const cargarPagina = async () => {
     try {
         const { data } = await axios.get(`${URL}mesa`);
@@ -64,6 +70,7 @@ const listarMesasAbiertas = (mesas) => {
     mesas_abiertas.innerHTML = '';
     for (let mesa of mesas) {
         const div = document.createElement('div');
+        div.id = mesa._id;
 
         div.classList.add('mesaAbierta')
         div.classList.add('py-2')
@@ -71,6 +78,8 @@ const listarMesasAbiertas = (mesas) => {
         const h3 = document.createElement('h3');
         const nombre = document.createElement('p');
         const precio = document.createElement('span');
+
+        div.addEventListener('click', abrirVenta)
 
 
         h3.innerText = `Mesa ${mesa.nombre}`;

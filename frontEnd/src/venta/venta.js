@@ -46,6 +46,10 @@ const alerta = document.querySelector('.alerta');
 //body
 const body = document.querySelector('body');
 
+//Mesa
+const tituloMesa = document.getElementById('tituloMesa');
+const botonCambiarMesa = document.getElementById('botonCambiarMesa');
+
 //Modal
 const modal = document.getElementById('modal');
 const descripcionProducto = document.getElementById('descripcionProducto');
@@ -53,7 +57,7 @@ const precioProducto = document.getElementById('precioProducto');
 const impuestoProducto = document.getElementById('impuestoProducto');
 const aceptar = document.getElementById('aceptar');
 
-
+let mesaURL = getParameterByName('mesa');
 let tipoFactura = getParameterByName("tipoFactura");
 let facturaAnterior;
 
@@ -71,20 +75,24 @@ let precioEmpanadas = 0;
 let empanadas = 0;
 let descuentoPorDocena = false; //Se usa para que en el ticket si esto es true se muetre un texto que diga que se hizo un descuento por una docena y media
 
+
+//Guaradamos la mesa que tragaimos al buscar
+let mesa;
+
 const abrirModal = () => {
     modal.classList.remove('none');
 };
 
 const agregarItemCarrito = (e) => {
     const item = carrito.productos.findIndex(producto => producto.producto._id == e.target.id);
-    if(item === -1){
+    if (item === -1) {
         const producto = listaProductos.find(elem => elem._id === e.target.id);
         carrito.productos.push({
             cantidad: 1,
             producto: producto,
             observaciones: ''
         });
-    }else{
+    } else {
         carrito.productos[item].cantidad += 1
     };
 
@@ -94,15 +102,15 @@ const agregarItemCarrito = (e) => {
 
 const agregarMediaDocena = (e) => {
     const item = carrito.productos.findIndex(producto => producto.producto._id === e.target.id);
-    
-    if(item === -1){
+
+    if (item === -1) {
         const producto = listaProductos.find(elem => elem._id === e.target.id);
         carrito.productos.push({
             cantidad: 6,
             producto: producto,
             observaciones: ''
         });
-    }else{
+    } else {
         carrito.productos[item].cantidad += 6;
     }
 
@@ -111,15 +119,15 @@ const agregarMediaDocena = (e) => {
 
 const agregarDocena = (e) => {
     const item = carrito.productos.findIndex(producto => producto.producto._id === e.target.id);
-    
-    if(item === -1){
+
+    if (item === -1) {
         const producto = listaProductos.find(elem => elem._id === e.target.id);
         carrito.productos.push({
             cantidad: 12,
             producto: producto,
             observaciones: ''
         });
-    }else{
+    } else {
         carrito.productos[item].cantidad += 12;
     }
 
@@ -144,41 +152,52 @@ const agregarProductoManual = () => {
     precioProducto.value = '';
     modal.classList.add('none');
     listarProductos(carrito.productos);
-
-    
 };
 
 const buscarCliente = (e) => {
-    if(e.key === 'Enter'){
+    if (e.key === 'Enter') {
         listarCliente(e.target.value);
     }
 }
 
-const calcularTotal = async() => {
+const calcularTotal = async () => {
     let total = 0;
 
     let cantidadEmapandas = 0;
 
-    for(let item of carrito.productos){
-        if(item.producto?.seccion?.nombre === 'EMPANADAS'){
+    for (let item of carrito.productos) {
+        if (item.producto?.seccion?.nombre === 'EMPANADAS') {
             cantidadEmapandas += item.cantidad;
-        }else{
+        } else {
             total += item.producto.precio * item.cantidad
         }
     };
 
 
-    if(cantidadEmapandas > 0){
+    if (cantidadEmapandas > 0) {
         let docenas = Math.floor(cantidadEmapandas / 12);
         let resto = cantidadEmapandas % 12;
 
         let medias = Math.floor(resto / 6);
         let sueltas = resto % 6;
 
-        total += (docenas * precioEmpanadas.docena) + (medias * precioEmpanadas.mediaDocena) + (sueltas * 2000); 
+        total += (docenas * precioEmpanadas.docena) + (medias * precioEmpanadas.mediaDocena) + (sueltas * 2000);
     };
-    
+
     precioTotal.innerText = redondear(total, 2);
+
+    if (mesa) {
+        mesa.precio = precioTotal.innerText;
+        console.log(mesa)
+        await axios.put(`${URL}mesa/${mesaURL}`, mesa);
+    }
+};
+
+const cambiandoObservaciones = async () => {
+    if (mesa) {
+        mesa.observaciones = observaciones.value;
+        await axios.put(`${URL}mesa/${mesaURL}`, mesa);
+    }
 };
 
 //Lo usamos para mostrar o ocultar cuestiones que tiene que ver con las ventas
@@ -186,8 +205,8 @@ const cambiarSituacion = (situacion) => {
     situacion === "negro" ? tarjetaCredito.classList.add('none') : tarjetaCredito.classList.remove('none');
 };
 
-const clickEnCarrito = async(e) => {
-    if(e.target.id === 'limpiarProductoCarrito'){
+const clickEnCarrito = async (e) => {
+    if (e.target.id === 'limpiarProductoCarrito') {
         const elemento = e.target.parentNode.parentNode.parentNode;
         const id = elemento.id;
 
@@ -196,14 +215,14 @@ const clickEnCarrito = async(e) => {
     };
 
 
-    if(e.target.id === 'sumar'){
+    if (e.target.id === 'sumar') {
         const elemento = e.target.parentNode.parentNode.parentNode;
         const id = elemento.id;
 
         sumarElemento(id);
     }
 
-    if(e.target.id === 'restar'){
+    if (e.target.id === 'restar') {
         const elemento = e.target.parentNode.parentNode.parentNode;
         const id = elemento.id;
 
@@ -211,8 +230,8 @@ const clickEnCarrito = async(e) => {
     }
 };
 
-const clickModal = async(e) => {
-    if(e.target.classList.contains('cerrarModal')){
+const clickModal = async (e) => {
+    if (e.target.classList.contains('cerrarModal')) {
         modal.classList.add('none');
     }
 };
@@ -220,19 +239,16 @@ const clickModal = async(e) => {
 const filtrar = async (e) => {
     const descripcion = buscarProducto.value !== "" ? buscarProducto.value : "textoVacio";
     try {
-        const {data} = await axios.get(`${URL}producto/forSeccionAndDescription/${descripcion}/descripcion`);
-        if(data.ok){
+        const { data } = await axios.get(`${URL}producto/forSeccionAndDescription/${descripcion}/descripcion`);
+        if (data.ok) {
             listaProductos = data.productos;
             listarTarjetas(data.productos);
-        }else{
-            return await sweet.fire('Error al filtrar los productos', data.msg, 'error');  
-        } 
+        } else {
+            return await sweet.fire('Error al filtrar los productos', data.msg, 'error');
+        }
     } catch (error) {
-        return await sweet.fire('Error al filtrar los productos', data?.response?.data?.msg, 'error');  
+        return await sweet.fire('Error al filtrar los productos', data?.response?.data?.msg, 'error');
     };
-    
-    
-
 };
 
 const limpiarCarrito = () => {
@@ -242,16 +258,17 @@ const limpiarCarrito = () => {
 
 const listarCliente = async (id) => {
     codigo.value = id;
-    
+
     let cliente;
     try {
         const { data } = await axios.get(`${URL}cliente/${id}`);
         cliente = data.cliente;
-        if(!data.ok) return await sweet.fire('No se pudo obtener el cliente', data.msg, 'error');
+        if (!data.ok) return await sweet.fire('No se pudo obtener el cliente', data.msg, 'error');
     } catch (error) {
         console.log(error.response.data.msg);
         return await sweet.fire('No se pudo obtener el cliente', error.response.data.msg, 'error')
     };
+
     if (cliente !== "") {
         nombre.value = cliente.nombre;
         telefono.value = cliente.telefono;
@@ -259,29 +276,49 @@ const listarCliente = async (id) => {
         cuit.value = cliente.cuit === "" ? "00000000" : cliente.cuit;
         condicionIva.value = cliente.condicionIva ? cliente.condicionIva : "Consumidor Final";
 
+        if (mesa) {
+            mesa.cliente = cliente.nombre;
+            mesa.idCliente = cliente._id;
+
+            await axios.put(`${URL}mesa/${mesaURL}`, mesa);
+        }
+
     } else {
         codigo.value = "";
         codigo.focus();
     }
 };
 
-const listarProductos = (lista) => {
+const listarMesa = (mesa) => {
+    codigo.value = mesa.idCliente === '0' ? 1 : mesa.idCliente;
+    listarCliente(codigo.value);
+
+    tituloMesa.innerHTML += `${mesa.nombre}`;
+    carrito.productos = mesa.productos;
+    observaciones.value = mesa.observaciones;
+
+    listarProductos(mesa.productos);
+
+    facturar.innerHTML = `<button class="w-90">Cerrar Mesa</button>`
+};
+
+const listarProductos = async (lista) => {
 
     divCarrito.innerHTML = '';
 
-    if(lista.length === 0){
+    if (lista.length === 0) {
         total.classList.add('none');
         divCarrito.innerHTML = `
             <div class="flex w-full justify-center">
                 <p>El Carrito esta Vacio</p>
             </div>`
-            return
+        return
     }
 
 
     let div = document.createElement('div');
-    
-    for(let {cantidad, producto, observaciones} of lista){
+
+    for (let { cantidad, producto, observaciones } of lista) {
         div.innerHTML += `
             <div class='flex gap-2' id='tarjetaCarrito'>
                 <div class='w-20 h-10'>
@@ -308,21 +345,26 @@ const listarProductos = (lista) => {
 
     total.classList.remove('none');
     calcularTotal();
-    
+
     divCarrito.appendChild(div);
+
+    if (mesa) {
+        mesa.productos = carrito.productos.length > 0 ? [...carrito.productos] : mesa.productos;
+        const { data } = await axios.put(`${URL}mesa/${mesa._id}`, mesa);
+    };
 };
 
 const listarSecciones = (lista) => {
-    
+
     const fragment = document.createDocumentFragment();
 
-    for(let seccion of lista){
+    for (let seccion of lista) {
         const p = document.createElement('p');
         p.classList.add('rubro');
 
         p.innerText = seccion.nombre;
 
-        if(seccion.nombre === 'TODOS'){
+        if (seccion.nombre === 'TODOS') {
             p.classList.add('rubroActivo');
             seccionActivo = p;
         }
@@ -357,7 +399,6 @@ const listarTarjetas = async (productos) => {
         stock.classList.add('stock')
 
         const precio = document.createElement('p');
-
 
         precio.classList.add('precio');
 
@@ -408,12 +449,16 @@ const listarTarjetas = async (productos) => {
         div.appendChild(divBotones);
 
         seccionTarjetas.appendChild(div);
-        
     }
 };
 
-const quitarElemento = (id) => {
+const quitarElemento = async (id) => {
     carrito.productos = carrito.productos.filter(elem => elem.producto._id != id);
+
+    if (mesa) {
+        mesa.productos = [...carrito.productos];
+        await axios.put(`${URL}mesa/${mesa._id}`, mesa);
+    };
     calcularTotal();
 };
 
@@ -447,16 +492,15 @@ window.addEventListener('load', async e => {
     situacion = situacion === 'blanco' ? 'negro' : 'blanco';
     body.classList.toggle('negro');
     cambiarSituacion(situacion);
-    console.log(situacion);
-        
+
     listarCliente(1);//listanos los clientes
 
     try {
         const { data } = await axios.get(`${URL}carta`);
-        if(!data.ok) return await sweet.fire('No se pudo obtener la carta empanada', data.msg, 'error');
+        if (!data.ok) return await sweet.fire('No se pudo obtener la carta empanada', data.msg, 'error');
 
         precioEmpanadas = data.carta;
-        
+
         filtrar();
     } catch (error) {
         console.log(error?.response?.data?.msg);
@@ -465,17 +509,31 @@ window.addEventListener('load', async e => {
 
     try {
         const { data } = await axios.get(`${URL}seccion`);
-        if(data.ok){
+        if (data.ok) {
             listarSecciones(data.secciones)
-        }else{
+        } else {
             return await sweet.fire('No se pudo obtener las secciones', data.msg, 'error');
         };
     } catch (error) {
         console.log(error);
     };
+
+    if (mesaURL) {
+        botonCambiarMesa.classList.remove('none');
+        tituloMesa.classList.remove('none');
+
+        const { data } = await axios.get(`${URL}mesa/${mesaURL}`);
+        if (data.ok) {
+            mesa = data.mesa
+            listarMesa(mesa)
+        } else {
+            await Swal.fire('Erro al botener la mesa', data.msg, 'error');
+        }
+
+    }
 });
 
-aceptar.addEventListener('click', agregarProductoManual )
+aceptar.addEventListener('click', agregarProductoManual)
 
 buscarProducto.addEventListener('keyup', filtrar);
 
@@ -532,10 +590,10 @@ tarjetaCredito.addEventListener('click', () => {
 
 facturar.addEventListener('click', async e => {
     //Verificamos los datos para la venta si estan correctos
-    if(!verificarDatosParaventa()) return;
-    
+    if (!verificarDatosParaventa()) return;
+
     alerta.classList.remove('none');
-    
+
     const venta = {};
 
     venta.cliente = nombre.value;
@@ -551,7 +609,7 @@ facturar.addEventListener('click', async e => {
     venta.condicionIva = condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value
     venta.observaciones = observaciones.value
 
-     //Ponemos propiedades para la factura electronica
+    //Ponemos propiedades para la factura electronica
     venta.cod_comp = situacion === "blanco" ? await verCodigoComprobante(tipoFactura, cuit.value, condicionIva.value === "Responsable Inscripto" ? "Inscripto" : condicionIva.value) : 0;
     venta.tipo_comp = situacion === "blanco" ? await verTipoComprobante(venta.cod_comp) : "Comprobante";
 
@@ -564,7 +622,11 @@ facturar.addEventListener('click', async e => {
     venta.gravado105 = gravado105;
     venta.cantIva = cantIva;
     venta.facturaAnterior = facturaAnterior ? facturaAnterior : "";
-    
+
+    if (mesa) {
+        venta.mesa = mesaURL;
+    };
+
     if (situacion === "blanco") {
         alerta.classList.remove('none');
         venta.afip = await cargarFactura(venta, facturaAnterior ? true : false);
@@ -573,26 +635,30 @@ facturar.addEventListener('click', async e => {
         venta.F = false;
         alerta.children[1].innerHTML = "Generando Venta";
     };
-        
 
-    const {isConfirmed} = await sweet.fire({
-            title: "Imprimir Ticket Cliente",
-            confirmButtonText: "Aceptar",
-            showCancelButton: true
+
+    const { isConfirmed } = await sweet.fire({
+        title: "Imprimir Ticket Cliente",
+        confirmButtonText: "Aceptar",
+        showCancelButton: true
     });
 
-    if(isConfirmed){
+    if (isConfirmed) {
         venta.imprimirCliente = true
-    }else{
+    } else {
         venta.imprimirCliente = false
     };
-        
+
     try {
 
         const { data } = await axios.post(`${URL}venta`, venta);
-        if(!data.ok) return await sweet.fire('Error al hacer la venta', error.response.data.msg, 'error');
+        if (!data.ok) return await sweet.fire('Error al hacer la venta', error.response.data.msg, 'error');
 
-        location.reload();
+        if (mesa) {
+            location.href = '../menu.html'
+        } else {
+            location.reload();
+        }
 
     } catch (error) {
 
@@ -604,7 +670,7 @@ facturar.addEventListener('click', async e => {
     alerta.classList.add('none')
 });
 
-const verificarDatosParaventa = async() => {
+const verificarDatosParaventa = async () => {
 
     if (codigo.value === "") {
         await sweet.fire({
@@ -635,7 +701,7 @@ const verificarDatosParaventa = async() => {
         }
     };
 
-    if(tipoPago === ''){
+    if (tipoPago === '') {
         return await sweet.fire('No se puede generar la venta', 'Elegir el metodo de pago', 'error')
     }
 
@@ -729,7 +795,7 @@ cuit.addEventListener('keypress', e => {
 telefono.addEventListener('keypress', async e => {
     if (e.keyCode === 13) {
         const { data } = await axios.get(`${URL}cliente/forTelefono/${telefono.value.trim()}`);
-        if(!data.ok) return await sweet.fire('Error al obtener el cliente por telefono', data.msg, 'error');
+        if (!data.ok) return await sweet.fire('Error al obtener el cliente por telefono', data.msg, 'error');
 
         const cliente = data.cliente;
         codigo.value = cliente._id;
@@ -755,8 +821,16 @@ cuit.addEventListener('focus', e => {
     cuit.select();
 });
 
+observaciones.addEventListener('keydown', cambiandoObservaciones);
+
+botonCambiarMesa.addEventListener('click', e => {
+    console.log("a")
+    location.href = '../mesas/mesa.html';
+})
+
+
 ipcRenderer.on('recibir', (e, args) => {
-    const { tipo, informacion} = JSON.parse(args);
+    const { tipo, informacion } = JSON.parse(args);
     tipo === "cliente" && listarCliente(informacion);
     tipo === "Ningun cliente" && nombre.focus();
 });

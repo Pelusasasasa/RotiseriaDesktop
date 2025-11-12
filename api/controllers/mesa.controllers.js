@@ -36,6 +36,30 @@ mesaCTRL.deleteOne = async (req, res) => {
 
 };
 
+mesaCTRL.getMesa = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const mesa = await Mesa.findById(id);
+
+        if (!mesa) return res.status(500).json({
+            ok: false,
+            msg: 'No existe la mesa'
+        });
+
+        res.status(200).json({
+            ok: true,
+            mesa
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'No se pudo obtener la mesa, hable con el administrador'
+        });
+    }
+}
+
 mesaCTRL.getMesas = async (req, res) => {
     try {
         const mesas = await Mesa.find();
@@ -62,12 +86,6 @@ mesaCTRL.getMesas = async (req, res) => {
 mesaCTRL.getMesasAbiertas = async (req, res) => {
     try {
         const mesas = await Mesa.find({ estado: 'abierto' });
-        if (!mesas || mesas.length === 0) {
-            return res.status(404).json({
-                ok: false,
-                msg: 'No existen mesas'
-            });
-        };
 
         res.status(200).json({
             ok: true,
@@ -125,7 +143,7 @@ mesaCTRL.putMesa = async (req, res) => {
         }
 
         // Validar campos a actualizar
-        const updateFields = {};
+        const updateFields = req.body;
         if (nombre !== undefined) {
             if (typeof nombre !== 'string' || !nombre.trim()) {
                 return res.status(400).json({
@@ -135,15 +153,6 @@ mesaCTRL.putMesa = async (req, res) => {
             }
             updateFields.nombre = nombre.trim();
         };
-        if (cantidad !== undefined) {
-            if (typeof cantidad !== 'number' || cantidad < 0) {
-                return res.status(400).json({
-                    ok: false,
-                    msg: 'La cantidad debe ser un número mayor o igual a 0'
-                });
-            }
-            updateFields.cantidad = cantidad;
-        }
 
         const mesaActualizada = await Mesa.findByIdAndUpdate(
             id,
@@ -199,6 +208,6 @@ mesaCTRL.abrirMesa = async (req, res) => {
             msg: 'Erro al abrir la mesa, hable con el administrador'
         })
     }
-}
+};
 
 module.exports = mesaCTRL

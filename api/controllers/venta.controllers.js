@@ -7,6 +7,7 @@ const imprimirTicketComanda = require('../helpers/imprimirTicketComanda');
 const Venta = require('../models/Venta');
 const Producto = require('../models/Producto');
 const { imprimirVenta } = require('../helpers/generarImagenDesdeHTML');
+const reiniciarMesa = require('../helpers/reiniciarMesa');
 
 ventaCTRL.deleteVenta = async (req, res) => {
     const { id } = req.params;
@@ -262,7 +263,7 @@ ventaCTRL.notaCreditoTrue = async (req, res) => {
 
 ventaCTRL.postOne = async (req, res) => {
 
-    const { listaProductos, tipo_comp, imprimirCliente, F, dispositivo } = req.body;
+    const { listaProductos, tipo_comp, imprimirCliente, F, dispositivo, mesa } = req.body;
 
     try {
 
@@ -277,7 +278,11 @@ ventaCTRL.postOne = async (req, res) => {
                     { new: true }
                 );
             };
-        })
+        });
+
+        if (mesa) {
+            reiniciarMesa(mesa)
+        };
 
         const newVenta = new Venta({
             ...req.body,
@@ -285,19 +290,12 @@ ventaCTRL.postOne = async (req, res) => {
             nPedido
         });
 
-        // if(F  && dispositivo === 'MOVIL'){
-        //     subirFacturaAfip();
-        // }
-
         await newVenta.save();
         await imprimirVenta(newVenta);
-
-
 
         if (imprimirCliente) {
             await imprimirVenta(newVenta);
         };
-
 
         res.status(201).json({
             ok: true,

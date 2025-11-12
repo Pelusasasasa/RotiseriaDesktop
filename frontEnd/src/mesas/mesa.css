@@ -75,3 +75,7 @@
 .modalMesaAbierta span {
     font-size: 1.1rem;
 }
+
+.cerrarModal:hover {
+    transform: scale(1.25);
+}
