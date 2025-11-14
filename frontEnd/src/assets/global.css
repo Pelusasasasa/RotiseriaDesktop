@@ -160,6 +160,10 @@ select {
   background-color: white;
 }
 
+.bg-green {
+  background-color: rgb(4, 160, 30);
+}
+
 .bg-gray {
   background-color: rgb(114, 114, 114);
 }
@@ -375,6 +379,8 @@ select {
   margin-bottom: 2rem;
 }
 
+
+
 /* padding */
 .p-0 {
   padding: 0;
@@ -405,6 +411,10 @@ select {
 .py-2 {
   padding-top: 2rem;
   padding-bottom: 2rem;
+}
+
+.pr-2 {
+  padding-right: 2rem;
 }
 
 .gap-1 {

@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 
-const { getMesas, getMesasAbiertas, postMesa, putMesa, deleteOne, abrirMesa, getMesa } = require('../controllers/mesa.controllers');
+const { getMesas, getMesasAbiertas, postMesa, putMesa, deleteOne, abrirMesa, getMesa, cerrarMesa } = require('../controllers/mesa.controllers');
 
 router.route('/')
     .get(getMesas)
@@ -9,7 +9,8 @@ router.route('/')
 
 router.route('/abierto')
     .get(getMesasAbiertas)
-
+router.route('/cerrar/:id')
+    .patch(cerrarMesa)
 router.route('/:id')
     .get(getMesa)
     .patch(abrirMesa)

@@ -20,7 +20,7 @@ const Mesa = new Schema({
     },
     precio: {
         type: Number,
-        required: true
+        default: 0
     },
     dispositivo: {
         type: String,
@@ -37,7 +37,7 @@ const Mesa = new Schema({
         type: String,
         enum: ['abierto', 'cerrado'],
         trim: true,
-        default: 'abierto'
+        default: 'cerrado'
     },
     abierto_en: {
         type: Date,

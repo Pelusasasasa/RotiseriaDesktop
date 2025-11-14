@@ -102,7 +102,7 @@ mesaCTRL.getMesasAbiertas = async (req, res) => {
 
 mesaCTRL.postMesa = async (req, res) => {
     try {
-        const { nombre, cantidad } = req.body;
+        const { nombre } = req.body;
 
         // Validaciones básicas
         if (!nombre || typeof nombre !== 'string' || !nombre.trim()) {
@@ -111,6 +111,13 @@ mesaCTRL.postMesa = async (req, res) => {
                 msg: 'El nombre de la mesa es requerido'
             });
         };
+
+        const mesaUsada = await Mesa.findOne({ nombre });
+
+        if (mesaUsada) return res.send({
+            ok: false,
+            msg: 'Nombre de mesa ya utilizada'
+        })
 
         const nuevaMesa = new Mesa(req.body);
 
@@ -206,6 +213,36 @@ mesaCTRL.abrirMesa = async (req, res) => {
         return res.status(500).json({
             ok: false,
             msg: 'Erro al abrir la mesa, hable con el administrador'
+        })
+    }
+};
+
+mesaCTRL.cerrarMesa = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const mesa = await Mesa.findOne({ _id: id });
+
+        if (!mesa) return res.status(404).json({
+            ok: false,
+            msg: 'La mesa no existe'
+        });
+
+        mesa.estado = 'cerrado';
+        mesa.productos = [];
+        mesa.precio = 0;
+        mesa.idCliente = '0';
+        mesa.cliente = 'Consumidor Final';
+        await mesa.save();
+
+        res.status(200).json({
+            ok: true,
+            mesa
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error al cerrar la mesa, hable con el administrador'
         })
     }
 };
