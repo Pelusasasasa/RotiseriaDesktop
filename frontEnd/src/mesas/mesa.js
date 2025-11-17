@@ -98,15 +98,16 @@ const agregarNuevaMesa = async (e) => {
 const cargarPagina = async () => {
     try {
         const { data } = await axios.get(`${URL}mesa`);
+        console.log(data)
         if (data.ok) {
             todasLasMesas = data.mesas;
             listarMesas(data.mesas)
         } else {
-            await Swal.fire('Error al obtener mesas', error, 'error');
+            await Swal.fire('Error al obtener mesas', error, msg, 'error');
         };
 
     } catch (error) {
-        await Swal.fire('Error al obtener mesas', error, 'error');
+        await Swal.fire('Error al obtener mesas', error.msg, 'error');
     };
 
     try {

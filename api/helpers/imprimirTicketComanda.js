@@ -1,154 +1,208 @@
-const sharp = require("sharp");
-const moment = require('moment-timezone');
+const puppeteer = require('puppeteer');
+
 
 const ThermalPrinter = require("node-thermal-printer").printer;
 const PrinterTypes = require("node-thermal-printer").types;
 
-const imprimirTicketComanda = async(venta) => {
+const generarImagenDesdeHTML = async (mesa) => {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    const html =
+        `
+        <html>
+            <head>
+                <style>
+                    ${css}
+                </style>
+            </head>
+
+            <body class=''>
+
+                <div class='flex justify-center mb-1'>
+                    <h3>Sabor Urbano</h3>
+                </div>
+
+                <div id='encabezado' class='border-b border-gray-800 pb-1'>
+                    <p>Fecha: ${parsearFecha(mesa.abierto_en)}</p>
+                    <p>Mesa N: ${mesa.nombre}</p>
+                </div>
+
+                <div id='cliente' class='mt-4 border-b border-gray-800 pb-1'>
+                    <p class='font-bold text-xl'>Nombre: ${mesa.cliente}</p>
+                </div>
+
+                <div class='mt-4 border-b border-gray-800 pb-1'>
+
+                <div class='grid grid-cols-3 gap-2 border-b border-gray-800 mb-1'>
+                    <p class='font-bold'>Cantidad</p>
+                    <p class='font-bold'>Producto</p>
+                    <p class='font-bold'>Precio</p>
+                </div>
+                
+                ${mesa.productos.map(({ cantidad, producto, impreso }) => `
+                    
+                ${!impreso
+                ? (`<div class='grid grid-cols-3 productos'>
+                    <em class='font-bold text-xl'>${cantidad.toFixed(2)}</em>
+                    <em class='font-bold text-xl'>${producto.descripcion}</em>
+                    <em class='font-bold text-xl'>$${producto.precio.toFixed(2)}</em>
+                </div>`)
+                : ('')}
+                `)}
+                </div>
+
+
+                <div id='total' class='flex justify-end border-b border-gray-800 pb-1'>
+                    <p class='font-bold text-2xl mt-4'>Total: $${mesa.precio.toFixed(2)}</p>
+                </div>
+
+                    ${mesa?.observaciones ? `
+                        <div id='varios' class='border-b border-gray-800 pb-1'>
+                            <p class='text-2xl'>Observaciones: ${mesa.observaciones}</p>
+                        </div>
+                        `
+            : ''}
+            </body>
+        </html>
+    `;
+
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+    const buffer = await page.screenshot({ type: 'png', fullPage: true });
+    await browser.close();
+
+    return buffer;
+};
+
+async function imprimirTicketComanda(venta) {
+    let printer = new ThermalPrinter({
+        type: PrinterTypes.EPSON,
+        interface: 'tcp://192.168.0.47:9100'
+    });
+
+    const imagenBuffer = await generarImagenDesdeHTML(venta);
+    await printer.isPrinterConnected();
+
+    await printer.printImageBuffer(imagenBuffer);
+    await printer.cut();
     try {
-        let printer = new ThermalPrinter({
-            type: PrinterTypes.EPSON,
-            // interface: '//localhost/POS-80C'
-            interface: 'tcp://192.168.0.15:6001'
-        });
-
-        //Redimensionar imagen
-        const resizedImagePath = 'img/reducida.png';
-
-        await sharp('img/Logo.png')
-            .resize({width: 200})
-            .toFile(resizedImagePath)
-
-        const fechaConvertida = moment(venta.fecha).tz('America/Argentina/Buenos_Aires').format();
-        
-        const fecha = fechaConvertida.slice(0, 10).split('-').reverse().join('/');
-        const hora = fechaConvertida.slice(11, 19);
-
-        printer.alignCenter();
-        await printer.printImage(resizedImagePath);
-        printer.newLine();
-        printer.println('Sabor Urbano');
-        printer.newLine();
-
-        if(venta.F){
-            printer.alignLeft(); 
-            printer.println('Razon Social: AYALA NORMA BEATRIZ');
-            printer.println('Domicilio Comercial: 9 de Julio 4080');
-            printer.println('CUIT: 27272214900');
-            printer.println('Ingreso Brutos: 27272214900');
-            printer.println('Inicio de actividades 01/01/2021');
-            printer.println('Condicion Frente Iva: Responsable Monotributo');
-        }
-
-
-        printer.alignLeft();  
-        printer.print(`${venta.tipo_comp ? venta.tipo_comp : 'Comprobante'}     `);
-        printer.println(`${venta.F ? `${venta.afip.puntoVenta.padStart(4, '0')}-${venta.afip.numero.toString().padStart(8, '0')}` : venta.numero.toString().padStart(8, '0')}`)
-
-        printer.print(`Fecha: ${fecha}     `);
-        printer.println(`Hora: ${hora}`);
-        printer.bold(true);
-        printer.println(`Pedido N: ${venta?.nPedido}`);
-        printer.bold(false);
-        
-        printer.println('------------------------------------------');
-        
-        //Info cliente
-        printer.setTextDoubleHeight(),
-        printer.setTextDoubleWidth(),
-        printer.println(`${venta?.cliente}`);
-        printer.setTextNormal();
-        printer.println(`${venta?.num_doc?.length > 8 ? 'CUIT' : 'DNI'}: ${venta?.num_doc ? venta.num_doc : '00000000'}`);
-        venta.direccion && printer.println(`Direccion ${venta?.direccion}`);
-        venta.telefono && printer.println(`Telefono ${venta?.telefono}`);
-        printer.println('------------------------------------------');
-
-        printer.setTextDoubleHeight(),
-        //Title producto
-        printer.println('Cantidad - Descripcion - Precio');
-        printer.println('------------------------------------------');
-
-        //Productos
-        printer.bold(true);
-        venta.listaProductos.forEach(({producto, cantidad, observaciones}) => {
-            const maxLineLength = 37;
-            const cantidadDesc = `${cantidad} - ${producto.descripcion}`;
-            const precioTexto = `$${producto.precio.toFixed(2)}`;
-            
-            const espacioDisponible = maxLineLength - precioTexto.length;
-            if (cantidadDesc.length <= espacioDisponible) {
-                // Todo entra en una sola línea
-                const linea = cantidadDesc + " ".repeat(espacioDisponible - cantidadDesc.length) + precioTexto;
-                printer.println(linea);
-                observaciones && printer.println(observaciones)
-            } else {
-                // Imprimir descripción dividida
-                printer.print(cantidadDesc); // línea con cantidad y descripción larga
-                printer.println(" ".repeat(maxLineLength - precioTexto.length) + precioTexto); // precio alineado a la derecha
-                observaciones && printer.println(observaciones)
-            }
-
-            printer.alignLeft();
-            printer.newLine();
-        });
-
-
-        printer.setTextNormal();
-        printer.println('------------------------------------------');
-
-        //Total
-        printer.alignLeft();
-        printer.setTextDoubleHeight();
-        printer.setTextDoubleWidth();
-        printer.println(`Total: $${venta.precio.toFixed(2)}`);
-        printer.alignCenter();
-        printer.newLine();
-        
-        //Ponemos el texto entexto chico para el pago y la modalidad de envio
-        printer.setTextNormal();
-        if(venta?.observaciones){
-            printer.println(venta?.observaciones);
-            printer.println('------------------------------------------');
-            printer.newLine();
-        };
-
-        printer.alignLeft();
-        printer.setTextDoubleHeight();
-        printer.println(venta?.tipo_pago === 'TRANSFERENCIA' ? `Pago Con Transferencia` : 'Pago en Efectivo');
-        printer.println(venta?.envio ? `Modalidad Envio a domiclio` : 'Modalidad Retiro en Local');
-        printer.println(venta?.vuelto ? `El cliente paga con: $${venta?.vuelto}` : '');
-
-        printer.alignCenter();
-        printer.newLine();
-        printer.println('------------------------------------------');
-        printer.newLine();
-
-        printer.setTextDoubleHeight();
-        printer.setTextDoubleWidth();
-        printer.println('*MUCHAS GRACIAS*');
-        printer.newLine();
-        printer.setTextNormal();
-
-        if(venta.F){
-            printer.printQR(venta.afip.QR, {
-                cellSize: 4,
-                correction: 'Q'
-            })
-            printer.newLine();
-            printer.println(`CAE: ${venta.afip.cae}`);
-            printer.println(`VTO CAE: ${venta.afip.vencimiento}`);
-        }
-
-
-        printer.cut();
-
-    
-        printer.execute()
-        console.log("Print done!");
+        await printer.execute();
+        console.log("✅ Ticket impreso");
     } catch (error) {
-        console.error("Print failed:", error);
+        console.error("❌ Error al imprimir ticket:", error.message || error);
     }
 };
+
+const parsearFecha = (date) => {
+    if (!date) return;
+    const fecha = new Date(date);
+    const fechaUTC3 = new Date(fecha.getTime() - 3 * 60 * 60 * 1000).toISOString();
+    const fechaParseada = `${fechaUTC3.slice(0, 10)} - ${fechaUTC3.slice(11, 19)}`;
+    return fechaParseada;
+}
+
+const css = `
+    @page{
+        margin: 0;
+        width: 80mm;
+    }
+    html, body{
+        font-family: Arial, sans-serif;
+        font-size: 24px;
+        margin: 0;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        padding: 0;
+    }
+    body{
+        width: 130mm;
+        font-family: 'Inconsolata', monospace;
+    }
+    p{
+        margin: 0;
+    }
+    .font-bold{
+        font-weight: bold;
+    }
+
+    .text-center{
+        text-align: center;
+    }
+    .text-end{
+        text-align: end;
+    }
+    .mt-4{
+        margin-top: 1rem;
+    }
+    .mt-5{
+        margin-top: 2rem
+    }
+    .mb-1{
+        margin-bottom: 1rem
+    }
+
+    .pb-1{
+        margin-bottom: 1rem
+    }
+    .text-lg{
+        font-size:  23px;
+    }
+    .text-xl{
+        font-size: 26px;
+    }
+    .text-2xl{
+        font-size: 29px;
+    }
+    .text-xs{
+        font-size: 18px;
+    }
+
+    .text-sans{
+        font-family: sans
+    }
+
+    .w-full{
+        width: 100%;
+    }
+    .w-7{
+        width: 7rem;
+    }
+    
+    .grid{
+        display: grid;
+    }
+
+    .flex{
+        display: flex
+    }
+
+    .justify-center{
+        justify-content: center;
+    }
+    .justify-end{
+        justify-content: flex-end;
+    }
+
+    .grid-cols-3{
+        grid-template-columns: 0.5fr 2fr 0.5fr;
+    }
+
+    .gap-2{
+        gap: 2rem;
+    }
+
+    .gap-4{
+        gap: 4rem;
+    }
+    
+    .border-b{
+        border-bottom: 3px dotted;
+    }
+
+    .border-gray-800{
+        border-color: #4b4a4aff
+    }
+
+    `
 
 
 module.exports = imprimirTicketComanda;

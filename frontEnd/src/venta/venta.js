@@ -48,6 +48,7 @@ const body = document.querySelector('body');
 
 //Mesa
 const tituloMesa = document.getElementById('tituloMesa');
+const botonImprimir = document.getElementById('botonImprimir');
 const botonCambiarMesa = document.getElementById('botonCambiarMesa');
 
 //Modal
@@ -519,6 +520,7 @@ window.addEventListener('load', async e => {
     };
 
     if (mesaURL) {
+        botonImprimir.classList.remove('none');
         botonCambiarMesa.classList.remove('none');
         tituloMesa.classList.remove('none');
 
@@ -597,6 +599,7 @@ facturar.addEventListener('click', async e => {
     const venta = {};
 
     venta.cliente = nombre.value;
+    venta.cliente += mesaURL ? ` (Mesa: ${mesa.nombre})` : '';
     venta.idCliente = codigo.value;
     venta.direccion = direccion.value;
     venta.telefono = telefono.value;
@@ -794,7 +797,7 @@ cuit.addEventListener('keypress', e => {
 
 telefono.addEventListener('keypress', async e => {
     if (e.keyCode === 13) {
-        const { data } = await axios.get(`${URL}cliente/forTelefono/${telefono.value.trim()}`);
+        const { data } = await axios.get(`${URL} cliente / forTelefono / ${telefono.value.trim()} `);
         if (!data.ok) return await sweet.fire('Error al obtener el cliente por telefono', data.msg, 'error');
 
         const cliente = data.cliente;
@@ -823,8 +826,14 @@ cuit.addEventListener('focus', e => {
 
 observaciones.addEventListener('keydown', cambiandoObservaciones);
 
+botonImprimir.addEventListener('click', async e => {
+    alerta.classList.remove('none');
+    alerta.children[1].innerText = 'Imprimiendo venta';
+    await axios.post(`${URL}mesa/imprimirComanda/${mesaURL}`);
+    alerta.classList.add('none');
+});
+
 botonCambiarMesa.addEventListener('click', e => {
-    console.log("a")
     location.href = '../mesas/mesa.html';
 })
 

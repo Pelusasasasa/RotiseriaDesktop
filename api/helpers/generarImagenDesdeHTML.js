@@ -109,16 +109,11 @@ async function generarImagenDesdeHTML(venta) {
     return buffer;
 };
 
-async function mostrarEnElNavegador(html) {
-    const filePath = path.join(process.cwd(), 'ticket.html');
-    fs.writeFileSync(filePath, html, 'utf-8');
-}
 
 async function imprimirVenta(venta) {
     let printer = new ThermalPrinter({
         type: PrinterTypes.EPSON,
-        interface: '//localhost/POS-80C'
-        //interface: 'tcp://192.168.0.15:6001'
+        interface: 'tcp://192.168.0.47:9100'
     });
 
     //Redimensionar imagen

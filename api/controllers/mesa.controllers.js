@@ -1,3 +1,4 @@
+const imprimirTicketComanda = require("../helpers/imprimirTicketComanda");
 const validarId = require("../helpers/validarId");
 const Mesa = require("../models/Mesa");
 
@@ -63,12 +64,6 @@ mesaCTRL.getMesa = async (req, res) => {
 mesaCTRL.getMesas = async (req, res) => {
     try {
         const mesas = await Mesa.find();
-        if (!mesas || mesas.length === 0) {
-            return res.status(404).json({
-                ok: false,
-                msg: 'No existen mesas'
-            });
-        };
 
         res.status(200).json({
             ok: true,
@@ -201,8 +196,9 @@ mesaCTRL.abrirMesa = async (req, res) => {
             });
         };
 
-        mesa.estado = 'abierto',
-            await mesa.save();
+        mesa.abierto_en = new Date();
+        mesa.estado = 'abierto';
+        await mesa.save();
 
         res.status(200).json({
             ok: true,
@@ -245,6 +241,41 @@ mesaCTRL.cerrarMesa = async (req, res) => {
             msg: 'Error al cerrar la mesa, hable con el administrador'
         })
     }
+};
+
+mesaCTRL.imprimirComandaMesa = async (req, res) => {
+
+    const { id } = req.params;
+
+    try {
+        const mesa = await Mesa.findById(id);
+
+        await imprimirTicketComanda(mesa);
+
+        // Hay que indicar a Mongoose que fue modificado el array anidado
+        mesa.productos = mesa.productos.map(producto => {
+            if (producto && producto.producto) {
+                return {
+                    ...producto,
+                    impreso: true
+                };
+            }
+            return producto;
+        });
+        await mesa.markModified('productos');
+        await mesa.save();
+
+        res.status(200).json({
+            ok: true
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error al imprimir comanda, hable con el administrador'
+        })
+    }
+
 };
 
 module.exports = mesaCTRL

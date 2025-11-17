@@ -2,7 +2,6 @@ const ventaCTRL = {};
 
 const getNextNumberContado = require('../helpers/getNextNumberContado');
 const getNextNumberPedido = require('../helpers/getNextNumberPedido');
-const imprimirTicketComanda = require('../helpers/imprimirTicketComanda');
 
 const Venta = require('../models/Venta');
 const Producto = require('../models/Producto');
