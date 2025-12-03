@@ -259,7 +259,6 @@ const limpiarCarrito = () => {
 
 const listarCliente = async (id) => {
     codigo.value = id;
-
     let cliente;
     try {
         const { data } = await axios.get(`${URL}cliente/${id}`);
@@ -292,8 +291,8 @@ const listarCliente = async (id) => {
 
 const listarMesa = (mesa) => {
     codigo.value = mesa.idCliente === '0' ? 1 : mesa.idCliente;
-    listarCliente(codigo.value);
-
+    nombre.value = mesa.cliente;
+    
     tituloMesa.innerHTML += `${mesa.nombre}`;
     carrito.productos = mesa.productos;
     observaciones.value = mesa.observaciones;
@@ -791,8 +790,20 @@ nombre.addEventListener('keypress', e => {
     apretarEnter(e, cuit);
 });
 
-cuit.addEventListener('keypress', e => {
+nombre.addEventListener('keyup', async e => {
+    mesa.cliente = nombre.value.toUpperCase();
+    
+    const { data } = await axios.put(`${URL}mesa/${mesa._id}`, mesa);
+
+    if(!data.ok){
+        await sweet.fire('Error al actualizar la mesa', data.msg, 'error');
+    }
+
+})
+
+cuit.addEventListener('keypress', e => {    
     apretarEnter(e, telefono);
+
 });
 
 telefono.addEventListener('keypress', async e => {
