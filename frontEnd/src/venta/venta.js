@@ -86,6 +86,7 @@ const abrirModal = () => {
 
 const agregarItemCarrito = (e) => {
     const item = carrito.productos.findIndex(producto => producto.producto._id == e.target.id);
+    console.log(item)
     if (item === -1) {
         const producto = listaProductos.find(elem => elem._id === e.target.id);
         carrito.productos.push({
@@ -163,11 +164,12 @@ const buscarCliente = (e) => {
 
 const calcularTotal = async () => {
     let total = 0;
-
+    let precioIndivudial = 0;
     let cantidadEmapandas = 0;
 
     for (let item of carrito.productos) {
         if (item.producto?.seccion?.nombre === 'EMPANADAS') {
+            precioIndivudial = item.producto.precio;
             cantidadEmapandas += item.cantidad;
         } else {
             total += item.producto.precio * item.cantidad
@@ -182,7 +184,7 @@ const calcularTotal = async () => {
         let medias = Math.floor(resto / 6);
         let sueltas = resto % 6;
 
-        total += (docenas * precioEmpanadas.docena) + (medias * precioEmpanadas.mediaDocena) + (sueltas * 2000);
+        total += (docenas * precioEmpanadas.docena) + (medias * precioEmpanadas.mediaDocena) + (sueltas * precioIndivudial);
     };
 
     precioTotal.innerText = redondear(total, 2);
@@ -319,6 +321,7 @@ const listarProductos = async (lista) => {
     let div = document.createElement('div');
 
     for (let { cantidad, producto, observaciones } of lista) {
+        console.log(producto)
         div.innerHTML += `
             <div class='flex gap-2' id='tarjetaCarrito'>
                 <div class='w-20 h-10'>
