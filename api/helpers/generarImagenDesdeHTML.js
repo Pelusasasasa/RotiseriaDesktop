@@ -86,7 +86,7 @@ async function generarImagenDesdeHTML(venta) {
                 </div>
 
 
-                <div id='total' class='flex justify-end border-b border-gray-800 pb-1'>
+                <div id='total' class='flex flex-col justify-end border-b border-gray-800 pb-1'>
                 <p class='font-bold text-2xl mt-4'>Precio del envio: $${venta.precioEnvio.toFixed(
                   2
                 )}</p>
@@ -148,6 +148,7 @@ async function generarImagenDesdeHTML(venta) {
 async function imprimirVenta(venta) {
   let printer = new ThermalPrinter({
     type: PrinterTypes.EPSON,
+    //interface: "tcp://192.168.0.15:6001",
     interface: "tcp://192.168.0.47:9100",
   });
 
@@ -270,6 +271,9 @@ const css = `
 
     .flex{
         display: flex
+    }
+    .flex-col{
+        flex-direction: column;
     }
 
     .justify-center{
