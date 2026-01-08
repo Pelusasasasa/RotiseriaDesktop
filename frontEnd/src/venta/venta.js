@@ -182,7 +182,7 @@ const calcularTotal = async () => {
   let cantidadEmapandas = 0;
 
   for (let item of carrito.productos) {
-    if (item.producto?.seccion?.nombre === "EMPANADAS") {
+    if (item.producto?.seccion?.nombre.trim().toUpperCase() === "EMPANADAS") {
       precioIndivudial = item.producto.precio;
       cantidadEmapandas += item.cantidad;
     } else {
