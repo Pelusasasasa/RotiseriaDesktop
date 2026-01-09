@@ -87,11 +87,11 @@ async function generarImagenDesdeHTML(venta) {
 
 
                 <div id='total' class='flex flex-col justify-end border-b border-gray-800 pb-1'>
-                <p class='font-bold text-2xl mt-4'>Precio del envio: $${venta.precioEnvio.toFixed(
-                  2
-                )}</p>
+                <p class='font-bold text-2xl mt-4'>Precio del envio: $${
+                  venta?.precioEnvio?.toFixed(2) || 0
+                }</p>
                 <p class='font-bold text-2xl mt-4'>Total: $${(
-                  venta.precio + venta.precioEnvio
+                  venta.precio + (venta?.precioEnvio || 0)
                 ).toFixed(2)}</p>
                 </div>
 
