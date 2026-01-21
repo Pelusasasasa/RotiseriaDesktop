@@ -115,7 +115,7 @@ window.addEventListener("load", async (e) => {
     await sweet.fire(
       "Error al traer las ventas",
       "No se pudieron obtener las ventas",
-      "error"
+      "error",
     );
   }
 
@@ -129,7 +129,7 @@ window.addEventListener("load", async (e) => {
     return await sweet.fire(
       "Error al traer variables",
       error.response.data.msg,
-      "error"
+      "error",
     );
   }
 });
@@ -165,7 +165,7 @@ document.addEventListener("keydown", (e) => {
           }
         }
       },
-      { once: true }
+      { once: true },
     );
   }
 });
@@ -195,7 +195,7 @@ const eliminarVenta = async (e) => {
       await sweet.fire(
         "Error al obtener la venta",
         error.response.data.msg,
-        "error"
+        "error",
       );
     }
     const {
@@ -236,7 +236,7 @@ const eliminarVenta = async (e) => {
         await sweet.fire(
           "Error al cargar la nota de credito",
           "No se pudo cargar la nota de credito",
-          "error"
+          "error",
         );
       }
 
@@ -253,13 +253,13 @@ const eliminarVenta = async (e) => {
       let aux;
       try {
         const { data } = await axios.patch(
-          `${URL}venta/notaCredito/${venta._id}`
+          `${URL}venta/notaCredito/${venta._id}`,
         );
         if (!data.ok)
           return await sweet.fire(
             "Error al cargar la nota de credito",
             data.msg,
-            "error"
+            "error",
           );
         aux = data.venta;
       } catch (error) {
@@ -267,7 +267,7 @@ const eliminarVenta = async (e) => {
         await sweet.fire(
           "Error al cargar la nota de credito",
           error.response.data.msg,
-          "error"
+          "error",
         );
       }
 
@@ -293,12 +293,12 @@ const eliminarVenta = async (e) => {
       if (data.ok) {
         ventas = ventas.filter((elem) => elem._id !== data.ventaEliminada._id);
         const trEliminado = document.getElementById(
-          `${data.ventaEliminada._id}`
+          `${data.ventaEliminada._id}`,
         );
 
         //Son los tr que muestran los productos de una venta
         const alltrMovEliminados = document.querySelectorAll(
-          `.venta${data.ventaEliminada._id}`
+          `.venta${data.ventaEliminada._id}`,
         );
 
         for (let elem of alltrMovEliminados) {
@@ -308,13 +308,13 @@ const eliminarVenta = async (e) => {
         total.value = redondear(
           parseFloat(total.value) -
             parseFloat(trEliminado.children[6].innerText),
-          2
+          2,
         );
       } else {
         await sweet.fire(
           "Error al eliminar la venta",
           "No se pudo eliminar la venta",
-          "error"
+          "error",
         );
       }
     }
@@ -437,7 +437,7 @@ botonMes.addEventListener("click", async (e) => {
       await sweet.fire(
         "Error al traer las ventas",
         "No se pudieron obtener las ventas",
-        "error"
+        "error",
       );
     }
   } else {
@@ -474,7 +474,7 @@ fecha.addEventListener("keypress", async (e) => {
       await sweet.fire(
         "Error al traer las ventas",
         "No se pudieron obtener las ventas",
-        "error"
+        "error",
       );
     }
   }
@@ -489,7 +489,7 @@ selectMes.addEventListener("click", async (e) => {
     await sweet.fire(
       "Error al traer las ventas",
       "No se pudieron obtener las ventas",
-      "error"
+      "error",
     );
   }
 });
@@ -558,7 +558,7 @@ const listarVentas = async (ventas) => {
   if (facturas.checked) {
     lista = lista.filter(
       (venta) =>
-        venta.tipo_comp === "Factura C" || venta.tipo_comp === "Nota Credito C"
+        venta.tipo_comp === "Factura C" || venta.tipo_comp === "Nota Credito C",
     );
   }
 
@@ -631,8 +631,8 @@ const listarVentas = async (ventas) => {
     tdPrecioTotal.innerText =
       venta.tipo_comp === "Nota Credito C"
         ? redondear(venta.precio * -1, 2)
-        : (venta.precio + (venta.precioEnvio ?? 0)).toFixed(2);
-    tdPrecioEnvio.innerText = venta.precioEnvio.toFixed(2) ?? "0.00";
+        : (venta.precio + (venta?.precioEnvio ?? 0)).toFixed(2);
+    tdPrecioEnvio.innerText = venta?.precioEnvio?.toFixed(2) ?? "0.00";
     tdDispositivo.innerText = textoDispositivo;
 
     tr.appendChild(tdNumero);
