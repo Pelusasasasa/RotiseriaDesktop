@@ -16,6 +16,11 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
+app.get("/rotiseria/test", (req, res) => {
+  console.log("Test exitoso");
+  res.json({ ok: true, msg: "Test exitoso" });
+});
+
 app.use("/rotiseria/img", express.static(path.join(__dirname, "imgProductos")));
 
 app.use("/rotiseria/carta", require("./routes/carta.routes"));
@@ -53,7 +58,10 @@ app.listen(PORT, () => {
 setInterval(syncVentas, 1 * 1000);
 setInterval(procesarPendientes, 60 * 1000);
 
-setInterval(() => {
-  console.log("Backup de la base de datos en proceso...");
-  backUpMongoLocal();
-}, 60 * 60 * 1000);
+setInterval(
+  () => {
+    console.log("Backup de la base de datos en proceso...");
+    backUpMongoLocal();
+  },
+  60 * 60 * 1000,
+);

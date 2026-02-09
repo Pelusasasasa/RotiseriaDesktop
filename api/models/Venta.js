@@ -141,6 +141,11 @@ const Venta = new Schema({
     type: Number,
     default: 0,
   },
+  estado: {
+    type: String,
+    default: "pendiente",
+    enum: ["pendiente", "preparando", "listo", "entregado"],
+  },
 });
 
 module.exports = model("Venta", Venta);
