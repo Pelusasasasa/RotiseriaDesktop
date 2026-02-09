@@ -121,8 +121,8 @@ async function generarImagenDesdeHTML(venta) {
 async function imprimirVenta(venta) {
   let printer = new ThermalPrinter({
     type: PrinterTypes.EPSON,
-    interface: 'tcp://192.168.0.15:6001',
-    //interface: "tcp://192.168.0.47:9100",
+    //interface: 'tcp://192.168.0.15:6001',
+    interface: 'tcp://192.168.0.47:9100',
   });
 
   //Redimensionar imagen
