@@ -1,9 +1,9 @@
-const puppeteer = require("puppeteer");
-const ThermalPrinter = require("node-thermal-printer").printer;
-const PrinterTypes = require("node-thermal-printer").types;
-const path = require("node:path");
-const fs = require("node:fs");
-const sharp = require("sharp");
+const puppeteer = require('puppeteer');
+const ThermalPrinter = require('node-thermal-printer').printer;
+const PrinterTypes = require('node-thermal-printer').types;
+const path = require('node:path');
+const fs = require('node:fs');
+const sharp = require('sharp');
 
 async function generarImagenDesdeHTML(venta) {
   const browser = await puppeteer.launch();
@@ -31,17 +31,10 @@ async function generarImagenDesdeHTML(venta) {
                             <p>Ingreso Brutos: 27272214900</p>
                             <p>Inicio de actividades: 01/01/2021</p>
                             <p>Conmidicion Frente Iva: Responsable Monotributo</p>
-                            <p>Factura C: ${venta.afip.puntoVenta.padStart(
-                              4,
-                              "0"
-                            )}-${venta.afip.numero
-                            .toString()
-                            .padStart(8, "0")}</p>
+                            <p>Factura C: ${venta.afip.puntoVenta.padStart(4, '0')}-${venta.afip.numero.toString().padStart(8, '0')}</p>
                         `
                         : `
-                            <p>Comprobante: ${venta.numero
-                              .toString()
-                              .padStart(8, "0")}</p>
+                            <p>Comprobante: ${venta.numero.toString().padStart(8, '0')}</p>
                         `
                     }
                     
@@ -51,13 +44,9 @@ async function generarImagenDesdeHTML(venta) {
 
                 <div id='cliente' class='mt-4 border-b border-gray-800 pb-1'>
                     <p class='font-bold text-xl'>Nombre: ${venta.cliente}</p>
-                    <p>${venta.num_doc?.length > 8 ? "CUIT" : "DNI"}: ${
-    venta?.num_doc ?? "00000000"
-  }</p>
+                    <p>${venta.num_doc?.length > 8 ? 'CUIT' : 'DNI'}: ${venta?.num_doc ?? '00000000'}</p>
                     <p>Teléfono: ${venta?.telefono}</p>
-                    <p class='text-xl font-bold'>Direccion: ${
-                      venta?.direccion
-                    }</p>
+                    <p class='text-xl font-bold'>Direccion: ${venta?.direccion}</p>
                 </div>
 
                 <div class='mt-4 border-b border-gray-800 pb-1'>
@@ -70,29 +59,21 @@ async function generarImagenDesdeHTML(venta) {
                 
                 ${venta.listaProductos.map(
                   ({ cantidad, producto }) => `
-                    <div class='grid grid-cols-3 productos'>
-                            <em class='font-bold text-xl'>${cantidad.toFixed(
-                              2
-                            )}</em>
-                            <em class='font-bold text-xl'>${
-                              producto.descripcion
-                            }</em>
-                            <em class='font-bold text-xl'>$${producto.precio.toFixed(
-                              2
-                            )}</em>
+                  <div class='productos flex flex-col'>
+                    <em class='font-bold text-xl'>${cantidad.toFixed(2)}/${producto.precio.toFixed(2)}</em>
+                    <div class='grid grid-cols-2'>
+                            <em class='font-bold text-xl'>${producto.descripcion}</em>
+                            <em class='font-bold text-xl text-end'>$${(cantidad * producto.precio).toFixed(2)}</em>
                     </div>
+                  </div>
                 `
                 )}
                 </div>
 
 
                 <div id='total' class='flex flex-col justify-end border-b border-gray-800 pb-1'>
-                <p class='font-bold text-2xl mt-4'>Precio del envio: $${
-                  venta?.precioEnvio?.toFixed(2) || 0
-                }</p>
-                <p class='font-bold text-2xl mt-4'>Total: $${(
-                  venta.precio + (venta?.precioEnvio || 0)
-                ).toFixed(2)}</p>
+                <p class='font-bold text-2xl mt-4'>Precio del envio: $${venta?.precioEnvio?.toFixed(2) || 0}</p>
+                <p class='font-bold text-2xl mt-4'>Total: $${(venta.precio + (venta?.precioEnvio || 0)).toFixed(2)}</p>
                 </div>
 
                     ${
@@ -103,21 +84,13 @@ async function generarImagenDesdeHTML(venta) {
                             <p class='text-2xl'>Observaciones: ${venta.observaciones}</p>
                         </div>
                         `
-                        : ""
+                        : ''
                     }
 
                 <div id='forma'>
-                    <p class='mb-1 mt-5 text-2xl'>Forma de pago: ${
-                      venta.tipo_pago
-                    }</p>
-                    <p class='mb-1 text-2xl'>Modalidad: ${
-                      venta.envio ? "Envio a Domicilio" : "Retiro en el local"
-                    }</p>
-                    <p class='text-2xl'>${
-                      venta?.vuelto
-                        ? `El cliente paga con: $${venta?.vuelto}`
-                        : ""
-                    }</p>
+                    <p class='mb-1 mt-5 text-2xl'>Forma de pago: ${venta.tipo_pago}</p>
+                    <p class='mb-1 text-2xl'>Modalidad: ${venta.envio ? 'Envio a Domicilio' : 'Retiro en el local'}</p>
+                    <p class='text-2xl'>${venta?.vuelto ? `El cliente paga con: $${venta?.vuelto}` : ''}</p>
                 </div>
 
                 <div class='text-center mt-4'>
@@ -130,16 +103,16 @@ async function generarImagenDesdeHTML(venta) {
                         <p class='text-lg'>CAE: ${venta.afip.cae}</p>
                         <p class='text-lg'>Vencimiento CAE: ${venta.afip.vencimiento}</p>
                     </div>`
-                    : ""
+                    : ''
                 }
             </body>
         </html>
     `;
 
-  await page.setContent(html, { waitUntil: "networkidle0" });
-  const buffer = await page.screenshot({ type: "png", fullPage: true });
+  await page.setContent(html, { waitUntil: 'networkidle0' });
+  const buffer = await page.screenshot({ type: 'png', fullPage: true });
   const pdfPath = path.join(process.cwd(), `factura.pdf`);
-  await page.pdf({ path: pdfPath, format: "A4", printBackground: true });
+  await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
   await browser.close();
 
   return buffer;
@@ -148,14 +121,14 @@ async function generarImagenDesdeHTML(venta) {
 async function imprimirVenta(venta) {
   let printer = new ThermalPrinter({
     type: PrinterTypes.EPSON,
-    //interface: "tcp://192.168.0.15:6001",
-    interface: "tcp://192.168.0.47:9100",
+    interface: 'tcp://192.168.0.15:6001',
+    //interface: "tcp://192.168.0.47:9100",
   });
 
   //Redimensionar imagen
-  const resizedImagePath = "img/reducida.png";
+  const resizedImagePath = 'img/reducida.png';
 
-  await sharp("img/Logo.png").resize({ width: 200 }).toFile(resizedImagePath);
+  await sharp('img/Logo.png').resize({ width: 200 }).toFile(resizedImagePath);
 
   const imagenBuffer = await generarImagenDesdeHTML(venta);
   await printer.isPrinterConnected();
@@ -169,15 +142,15 @@ async function imprimirVenta(venta) {
   venta.F &&
     (await printer.printQR(venta.afip.QR, {
       cellSize: 4,
-      correction: "Q",
+      correction: 'Q',
     }));
 
   await printer.cut();
   try {
     await printer.execute();
-    console.log("✅ Ticket impreso");
+    console.log('✅ Ticket impreso');
   } catch (error) {
-    console.error("❌ Error al imprimir ticket:", error.message || error);
+    console.error('❌ Error al imprimir ticket:', error.message || error);
   }
 }
 
@@ -188,13 +161,8 @@ module.exports = {
 
 const parsearFecha = (date) => {
   const fecha = new Date(date);
-  const fechaUTC3 = new Date(
-    fecha.getTime() - 3 * 60 * 60 * 1000
-  ).toISOString();
-  const fechaParseada = `${fechaUTC3.slice(0, 10)} - ${fechaUTC3.slice(
-    11,
-    19
-  )}`;
+  const fechaUTC3 = new Date(fecha.getTime() - 3 * 60 * 60 * 1000).toISOString();
+  const fechaParseada = `${fechaUTC3.slice(0, 10)} - ${fechaUTC3.slice(11, 19)}`;
   return fechaParseada;
 };
 
@@ -285,6 +253,11 @@ const css = `
 
     .grid-cols-3{
         grid-template-columns: 0.5fr 2fr 0.5fr;
+    }
+
+    .grid-cols-2 {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
     }
 
     .gap-2{
