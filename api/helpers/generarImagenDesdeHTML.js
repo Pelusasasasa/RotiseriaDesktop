@@ -2,10 +2,12 @@ const puppeteer = require('puppeteer');
 const ThermalPrinter = require('node-thermal-printer').printer;
 const PrinterTypes = require('node-thermal-printer').types;
 const path = require('node:path');
-const fs = require('node:fs');
 const sharp = require('sharp');
 
+const CartaEmpanada = require('../models/CartaEmpanada');
+
 async function generarImagenDesdeHTML(venta) {
+  const cartaEmpanada = await CartaEmpanada.findOne();
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const html = `
@@ -57,17 +59,30 @@ async function generarImagenDesdeHTML(venta) {
                     <p class='font-bold'>Precio</p>
                 </div>
                 
-                ${venta.listaProductos.map(
-                  ({ cantidad, producto }) => `
+                ${venta.listaProductos.map(({ cantidad, producto }) => {
+                  const isEmpanada = producto.seccion?.nombre?.toUpperCase() === 'EMPANADAS';
+                  let subtotalItem;
+
+                  if (isEmpanada) {
+                    const docenas = Math.floor(cantidad / 12);
+                    const restoDocena = cantidad % 12;
+                    const medias = Math.floor(restoDocena / 6);
+                    const sueltas = restoDocena % 6;
+                    subtotalItem = docenas * cartaEmpanada.docena + medias * cartaEmpanada.mediaDocena + sueltas * producto.precio;
+                  } else {
+                    subtotalItem = cantidad * producto.precio;
+                  }
+
+                  return `
                   <div class='productos flex flex-col'>
                     <em class='font-bold text-xl'>${cantidad.toFixed(2)}/${producto.precio.toFixed(2)}</em>
                     <div class='grid grid-cols-2'>
                             <em class='font-bold text-xl'>${producto.descripcion}</em>
-                            <em class='font-bold text-xl text-end'>$${(cantidad * producto.precio).toFixed(2)}</em>
+                            <em class='font-bold text-xl text-end'>$${subtotalItem.toFixed(2)}</em>
                     </div>
                   </div>
-                `
-                )}
+                `;
+                })}
                 </div>
 
 
