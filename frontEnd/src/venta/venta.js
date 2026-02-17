@@ -95,7 +95,7 @@ const abrirModal = () => {
 
 const agregarItemCarrito = (e) => {
   const item = carrito.productos.findIndex(
-    (producto) => producto.producto._id == e.target.id
+    (producto) => producto.producto._id == e.target.id,
   );
   console.log(item);
   if (item === -1) {
@@ -114,7 +114,7 @@ const agregarItemCarrito = (e) => {
 
 const agregarMediaDocena = (e) => {
   const item = carrito.productos.findIndex(
-    (producto) => producto.producto._id === e.target.id
+    (producto) => producto.producto._id === e.target.id,
   );
 
   if (item === -1) {
@@ -133,7 +133,7 @@ const agregarMediaDocena = (e) => {
 
 const agregarDocena = (e) => {
   const item = carrito.productos.findIndex(
-    (producto) => producto.producto._id === e.target.id
+    (producto) => producto.producto._id === e.target.id,
   );
 
   if (item === -1) {
@@ -182,7 +182,10 @@ const calcularTotal = async () => {
   let cantidadEmapandas = 0;
 
   for (let item of carrito.productos) {
-    if (item.producto?.seccion?.nombre.trim().toUpperCase() === "EMPANADAS") {
+    if (
+      item.producto?.seccion?.nombre.trim().toUpperCase() === "EMPANADAS" &&
+      item.producto.descripcion.trim().startsWith("UNID")
+    ) {
       precioIndivudial = item.producto.precio;
       cantidadEmapandas += item.cantidad;
     } else {
@@ -261,7 +264,7 @@ const filtrar = async (e) => {
     buscarProducto.value !== "" ? buscarProducto.value : "textoVacio";
   try {
     const { data } = await axios.get(
-      `${URL}producto/forSeccionAndDescription/${descripcion}/descripcion`
+      `${URL}producto/forSeccionAndDescription/${descripcion}/descripcion`,
     );
     if (data.ok) {
       listaProductos = data.productos;
@@ -270,14 +273,14 @@ const filtrar = async (e) => {
       return await sweet.fire(
         "Error al filtrar los productos",
         data.msg,
-        "error"
+        "error",
       );
     }
   } catch (error) {
     return await sweet.fire(
       "Error al filtrar los productos",
       data?.response?.data?.msg,
-      "error"
+      "error",
     );
   }
 };
@@ -297,14 +300,14 @@ const listarCliente = async (id) => {
       return await sweet.fire(
         "No se pudo obtener el cliente",
         data.msg,
-        "error"
+        "error",
       );
   } catch (error) {
     console.log(error.response.data.msg);
     return await sweet.fire(
       "No se pudo obtener el cliente",
       error.response.data.msg,
-      "error"
+      "error",
     );
   }
 
@@ -361,8 +364,8 @@ const listarProductos = async (lista) => {
             <div class='flex gap-2' id='tarjetaCarrito'>
                 <div class='w-20 h-10'>
                     <img class='w-full' src=${URL}img/${producto._id}.png alt=${
-      producto.descripcion
-    } />
+                      producto.descripcion
+                    } />
                 </div>
                 
                 <div class='flex flex-col flex-1' id='${producto._id}'>
@@ -370,7 +373,7 @@ const listarProductos = async (lista) => {
                       producto.descripcion
                     }</h4>
                     <span class='text-primary font-semibold'>$ ${producto.precio.toFixed(
-                      2
+                      2,
                     )}</span>
 
                     <div class='flex justify-between  mt-auto'>
@@ -499,7 +502,7 @@ const listarTarjetas = async (productos) => {
 
 const quitarElemento = async (id) => {
   carrito.productos = carrito.productos.filter(
-    (elem) => elem.producto._id != id
+    (elem) => elem.producto._id != id,
   );
 
   if (mesa) {
@@ -538,8 +541,8 @@ const setRubroActivo = (e) => {
     ? listarTarjetas(listaProductos)
     : listarTarjetas(
         listaProductos.filter(
-          (producto) => producto.seccion?.nombre === seccionActivo.innerText
-        )
+          (producto) => producto.seccion?.nombre === seccionActivo.innerText,
+        ),
       );
 };
 
@@ -575,7 +578,7 @@ window.addEventListener("load", async (e) => {
       return await sweet.fire(
         "No se pudo obtener la carta empanada",
         data.msg,
-        "error"
+        "error",
       );
 
     precioEmpanadas = data.carta;
@@ -586,7 +589,7 @@ window.addEventListener("load", async (e) => {
     await sweet.fire(
       "No se pudo obtener la carta de empanada",
       error.response.data.msg,
-      "error"
+      "error",
     );
   }
 
@@ -598,7 +601,7 @@ window.addEventListener("load", async (e) => {
       return await sweet.fire(
         "No se pudo obtener las secciones",
         data.msg,
-        "error"
+        "error",
       );
     }
   } catch (error) {
@@ -639,7 +642,7 @@ document.addEventListener("keydown", (e) => {
           cambiarSituacion(situacion);
         }
       },
-      { once: true }
+      { once: true },
     );
   } else if (e.keyCode === 113) {
     const opciones = {
@@ -712,7 +715,7 @@ facturar.addEventListener("click", async (e) => {
           cuit.value,
           condicionIva.value === "Responsable Inscripto"
             ? "Inscripto"
-            : condicionIva.value
+            : condicionIva.value,
         )
       : 0;
   venta.tipo_comp =
@@ -771,7 +774,7 @@ facturar.addEventListener("click", async (e) => {
       return await sweet.fire(
         "Error al hacer la venta",
         error.response.data.msg,
-        "error"
+        "error",
       );
 
     if (mesa) {
@@ -825,7 +828,7 @@ const verificarDatosParaventa = async () => {
     return await sweet.fire(
       "No se puede generar la venta",
       "Elegir el metodo de pago",
-      "error"
+      "error",
     );
   }
 
@@ -938,13 +941,13 @@ cuit.addEventListener("keypress", (e) => {
 telefono.addEventListener("keypress", async (e) => {
   if (e.keyCode === 13) {
     const { data } = await axios.get(
-      `${URL} cliente / forTelefono / ${telefono.value.trim()} `
+      `${URL} cliente / forTelefono / ${telefono.value.trim()} `,
     );
     if (!data.ok)
       return await sweet.fire(
         "Error al obtener el cliente por telefono",
         data.msg,
-        "error"
+        "error",
       );
 
     const cliente = data.cliente;
