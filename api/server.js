@@ -17,7 +17,6 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/rotiseria/test', (req, res) => {
-  console.log('Test exitoso');
   res.json({ ok: true, msg: 'Test exitoso' });
 });
 
@@ -55,8 +54,8 @@ app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
-setInterval(syncVentas, 1 * 1000);
-setInterval(procesarPendientes, 60 * 1000);
+// setInterval(syncVentas, 1 * 1000);
+// setInterval(procesarPendientes, 60 * 1000);
 
 setInterval(
   () => {

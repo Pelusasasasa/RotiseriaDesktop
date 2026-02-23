@@ -97,18 +97,18 @@ const agregarItemCarrito = (e) => {
   const item = carrito.productos.findIndex(
     (producto) => producto.producto._id == e.target.id,
   );
-  console.log(item);
   if (item === -1) {
     const producto = listaProductos.find((elem) => elem._id === e.target.id);
     carrito.productos.push({
       cantidad: 1,
       producto: producto,
+      estado: "pendiente",
       observaciones: "",
     });
   } else {
     carrito.productos[item].cantidad += 1;
+    carrito.productos[item].estado = "pendiente";
   }
-
   listarProductos(carrito.productos);
 };
 
@@ -122,6 +122,7 @@ const agregarMediaDocena = (e) => {
     carrito.productos.push({
       cantidad: 6,
       producto: producto,
+      estado: "pendiente",
       observaciones: "",
     });
   } else {
@@ -210,7 +211,7 @@ const calcularTotal = async () => {
 
   if (mesa) {
     mesa.precio = precioTotal.innerText;
-    console.log(mesa);
+    mesa.estado = "pendiente";
     await axios.put(`${URL}mesa/${mesaURL}`, mesa);
   }
 };
@@ -335,7 +336,6 @@ const listarCliente = async (id) => {
 const listarMesa = (mesa) => {
   codigo.value = mesa.idCliente === "0" ? 1 : mesa.idCliente;
   nombre.value = mesa.cliente;
-
   tituloMesa.innerHTML += `${mesa.nombre}`;
   carrito.productos = mesa.productos;
   observaciones.value = mesa.observaciones;
@@ -359,7 +359,8 @@ const listarProductos = async (lista) => {
 
   let div = document.createElement("div");
 
-  for (let { cantidad, producto, observaciones } of lista) {
+  for (let { cantidad, producto, observaciones, estado } of lista) {
+    console.log(estado);
     div.innerHTML += `
             <div class='flex gap-2' id='tarjetaCarrito'>
                 <div class='w-20 h-10'>
@@ -401,7 +402,7 @@ const listarProductos = async (lista) => {
   if (mesa) {
     mesa.productos =
       carrito.productos.length > 0 ? [...carrito.productos] : mesa.productos;
-    const { data } = await axios.put(`${URL}mesa/${mesa._id}`, mesa);
+    await axios.put(`${URL}mesa/${mesa._id}`, mesa);
   }
 };
 
@@ -736,6 +737,7 @@ facturar.addEventListener("click", async (e) => {
 
   if (mesa) {
     venta.mesa = mesaURL;
+    venta.estado = "listo";
   }
 
   if (situacion === "blanco") {
