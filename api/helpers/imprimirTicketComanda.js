@@ -5,10 +5,10 @@ const PrinterTypes = require('node-thermal-printer').types;
 const sharp = require('sharp');
 
 const generarImagenDesdeHTML = async (mesa) => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.setViewport({ width: 550, height: 1000 });
-  const html = `
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setViewport({ width: 550, height: 1000 });
+    const html = `
         <html>
             <head>
                 <style>
@@ -40,19 +40,18 @@ const generarImagenDesdeHTML = async (mesa) => {
                 </div>
                 
                 ${mesa.productos.map(
-                  ({ cantidad, producto, impreso }) => `
+        ({ cantidad, producto, impreso }) => `
                     
-                ${
-                  !impreso
-                    ? `<div class='grid grid-cols-3 productos'>
+                ${!impreso
+                ? `<div class='grid grid-cols-3 productos'>
                     <em class='font-bold text-xl'>${cantidad.toFixed(2)}</em>
                     <em class='font-bold text-xl'>${producto.descripcion}</em>
                     <em class='font-bold text-xl'>$${producto.precio.toFixed(2)}</em>
                 </div>`
-                    : ''
-                }
+                : ''
+            }
                 `
-                )}
+    )}
                 </div>
 
 
@@ -60,59 +59,58 @@ const generarImagenDesdeHTML = async (mesa) => {
                     <p class='font-bold text-2xl mt-4'>Total: $${mesa.precio.toFixed(2)}</p>
                 </div>
 
-                    ${
-                      mesa?.observaciones
-                        ? `
+                    ${mesa?.observaciones
+            ? `
                         <div id='varios' class='border-b border-gray-800 pb-1'>
                             <p class='text-2xl'>Observaciones: ${mesa.observaciones}</p>
                         </div>
                         `
-                        : ''
-                    }
+            : ''
+        }
             </body>
         </html>
     `;
 
-  await page.setContent(html, { waitUntil: 'networkidle0' });
-  const buffer = await page.screenshot({ type: 'png', fullPage: true });
-  await browser.close();
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+    const buffer = await page.screenshot({ type: 'png', fullPage: true });
+    await browser.close();
 
-  return buffer;
+    return buffer;
 };
 
 async function imprimirTicketComanda(venta) {
-  let printer = new ThermalPrinter({
-    type: PrinterTypes.EPSON,
-    //interface: "tcp://192.168.0.47:9100",
-    interface: 'tcp://192.168.0.15:6001',
-  });
-  console.log(venta.precioEnvio);
-  const imagenBuffer = await generarImagenDesdeHTML(venta);
-  
-  const processedBuffer = await sharp(imagenBuffer)
-    .resize(550)
-    .grayscale()
-    .threshold(180)
-    .toBuffer();
+    let printer = new ThermalPrinter({
+        type: PrinterTypes.EPSON,
+        interface: "tcp://192.168.0.47:9100",
+        //interface: 'tcp://192.168.0.15:6001',
+    });
+    console.log(venta.precioEnvio);
+    const imagenBuffer = await generarImagenDesdeHTML(venta);
 
-  await printer.isPrinterConnected();
+    const processedBuffer = await sharp(imagenBuffer)
+        .resize(550)
+        .grayscale()
+        .threshold(180)
+        .toBuffer();
 
-  await printer.printImageBuffer(processedBuffer);
-  await printer.cut();
-  try {
-    await printer.execute();
-    console.log('✅ Ticket impreso');
-  } catch (error) {
-    console.error('❌ Error al imprimir ticket:', error.message || error);
-  }
+    await printer.isPrinterConnected();
+
+    await printer.printImageBuffer(processedBuffer);
+    await printer.cut();
+    try {
+        await printer.execute();
+        console.log('✅ Ticket impreso');
+    } catch (error) {
+        console.error('❌ Error al imprimir ticket:', error.message || error);
+    }
 }
 
 const parsearFecha = (date) => {
-  if (!date) return;
-  const fecha = new Date(date);
-  const fechaUTC3 = new Date(fecha.getTime() - 3 * 60 * 60 * 1000).toISOString();
-  const fechaParseada = `${fechaUTC3.slice(0, 10)} - ${fechaUTC3.slice(11, 19)}`;
-  return fechaParseada;
+    if (!date) return;
+    const fecha = new Date(date);
+    const fechaUTC3 = new Date(fecha.getTime() - 3 * 60 * 60 * 1000).toISOString();
+    const fechaParseada = `${fechaUTC3.slice(0, 10)} - ${fechaUTC3.slice(11, 19)}`;
+    return fechaParseada;
 };
 
 const css = `
