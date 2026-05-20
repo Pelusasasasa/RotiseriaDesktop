@@ -1,10 +1,10 @@
-const moment = require("moment-timezone");
-const { Schema, model } = require("mongoose");
+const moment = require('moment-timezone');
+const { Schema, model } = require('mongoose');
 
 const Venta = new Schema({
   fecha: {
     type: Date,
-    default: () => moment().tz("America/Argentina/Buenos_Aires").toDate(),
+    default: () => moment().tz('America/Argentina/Buenos_Aires').toDate(),
   },
   nPedido: {
     type: Number,
@@ -12,12 +12,12 @@ const Venta = new Schema({
   },
   cliente: {
     type: String,
-    default: "Consumidor Final",
+    default: 'Consumidor Final',
     set: (value) => value.toUpperCase().trim(),
   },
   idCliente: {
     type: String,
-    default: "0",
+    default: '0',
   },
   numero: {
     type: Number,
@@ -37,15 +37,15 @@ const Venta = new Schema({
   },
   tipo_venta: {
     type: String,
-    default: "CD",
+    default: 'CD',
   },
   tipo_comp: {
     type: String,
-    default: "",
+    default: '',
   },
   caja: {
     type: String,
-    default: "",
+    default: '',
   },
   F: {
     type: Boolean,
@@ -57,34 +57,35 @@ const Venta = new Schema({
   },
   dispositivo: {
     type: String,
-    default: "",
-    enum: ["MOVIL", "DESKTOP", "", "WEB"],
+    default: '',
+    enum: ['MOVIL', 'DESKTOP', '', 'WEB'],
     set: (value) => value.toUpperCase().trim(),
   },
   observaciones: {
     type: String,
-    default: "",
+    default: '',
     set: (value) => value.toUpperCase().trim(),
   },
   eliminada: {
     type: Boolean,
     default: false,
   },
+
   //Persona
   direccion: {
     type: String,
-    default: "",
+    default: '',
     set: (value) => value.toUpperCase().trim(),
   },
   telefono: {
     type: String,
-    default: "",
+    default: '',
   },
 
   //Para la afip
   num_doc: {
     type: String,
-    default: "",
+    default: '',
   },
   cod_comp: {
     type: Number,
@@ -96,7 +97,7 @@ const Venta = new Schema({
   },
   condicionIva: {
     type: String,
-    default: "Consumidor Final",
+    default: 'Consumidor Final',
   },
   iva21: {
     type: Number,
@@ -130,7 +131,7 @@ const Venta = new Schema({
 
   tipo_pago: {
     type: String,
-    default: "EFECTIVO",
+    default: 'EFECTIVO',
     set: (value) => value.toUpperCase().trim(),
   },
   vuelto: {
@@ -143,9 +144,12 @@ const Venta = new Schema({
   },
   estado: {
     type: String,
-    default: "pendiente",
-    enum: ["pendiente", "preparando", "listo", "entregado"],
+    default: 'pendiente',
+    enum: ['pendiente', 'preparando', 'listo', 'entregado'],
   },
+  idInterno: {
+    type: String,
+  }
 });
 
-module.exports = model("Venta", Venta);
+module.exports = model('Venta', Venta);

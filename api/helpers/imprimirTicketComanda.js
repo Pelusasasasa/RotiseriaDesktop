@@ -1,11 +1,13 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require('puppeteer');
 
-const ThermalPrinter = require("node-thermal-printer").printer;
-const PrinterTypes = require("node-thermal-printer").types;
+const ThermalPrinter = require('node-thermal-printer').printer;
+const PrinterTypes = require('node-thermal-printer').types;
+const sharp = require('sharp');
 
 const generarImagenDesdeHTML = async (mesa) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
+  await page.setViewport({ width: 550, height: 1000 });
   const html = `
         <html>
             <head>
@@ -45,11 +47,9 @@ const generarImagenDesdeHTML = async (mesa) => {
                     ? `<div class='grid grid-cols-3 productos'>
                     <em class='font-bold text-xl'>${cantidad.toFixed(2)}</em>
                     <em class='font-bold text-xl'>${producto.descripcion}</em>
-                    <em class='font-bold text-xl'>$${producto.precio.toFixed(
-                      2
-                    )}</em>
+                    <em class='font-bold text-xl'>$${producto.precio.toFixed(2)}</em>
                 </div>`
-                    : ""
+                    : ''
                 }
                 `
                 )}
@@ -57,9 +57,7 @@ const generarImagenDesdeHTML = async (mesa) => {
 
 
                 <div id='total' class='flex justify-end border-b border-gray-800 pb-1'>
-                    <p class='font-bold text-2xl mt-4'>Total: $${mesa.precio.toFixed(
-                      2
-                    )}</p>
+                    <p class='font-bold text-2xl mt-4'>Total: $${mesa.precio.toFixed(2)}</p>
                 </div>
 
                     ${
@@ -69,14 +67,14 @@ const generarImagenDesdeHTML = async (mesa) => {
                             <p class='text-2xl'>Observaciones: ${mesa.observaciones}</p>
                         </div>
                         `
-                        : ""
+                        : ''
                     }
             </body>
         </html>
     `;
 
-  await page.setContent(html, { waitUntil: "networkidle0" });
-  const buffer = await page.screenshot({ type: "png", fullPage: true });
+  await page.setContent(html, { waitUntil: 'networkidle0' });
+  const buffer = await page.screenshot({ type: 'png', fullPage: true });
   await browser.close();
 
   return buffer;
@@ -85,40 +83,42 @@ const generarImagenDesdeHTML = async (mesa) => {
 async function imprimirTicketComanda(venta) {
   let printer = new ThermalPrinter({
     type: PrinterTypes.EPSON,
-    interface: "tcp://192.168.0.47:9100",
-    //interface: "tcp://192.168.0.15:6001",
+    //interface: "tcp://192.168.0.47:9100",
+    interface: 'tcp://192.168.0.15:6001',
   });
   console.log(venta.precioEnvio);
   const imagenBuffer = await generarImagenDesdeHTML(venta);
+  
+  const processedBuffer = await sharp(imagenBuffer)
+    .resize(550)
+    .grayscale()
+    .threshold(180)
+    .toBuffer();
+
   await printer.isPrinterConnected();
 
-  await printer.printImageBuffer(imagenBuffer);
+  await printer.printImageBuffer(processedBuffer);
   await printer.cut();
   try {
     await printer.execute();
-    console.log("✅ Ticket impreso");
+    console.log('✅ Ticket impreso');
   } catch (error) {
-    console.error("❌ Error al imprimir ticket:", error.message || error);
+    console.error('❌ Error al imprimir ticket:', error.message || error);
   }
 }
 
 const parsearFecha = (date) => {
   if (!date) return;
   const fecha = new Date(date);
-  const fechaUTC3 = new Date(
-    fecha.getTime() - 3 * 60 * 60 * 1000
-  ).toISOString();
-  const fechaParseada = `${fechaUTC3.slice(0, 10)} - ${fechaUTC3.slice(
-    11,
-    19
-  )}`;
+  const fechaUTC3 = new Date(fecha.getTime() - 3 * 60 * 60 * 1000).toISOString();
+  const fechaParseada = `${fechaUTC3.slice(0, 10)} - ${fechaUTC3.slice(11, 19)}`;
   return fechaParseada;
 };
 
 const css = `
     @page{
         margin: 0;
-        width: 80mm;
+        width: 100%;
     }
     html, body{
         font-family: Arial, sans-serif;
@@ -129,7 +129,7 @@ const css = `
         padding: 0;
     }
     body{
-        width: 130mm;
+        width: 100%;
         font-family: 'Inconsolata', monospace;
     }
     p{

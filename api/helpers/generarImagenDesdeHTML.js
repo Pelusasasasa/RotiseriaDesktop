@@ -10,6 +10,7 @@ async function generarImagenDesdeHTML(venta) {
   const cartaEmpanada = await CartaEmpanada.findOne();
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
+  await page.setViewport({ width: 550, height: 1000 });
   const html = `
         <html>
             <head>
@@ -53,14 +54,14 @@ async function generarImagenDesdeHTML(venta) {
 
                 <div class='mt-4 border-b border-gray-800 pb-1'>
 
-                <div class='grid grid-cols-3 gap-2 border-b border-gray-800 mb-1'>
+                <div class='grid grid-cols-3 gap-1 border-b border-gray-800 mb-1'>
                     <p class='font-bold'>Cantidad</p>
                     <p class='font-bold'>Producto</p>
-                    <p class='font-bold'>Precio</p>
+                    <p class='font-bold col-precio'>Precio</p>
                 </div>
                 
                 ${venta.listaProductos.map(({ cantidad, producto }) => {
-                  const isEmpanada = producto.seccion?.nombre?.toUpperCase() === 'EMPANADAS';
+                  const isEmpanada = producto?.seccion?.nombre?.toUpperCase() === 'EMPANADAS';
                   let subtotalItem;
 
                   if (isEmpanada) {
@@ -78,7 +79,7 @@ async function generarImagenDesdeHTML(venta) {
                     <em class='font-bold text-xl'>${cantidad.toFixed(2)}/${producto.precio.toFixed(2)}</em>
                     <div class='grid grid-cols-2'>
                             <em class='font-bold text-xl'>${producto.descripcion}</em>
-                            <em class='font-bold text-xl text-end'>$${subtotalItem.toFixed(2)}</em>
+                            <em class='font-bold text-xl col-precio'>$${subtotalItem.toFixed(2)}</em>
                     </div>
                   </div>
                 `;
@@ -136,8 +137,8 @@ async function generarImagenDesdeHTML(venta) {
 async function imprimirVenta(venta) {
   let printer = new ThermalPrinter({
     type: PrinterTypes.EPSON,
-    //interface: 'tcp://192.168.0.15:6001',
-    interface: 'tcp://192.168.0.47:9100',
+    interface: 'tcp://192.168.0.15:6001',
+    //interface: 'tcp://192.168.0.47:9100',
   });
 
   //Redimensionar imagen
@@ -146,12 +147,20 @@ async function imprimirVenta(venta) {
   await sharp('img/Logo.png').resize({ width: 200 }).toFile(resizedImagePath);
 
   const imagenBuffer = await generarImagenDesdeHTML(venta);
+
+  // Procesar la imagen para que sea blanco y negro puro (soluciona el problema de fondo negro)
+  const processedBuffer = await sharp(imagenBuffer)
+    .resize(550) // Ajuste fino para el ancho de la impresora
+    .grayscale()
+    .threshold(180) // Convierte a blanco y negro puro
+    .toBuffer();
+
   await printer.isPrinterConnected();
   await printer.alignCenter();
   await printer.printImage(resizedImagePath);
 
   await printer.alignLeft();
-  await printer.printImageBuffer(imagenBuffer);
+  await printer.printImageBuffer(processedBuffer);
 
   await printer.alignCenter();
   venta.F &&
@@ -184,19 +193,21 @@ const parsearFecha = (date) => {
 const css = `
     @page{
         margin: 0;
-        width: 80mm;
+        width: 100%;
     }
     html, body{
         font-family: Arial, sans-serif;
-        font-size: 24px;
+        font-size: 20px;
         margin: 0;
         word-wrap: break-word;
         overflow-wrap: break-word;
         padding: 0;
+        background-color: white;
     }
     body{
-        width: 130mm;
+        width: 100%;
         font-family: 'Inconsolata', monospace;
+        background-color: white;
     }
     p{
         margin: 0;
@@ -267,12 +278,21 @@ const css = `
     }
 
     .grid-cols-3{
-        grid-template-columns: 0.5fr 2fr 0.5fr;
+        grid-template-columns: 1.1fr 1.8fr 1.1fr;
     }
 
     .grid-cols-2 {
         display: grid;
         grid-template-columns: 3fr 1fr;
+    }
+
+    .col-precio{
+        text-align: end;
+        white-space: nowrap;
+    }
+
+    .gap-1{
+        gap: 0.5rem;
     }
 
     .gap-2{

@@ -6,6 +6,7 @@ const connectDB = require('./config/dataBase');
 const { syncVentas } = require('./helpers/syncVentasAtlas');
 const { procesarPendientes } = require('./helpers/syncPendientes');
 const backUpMongoLocal = require('./backUpMongoLocal');
+const { procesarPedidosDeApp } = require('./helpers/procesarPedidosDeApp');
 
 require('dotenv').config();
 
@@ -56,6 +57,7 @@ app.listen(PORT, () => {
 
 // setInterval(syncVentas, 1 * 1000);
 // setInterval(procesarPendientes, 60 * 1000);
+procesarPedidosDeApp();
 
 setInterval(
   () => {
