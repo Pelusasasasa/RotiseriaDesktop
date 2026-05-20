@@ -4,12 +4,15 @@ const Venta = require('../models/Venta');
 const getNextNumberContado = require('./getNextNumberContado');
 const { imprimirVenta } = require('./generarImagenDesdeHTML');
 
-const procesarPedidosDeApp = async () => {
-  const fechaInicio = new Date();
-  const fechaFin = new Date();
+const formatFechaLocal = (date) => {
+  const pad = (num) => String(num).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+};
 
-  fechaInicio.setHours(0, 0, 0, 0);
-  fechaFin.setHours(23, 59, 59, 999);
+const procesarPedidosDeApp = async () => {
+  const now = new Date();
+  const fechaInicio = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+  const fechaFin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
 
   try {
     //obtener pedidos de hoy
@@ -23,10 +26,11 @@ const procesarPedidosDeApp = async () => {
         Authorization: `Basic ${token}`,
       },
       params: {
-        fechaDesde: fechaInicio.toISOString(),
-        fechaHasta: fechaFin.toISOString(),
+        fechaDesde: formatFechaLocal(fechaInicio),
+        fechaHasta: formatFechaLocal(fechaFin),
       },
     });
+
 
     const posibleVentas = response.data.filter((pedido) => pedido.estado.nombre === 'EN_PREPARACION');
 
@@ -93,7 +97,7 @@ const procesarPedidosDeApp = async () => {
       const ventaNueva = await Venta.create(venta);
       await ventaNueva.save();
 
-      //await imprimirVenta(ventaNueva);
+      await imprimirVenta(ventaNueva, true, posibleVenta.tarifaServicio);
     }
   } catch (error) {
     console.error(error);

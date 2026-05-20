@@ -55,9 +55,11 @@ app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
-setInterval(syncVentas, 60 * 1000);
-setInterval(procesarPendientes, 60 * 1000);
-setInterval(procesarPedidosDeApp, 60 * 1000);
+
+// setInterval(syncVentas, 60 * 1000);
+// setInterval(procesarPendientes, 60 * 1000);
+// setInterval(procesarPedidosDeApp, 60 * 1000);
+procesarPedidosDeApp();
 
 setInterval(
   () => {
