@@ -31,7 +31,6 @@ const procesarPedidosDeApp = async () => {
       },
     });
 
-
     const posibleVentas = response.data.filter((pedido) => pedido.estado.nombre === 'EN_PREPARACION');
 
     for (let posibleVenta of posibleVentas) {
@@ -68,7 +67,7 @@ const procesarPedidosDeApp = async () => {
         fecha: new Date(),
         nPedido: await getNextNumberPedido(),
 
-        cliente: posibleVenta?.cliente?.nombreUsuario || 'Consumidor Final',
+        cliente: posibleVenta?.nombreUsuario || 'Consumidor Final',
         direccion: posibleVenta?.direccion?.calle + ' ' + posibleVenta?.direccion.numero || '',
         telefono: posibleVenta?.telefono || '',
         num_doc: posibleVenta?.num_doc || '',
@@ -79,8 +78,9 @@ const procesarPedidosDeApp = async () => {
         descuento: posibleVenta.descuento,
         tipo_comp: posibleVenta.tipo_comp,
         caja: posibleVenta.caja,
+        envio: posibleVenta.tipoEntrega !== 'RETIRO_EN_COMERCIO' ? true : false,
 
-        dispositivo: 'WEB',
+        dispositivo: 'APP',
         observaciones: posibleVenta.observaciones,
 
         cod_comp: posibleVenta.cod_comp,
@@ -89,8 +89,8 @@ const procesarPedidosDeApp = async () => {
         envio: posibleVenta.tipoEntrega !== 'RETIRO_EN_COMERCIO',
         tipo_venta: 'CD',
 
-        precio: posibleVenta.precioTotal + posibleVenta.tarifaServicio,
-        precioEnvio: posibleVenta.envio,
+        precio: posibleVenta.precioTotal,
+        precioEnvio: posibleVenta.tipoEntrega !== 'RETIRO_EN_COMERCIO' ? posibleVenta.envio : 0,
         idInterno: posibleVenta.idInterno,
       };
 

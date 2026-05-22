@@ -243,7 +243,7 @@ mesaCTRL.imprimirComandaMesa = async (req, res) => {
   try {
     const mesa = await Mesa.findById(id);
 
-    //await imprimirTicketComanda(mesa);
+    await imprimirTicketComanda(mesa);
 
     // Hay que indicar a Mongoose que fue modificado el array anidado
     mesa.productos = mesa.productos.map((producto) => {

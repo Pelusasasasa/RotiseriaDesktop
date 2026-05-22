@@ -58,7 +58,7 @@ const Venta = new Schema({
   dispositivo: {
     type: String,
     default: '',
-    enum: ['MOVIL', 'DESKTOP', '', 'WEB'],
+    enum: ['MOVIL', 'DESKTOP', '', 'WEB', 'APP'],
     set: (value) => value.toUpperCase().trim(),
   },
   observaciones: {

@@ -33,25 +33,20 @@ const generarImagenDesdeHTML = async (mesa) => {
 
                 <div class='mt-4 border-b border-gray-800 pb-1'>
 
-                <div class='grid grid-cols-3 gap-2 border-b border-gray-800 mb-1'>
-                    <p class='font-bold'>Cantidad</p>
-                    <p class='font-bold'>Producto</p>
-                    <p class='font-bold'>Precio</p>
-                </div>
+                    <div class='grid grid-cols-3 gap-2 border-b border-gray-800 mb-1'>
+                        <p class='font-bold'>Cantidad</p>
+                        <p class='font-bold'>Producto</p>
+                        <p class='font-bold'>Precio</p>
+                    </div>
                 
-                ${mesa.productos.map(
-        ({ cantidad, producto, impreso }) => `
-                    
-                ${!impreso
-                ? `<div class='grid grid-cols-3 productos'>
-                    <em class='font-bold text-xl'>${cantidad.toFixed(2)}</em>
-                    <em class='font-bold text-xl'>${producto.descripcion}</em>
-                    <em class='font-bold text-xl'>$${producto.precio.toFixed(2)}</em>
-                </div>`
-                : ''
-            }
-                `
-    )}
+                    ${mesa.productos.map(({ cantidad, producto }) => `
+                        <div class='grid grid-cols-3 productos'>
+                            <em class='font-bold text-xl'>${cantidad.toFixed(2)}</em>
+                            <em class='font-bold text-xl'>${producto.descripcion}</em>
+                            <em class='font-bold text-xl'>$${producto.precio.toFixed(2)}</em>
+                        </div>
+                    `).join('')}
+
                 </div>
 
 
@@ -59,14 +54,13 @@ const generarImagenDesdeHTML = async (mesa) => {
                     <p class='font-bold text-2xl mt-4'>Total: $${mesa.precio.toFixed(2)}</p>
                 </div>
 
-                    ${mesa?.observaciones
-            ? `
+                ${mesa?.observaciones
+                    ? `
                         <div id='varios' class='border-b border-gray-800 pb-1'>
                             <p class='text-2xl'>Observaciones: ${mesa.observaciones}</p>
-                        </div>
-                        `
-            : ''
-        }
+                        </div>`
+                    : ''
+                }
             </body>
         </html>
     `;
@@ -84,13 +78,14 @@ async function imprimirTicketComanda(venta) {
         interface: "tcp://192.168.0.47:9100",
         //interface: 'tcp://192.168.0.15:6001',
     });
-    console.log(venta.precioEnvio);
+    
     const imagenBuffer = await generarImagenDesdeHTML(venta);
+    
 
     const processedBuffer = await sharp(imagenBuffer)
         .resize(550)
         .grayscale()
-        .threshold(180)
+        .threshold(200)
         .toBuffer();
 
     await printer.isPrinterConnected();
@@ -120,15 +115,17 @@ const css = `
     }
     html, body{
         font-family: Arial, sans-serif;
-        font-size: 24px;
+        font-size: 20px;
         margin: 0;
         word-wrap: break-word;
         overflow-wrap: break-word;
         padding: 0;
+        background-color: white;
     }
     body{
         width: 100%;
         font-family: 'Inconsolata', monospace;
+        background-color: white;
     }
     p{
         margin: 0;
@@ -160,7 +157,7 @@ const css = `
         font-size:  23px;
     }
     .text-xl{
-        font-size: 26px;
+        font-size: 20px;
     }
     .text-2xl{
         font-size: 29px;

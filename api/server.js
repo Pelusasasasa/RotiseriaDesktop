@@ -56,10 +56,10 @@ app.listen(PORT, () => {
 });
 
 
-// setInterval(syncVentas, 60 * 1000);
-// setInterval(procesarPendientes, 60 * 1000);
-// setInterval(procesarPedidosDeApp, 60 * 1000);
-procesarPedidosDeApp();
+setInterval(syncVentas, 60 * 1000);
+setInterval(procesarPendientes, 60 * 1000);
+setInterval(procesarPedidosDeApp, 60 * 1000);
+
 
 setInterval(
   () => {
