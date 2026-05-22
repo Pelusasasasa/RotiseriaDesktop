@@ -55,12 +55,12 @@ const generarImagenDesdeHTML = async (mesa) => {
                 </div>
 
                 ${mesa?.observaciones
-                    ? `
+            ? `
                         <div id='varios' class='border-b border-gray-800 pb-1'>
                             <p class='text-2xl'>Observaciones: ${mesa.observaciones}</p>
                         </div>`
-                    : ''
-                }
+            : ''
+        }
             </body>
         </html>
     `;
@@ -75,12 +75,12 @@ const generarImagenDesdeHTML = async (mesa) => {
 async function imprimirTicketComanda(venta) {
     let printer = new ThermalPrinter({
         type: PrinterTypes.EPSON,
-        interface: "tcp://192.168.0.47:9100",
-        //interface: 'tcp://192.168.0.15:6001',
+        //interface: "tcp://192.168.0.47:9100",
+        interface: 'tcp://192.168.0.15:6001',
     });
-    
+
     const imagenBuffer = await generarImagenDesdeHTML(venta);
-    
+
 
     const processedBuffer = await sharp(imagenBuffer)
         .resize(550)
@@ -115,7 +115,7 @@ const css = `
     }
     html, body{
         font-family: Arial, sans-serif;
-        font-size: 20px;
+        font-size: 26px;
         margin: 0;
         word-wrap: break-word;
         overflow-wrap: break-word;
@@ -153,17 +153,21 @@ const css = `
     .pb-1{
         margin-bottom: 1rem
     }
+    h3{
+        font-size: 32px;
+        margin: 0;
+    }
     .text-lg{
-        font-size:  23px;
+        font-size: 30px;
     }
     .text-xl{
-        font-size: 20px;
+        font-size: 28px;
     }
     .text-2xl{
-        font-size: 29px;
+        font-size: 38px;
     }
     .text-xs{
-        font-size: 18px;
+        font-size: 24px;
     }
 
     .text-sans{
