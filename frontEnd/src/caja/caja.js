@@ -580,6 +580,8 @@ const listarVentas = async (ventas) => {
       textoDispositivo = "CELULAR";
     } else if (venta.dispositivo === "WEB") {
       textoDispositivo = "WEB";
+    } else if (venta.dispositivo === "APP") {
+      textoDispositivo = "APP";
     } else {
       textoDispositivo = "PC";
     }

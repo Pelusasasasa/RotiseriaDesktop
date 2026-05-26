@@ -18,6 +18,8 @@ const generarImagenDesdeHTML = async (mesa) => {
 
             <body class=''>
 
+                <div id='ticket-root'>
+
                 <div class='flex justify-center mb-1'>
                     <h3>Sabor Urbano</h3>
                 </div>
@@ -61,12 +63,35 @@ const generarImagenDesdeHTML = async (mesa) => {
                         </div>`
             : ''
         }
+
+                </div>
+
             </body>
         </html>
     `;
 
     await page.setContent(html, { waitUntil: 'networkidle0' });
-    const buffer = await page.screenshot({ type: 'png', fullPage: true });
+
+    let buffer;
+    const root = await page.$('#ticket-root');
+    if (root) {
+        const box = await root.boundingBox();
+        if (box && box.width > 0 && box.height > 0) {
+            buffer = await page.screenshot({
+                type: 'png',
+                clip: {
+                    x: Math.max(0, Math.floor(box.x)),
+                    y: Math.max(0, Math.floor(box.y)),
+                    width: Math.ceil(box.width),
+                    height: Math.ceil(box.height),
+                },
+            });
+        }
+    }
+    if (!buffer) {
+        buffer = await page.screenshot({ type: 'png', fullPage: true });
+    }
+
     await browser.close();
 
     return buffer;
@@ -75,15 +100,16 @@ const generarImagenDesdeHTML = async (mesa) => {
 async function imprimirTicketComanda(venta) {
     let printer = new ThermalPrinter({
         type: PrinterTypes.EPSON,
-        //interface: "tcp://192.168.0.47:9100",
-        interface: 'tcp://192.168.0.15:6001',
+        interface: "tcp://192.168.0.47:9100",
+        //interface: 'tcp://192.168.0.15:6001',
     });
 
     const imagenBuffer = await generarImagenDesdeHTML(venta);
 
 
     const processedBuffer = await sharp(imagenBuffer)
-        .resize(550)
+        .trim({ threshold: 20 })
+        .resize({ width: 550 })
         .grayscale()
         .threshold(200)
         .toBuffer();
@@ -115,7 +141,7 @@ const css = `
     }
     html, body{
         font-family: Arial, sans-serif;
-        font-size: 26px;
+        font-size: 28px;
         margin: 0;
         word-wrap: break-word;
         overflow-wrap: break-word;
@@ -126,6 +152,14 @@ const css = `
         width: 100%;
         font-family: 'Inconsolata', monospace;
         background-color: white;
+    }
+    #ticket-root{
+        display: flow-root;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    #ticket-root > *:last-child{
+        margin-bottom: 0;
     }
     p{
         margin: 0;
@@ -154,20 +188,20 @@ const css = `
         margin-bottom: 1rem
     }
     h3{
-        font-size: 32px;
+        font-size: 34px;
         margin: 0;
     }
     .text-lg{
-        font-size: 30px;
+        font-size: 32px;
     }
     .text-xl{
-        font-size: 28px;
+        font-size: 30px;
     }
     .text-2xl{
-        font-size: 38px;
+        font-size: 40px;
     }
     .text-xs{
-        font-size: 24px;
+        font-size: 26px;
     }
 
     .text-sans{

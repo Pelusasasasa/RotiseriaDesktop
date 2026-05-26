@@ -20,8 +20,9 @@ async function generarImagenDesdeHTML(venta, app = false, tarifa = 0) {
             </head>
 
             <body class=''>
+                <div id='ticket-root'>
 
-                <div class='flex justify-center mb-1'>
+                    <div class='flex justify-center mb-1'>
                 </div>
 
                 ${app ? '<h2>Pedido de la App</h2>' : ''}
@@ -121,12 +122,31 @@ async function generarImagenDesdeHTML(venta, app = false, tarifa = 0) {
                     </div>`
             : ''
         }
+                </div>
             </body>
         </html>
     `;
 
     await page.setContent(html, { waitUntil: 'networkidle0' });
-    const buffer = await page.screenshot({ type: 'png', fullPage: true });
+    let buffer;
+    const root = await page.$('#ticket-root');
+    if (root) {
+        const box = await root.boundingBox();
+        if (box && box.width > 0 && box.height > 0) {
+            buffer = await page.screenshot({
+                type: 'png',
+                clip: {
+                    x: Math.max(0, Math.floor(box.x)),
+                    y: Math.max(0, Math.floor(box.y)),
+                    width: Math.ceil(box.width),
+                    height: Math.ceil(box.height),
+                },
+            });
+        }
+    }
+    if (!buffer) {
+        buffer = await page.screenshot({ type: 'png', fullPage: true });
+    }
     const pdfPath = path.join(process.cwd(), `factura.pdf`);
     await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
     await browser.close();
@@ -150,6 +170,7 @@ async function imprimirVenta(venta, app = false, tarifa = 0) {
 
     // Procesar la imagen para que sea blanco y negro puro (soluciona el problema de fondo negro)
     const processedBuffer = await sharp(imagenBuffer)
+        .trim({ threshold: 20 })
         .resize(550) // Ajuste fino para el ancho de la impresora
         .grayscale()
         .threshold(180) // Convierte a blanco y negro puro
@@ -197,7 +218,7 @@ const css = `
     }
     html, body{
         font-family: Arial, sans-serif;
-        font-size: 20px;
+        font-size: 22px;
         margin: 0;
         word-wrap: break-word;
         overflow-wrap: break-word;
@@ -208,6 +229,14 @@ const css = `
         width: 100%;
         font-family: 'Inconsolata', monospace;
         background-color: white;
+    }
+    #ticket-root{
+        display: flow-root;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    #ticket-root > *:last-child{
+        margin-bottom: 0;
     }
     p{
         margin: 0;
@@ -236,16 +265,16 @@ const css = `
         margin-bottom: 1rem
     }
     .text-lg{
-        font-size:  23px;
+        font-size: 25px;
     }
     .text-xl{
-        font-size: 26px;
+        font-size: 28px;
     }
     .text-2xl{
-        font-size: 29px;
+        font-size: 32px;
     }
     .text-xs{
-        font-size: 18px;
+        font-size: 20px;
     }
 
     .text-sans{
